@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "228686973014",
+    "project_id": "yuukidatabase-a715b",
+    "storage_bucket": "yuukidatabase-a715b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228686973014:android:316727fd83dfb7b8fd13f7",
+        "android_client_info": {
+          "package_name": "com.example.yuuki"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdwbl-oJzn5dCzxoNsBkSK4M0hIMbRhQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:228686973014:android:2477f0bd71f0c941fd13f7",
+        "android_client_info": {
+          "package_name": "com.yuuki"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdwbl-oJzn5dCzxoNsBkSK4M0hIMbRhQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
