@@ -57,6 +57,27 @@ class UserTopic {
     );
   }
 
+    factory UserTopic.updateFromTopic(Topic topic) {
+    return UserTopic(
+      id: topic.id, // Assuming ID is available in Topic
+      title: topic.title,
+      author: topic.author,
+      authorName: topic.authorName,
+      description: topic.description,
+      isPrivate: topic.isPrivate,
+      vocabularies: handleVocab(topic.vocabularies),
+      lastOpen: DateTime.now().millisecondsSinceEpoch, // Use current time
+      startTime: 0, // Assuming default start time (modify if needed)
+      endTime: 0, // Assuming default end time (modify if needed)
+      lastTime: 0, // Assuming default last time (modify if needed)
+      bestTime: 0, // Assuming default best time (modify if needed)
+      lastScore: 0.0, // Assuming default last score (modify if needed)
+      bestScore: 0.0, // Assuming default best score (modify if needed)
+      view: 0, // Assuming default view count (modify if needed)
+    );
+  }
+
+
   static List<Vocabulary> handleVocab(List<Vocabulary> newVocabs) {
     List<Vocabulary> currentVocabs = []; // Assuming no initial vocabularies
     List<Vocabulary> output = [];
@@ -165,4 +186,6 @@ class UserTopic {
   void setLastScore(double value) => lastScore = value;
   void setBestScore(double value) => bestScore = value;
   void setView(int value) => view = value;
+
+  void incrementView() {view++;}
 }

@@ -1,14 +1,14 @@
 import 'user_topic.dart'; // Assuming user_topic.dart is defined with the UserTopic class
 
 class Folder {
-  final String folderName;
-  final String id; // Optional: Allow null for initial creation
-  final List<UserTopic> topics;
-  final int lastOpen; // Assuming long can be represented by int in Flutter
+  String folderName;
+  String? id; // Optional: Allow null for initial creation
+  List<UserTopic> topics;
+  int lastOpen; // Assuming long can be represented by int in Flutter
 
   Folder({
     required this.folderName,
-    required this.id, 
+    this.id, 
     required this.topics,
     required this.lastOpen,
   });
@@ -31,5 +31,30 @@ class Folder {
       'topics': topics.map((topic) => topic.toFirestore()).toList(),
       'lastOpen': lastOpen,
     };
+  }
+
+  String get getFolderName => folderName; // Getter for folderName (already final)
+  String? get getId => id; // Getter for id with null safety
+  get getLastOpen => lastOpen; // Getter for lastOpen (already final)
+
+
+  void setFolderName(String value) {
+    folderName = value;
+  }
+
+
+  void setId(String? value) {
+    id = value;
+  }
+
+  List<UserTopic> get getTopics => topics; // Getter for topics (immutable)
+
+  void setTopics(List<UserTopic> value) {
+    topics = value;
+  }
+
+
+  void setLastOpen(int value) {
+    lastOpen = value;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:yuuki/models/MyUser.dart';
+import 'package:yuuki/models/my_user.dart';
 class UserCard extends StatelessWidget {
   final MyUser user;
 

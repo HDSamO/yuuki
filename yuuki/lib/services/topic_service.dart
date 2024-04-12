@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yuuki/listeners/on_topic_create_listener.dart';
 import 'package:yuuki/listeners/on_topics_fetch_listener.dart';
 import 'package:yuuki/listeners/on_user_topic_create_listener.dart';
+import 'package:yuuki/models/folder.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
@@ -427,17 +428,12 @@ class TopicController {
 
   Future<UserTopic?> getUserTopicforUser(MyUser user, String topicId) async {
     try {
-      final CollectionReference usersCollection = FirebaseFirestore.instance.collection("users");
+      final DocumentReference userRef = FirebaseFirestore.instance.collection("users").doc(user.id); // Use user.id directly
 
-      final QuerySnapshot querySnapshot = await usersCollection
-          .where("id", isEqualTo:  user.id) // Use MyUser.id directly
-          .limit(1)
-          .get();
+      final DocumentSnapshot userSnapshot = await userRef.get();
 
-      if (querySnapshot.size > 0) {
-        final DocumentSnapshot documentSnapshot = querySnapshot.docs[0];
-
-        final DocumentReference userTopicRef = usersCollection.doc(documentSnapshot.id).collection("userTopics").doc(topicId);
+      if (userSnapshot.exists) {
+        final DocumentReference userTopicRef = userRef.collection("userTopics").doc(topicId);
         final DocumentSnapshot userTopicSnapshot = await userTopicRef.get();
 
         if (userTopicSnapshot.exists) {
@@ -454,6 +450,53 @@ class TopicController {
       return null; // Handle errors in UI
     }
   }
+
+  Future<List<Topic>> fetchTopicsNotInFolder(MyUser user, String folderId) async {
+    try {
+      final String userId = user.id as String; // Use unique ID from MyUser
+
+      final CollectionReference topicsCollection = FirebaseFirestore.instance.collection("topics");
+      final DocumentReference folderDocRef = FirebaseFirestore.instance.collection("users").doc(userId).collection("folders").doc(folderId);
+
+      final DocumentSnapshot folderSnapshot = await folderDocRef.get();
+      if (!folderSnapshot.exists) {
+        throw Exception("Folder document not found");
+      }
+
+      final Folder folder = folderSnapshot.data()! as Folder;
+      final List<String> topicIdsInFolder = folder.topics?.map((userTopic) => userTopic.id).toList() ?? [];
+
+      Query publicTopicsQuery = topicsCollection.where("private", isEqualTo: false);
+      Query privateTopicsQuery = topicsCollection.where("private", isEqualTo: true).where("author", isEqualTo: userId);
+
+      if (topicIdsInFolder.isNotEmpty) {
+        publicTopicsQuery = publicTopicsQuery.where("id", whereNotIn:  topicIdsInFolder).limit(15);
+        privateTopicsQuery = privateTopicsQuery.where("id", whereNotIn: topicIdsInFolder).limit(10);
+      } else {
+        publicTopicsQuery = publicTopicsQuery.limit(15);
+        privateTopicsQuery = privateTopicsQuery.limit(10);
+      }
+
+      final List<Future<QuerySnapshot>> queries = [publicTopicsQuery.get(), privateTopicsQuery.get()];
+      final List<QuerySnapshot> snapshots = await Future.wait(queries);
+
+      final List<Topic> topics = [];
+      for (final QuerySnapshot snapshot in snapshots) {
+        final List<DocumentSnapshot> documents = snapshot.docs;
+        topics.addAll(documents.map((doc) => doc.data()! as Topic).toList());
+      }
+
+      return topics;
+    } on Exception catch (e) {
+      print("Error fetching topics: $e"); // Log for debugging (remove in production)
+      return []; // Return empty list on error
+    }
+  }
+
+
+  
+
+
 
 
 }
