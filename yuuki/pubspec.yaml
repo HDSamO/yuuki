@@ -39,10 +39,13 @@ dependencies:
   firebase_auth: ^4.19.0
   firebase_core: ^2.28.0
   google_fonts: ^6.2.1
+  icons_plus: ^4.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  shared_preferences: ^2.0.8
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -63,7 +66,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/images/login_signup/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
@@ -81,19 +85,19 @@ flutter:
   fonts:
      - family: B612
        fonts:
-         - asset: fonts/B612-Bold.ttf
+         - asset: assets/fonts/B612-Bold.ttf
            weight: 700
      - family: Cabin
        fonts:
-         - asset: fonts/Cabin-Italic.ttf
+         - asset: assets/fonts/Cabin-Italic.ttf
            style: italic
-         - asset: fonts/Cabin-Regular.ttf
+         - asset: assets/fonts/Cabin-Regular.ttf
      - family: Jua
        fonts:
-         - asset: fonts/Jua-Regular.ttf
+         - asset: assets/fonts/Jua-Regular.ttf
      - family: Katibeh
        fonts:
-         - asset: fonts/Katibeh-Regular.ttf
+         - asset: assets/fonts/Katibeh-Regular.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

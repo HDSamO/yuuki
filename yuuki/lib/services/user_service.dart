@@ -93,7 +93,8 @@ class UserService {
       final DocumentSnapshot userSnapshot = await userRef.get();
 
       if (userSnapshot.exists) {
-        final MyUser user = userSnapshot.data() as MyUser;
+        // final MyUser user = userSnapshot.data() as MyUser;
+        final MyUser user = MyUser.fromMap(userSnapshot.data() as Map<String, dynamic>);
         // Save login history
         // ... (Not yet implemented)
         return UserResult(success: true, user: user);
