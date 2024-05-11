@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 class CustomLoginButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
+  final double width;
+  final double height;
 
   const CustomLoginButton({
     required this.onPressed,
     required this.text,
+    required this.width,
+    required this.height
   });
 
   @override
@@ -14,8 +18,8 @@ class CustomLoginButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 182,
-        height: 54,
+        width: width,
+        height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(27),
           gradient: LinearGradient(

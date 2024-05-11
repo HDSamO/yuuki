@@ -6,6 +6,7 @@ import 'package:yuuki/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/signup_screen.dart';
+import '../widgets/custom_input_text.dart';
 import '../widgets/custom_login_button.dart';
 import '../widgets/custom_login_scaffold.dart';
 import '../theme/theme.dart';
@@ -22,6 +23,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _userController = UserService();
   final _formLoginKey = GlobalKey<FormState>();
+
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -129,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
           const Expanded(
             flex: 1,
             child: SizedBox(
-              height: 5,
+              height: 10,
             ),
           ),
           Expanded(
@@ -164,20 +166,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 30.0,
                       ),
-                      TextFormField(
-                        maxLines: 1,
-                        maxLength: 100,
+                      CustomInputText(
                         controller: _usernameController,
+                        hintText: "Username",
                         keyboardType: TextInputType.name,
-                        decoration: const InputDecoration(
-                          hintText: "Username",
-                          hintStyle: TextStyle(color: Colors.blue),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                        ),
-                        // Màu của văn bản
-                        style: TextStyle(color: Colors.blue),
+                        autoFocus: true,
+                        onChanged: (_) {
+                          if (_isSubmit) {
+                            _formLoginKey.currentState!.validate();
+                          }
+                        },
                         onSaved: (v) {},
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -185,43 +183,27 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                           return null;
                         },
-                        autofocus: true,
+                      ),
+
+                      const SizedBox(
+                        height: 25.0,
+                      ),
+                      CustomInputText(
+                        controller: _passwordController,
+                        hintText: "Password",
+                        keyboardType: TextInputType.name,
+                        autoFocus: false,
                         onChanged: (_) {
                           if (_isSubmit) {
                             _formLoginKey.currentState!.validate();
                           }
                         },
-                      ),
-                      const SizedBox(
-                        height: 25.0,
-                      ),
-                      TextFormField(
-                        maxLines: 1,
-                        maxLength: 100,
-                        obscureText: true,
-                        obscuringCharacter: '*',
-                        controller: _passwordController,
-                        keyboardType: TextInputType.name,
-                        decoration: const InputDecoration(
-                          hintText: "Password",
-                          hintStyle: TextStyle(color: Colors.blue),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue, width: 2),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.blue),
                         onSaved: (v) {},
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Password';
                           }
                           return null;
-                        },
-                        autofocus: true,
-                        onChanged: (_) {
-                          if (_isSubmit) {
-                            _formLoginKey.currentState!.validate();
-                          }
                         },
                       ),
                       const SizedBox(
@@ -263,14 +245,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
-                      SizedBox(
+                      CustomLoginButton(
+                        onPressed: () {
+                          _handleSubmit();
+                        },
+                        text: 'LOGIN',
                         width: double.infinity,
-                        child: CustomLoginButton(
-                          onPressed: () {
-                            _handleSubmit();
-                          },
-                          text: 'LOGIN',
-                        ),
+                        height: 54,
                       ),
                       const SizedBox(
                         height: 15.0,

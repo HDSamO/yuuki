@@ -11,6 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yuuki/utils/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yuuki/widgets/onboarding_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,7 @@ class _MyAppState extends State<MyApp> {
   final _userController = UserService();
   String? _userId;
   String? _userEmail;
+  bool? _onboarding;
 
   @override
   void initState() {
@@ -39,6 +41,7 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _userId = prefs.getString('id');
       _userEmail = prefs.getString('email');
+      _onboarding = prefs.getBool('onboarding') ?? false;
     });
   }
 
@@ -62,6 +65,9 @@ class _MyAppState extends State<MyApp> {
               body: Text('Error: ${snapshot.error}'),
             );
           } else {
+            if (!_onboarding!){
+              return OnboardingView();
+            }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng
             if (snapshot.data == null) {
               return LoginScreen();

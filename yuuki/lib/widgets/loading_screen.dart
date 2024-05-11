@@ -5,7 +5,21 @@ class LoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(),
+        child: Column(
+          children: [
+            Text(
+              'YUUKI',
+              style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Jua",
+                  color: Colors.white
+              ),
+            ),
+            SizedBox(height: 10,),
+            CircularProgressIndicator(),
+          ],
+        )
       ),
     );
   }
