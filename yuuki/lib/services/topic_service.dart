@@ -125,7 +125,7 @@ class TopicController {
       final QuerySnapshot querySnapshot = await randomTopicsQuery.get();
 
       final List<Topic> topics = querySnapshot.docs
-          .map((doc) => doc.data()! as Topic)
+          .map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>))
           .toList();
 
       return topics;
@@ -133,6 +133,26 @@ class TopicController {
       throw Exception("Error fetching random topics: ${e.message}"); // Re-throw as a generic Exception
     }
   }
+
+  // Future<TopicListResult> getRandomTopics() async {
+  //   try {
+  //     final CollectionReference topicsCollection = FirebaseFirestore.instance.collection("topics");
+  //     final Query randomTopicsQuery = topicsCollection
+  //         .where("private", isEqualTo: false) // Filter out private topics
+  //         .orderBy("lastModify", descending: true) // Order by last modified date (descending)
+  //         .limit(10); // Fetch a maximum of 10 topics
+
+  //     final QuerySnapshot querySnapshot = await randomTopicsQuery.get();
+
+  //     final List<Topic> topics = querySnapshot.docs
+  //         .map((doc) => doc.data()! as Topic)
+  //         .toList();
+
+  //     return TopicListResult(success: true, topics: topics);
+  //   } on FirebaseException catch (e) {
+  //     throw Exception("Error fetching random topics: ${e.message}"); // Re-throw as a generic Exception
+  //   }
+  // }
 
   Future<List<UserTopic>> getRecentTopics(MyUser user) async {
     try {
