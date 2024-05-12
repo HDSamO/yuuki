@@ -35,7 +35,7 @@ class ExampleScreen extends StatelessWidget {
       title: "My Vocabulary List",
       description: "A collection of various words and their meanings.",
       vocabularies: vocabularies,
-      isPrivate: false,
+      private: false,
       authorName: "John Doe",
     );
 
