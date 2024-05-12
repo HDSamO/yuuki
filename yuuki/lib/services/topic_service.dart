@@ -7,6 +7,7 @@ import 'package:yuuki/models/folder.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/results/topic_result.dart';
 import 'package:yuuki/results/user_topic_result.dart';
 
@@ -114,7 +115,27 @@ class TopicController {
     }
   }
 
-  Future<List<Topic>> getRandomTopics() async {
+  // Future<List<Topic>> getRandomTopics() async {
+  //   try {
+  //     final CollectionReference topicsCollection = FirebaseFirestore.instance.collection("topics");
+  //     final Query randomTopicsQuery = topicsCollection
+  //         .where("private", isEqualTo: false) // Filter out private topics
+  //         .orderBy("lastModify", descending: true) // Order by last modified date (descending)
+  //         .limit(10); // Fetch a maximum of 10 topics
+
+  //     final QuerySnapshot querySnapshot = await randomTopicsQuery.get();
+
+  //     final List<Topic> topics = querySnapshot.docs
+  //         .map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>))
+  //         .toList();
+
+  //     return topics;
+  //   } on FirebaseException catch (e) {
+  //     throw Exception("Error fetching random topics: ${e.message}"); // Re-throw as a generic Exception
+  //   }
+  // }
+
+  Future<TopicListResult> getRandomTopics() async {
     try {
       final CollectionReference topicsCollection = FirebaseFirestore.instance.collection("topics");
       final Query randomTopicsQuery = topicsCollection
@@ -125,14 +146,15 @@ class TopicController {
       final QuerySnapshot querySnapshot = await randomTopicsQuery.get();
 
       final List<Topic> topics = querySnapshot.docs
-          .map((doc) => doc.data()! as Topic)
+          .map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>))
           .toList();
 
-      return topics;
+      return TopicListResult(success: true, topics: topics);
     } on FirebaseException catch (e) {
       throw Exception("Error fetching random topics: ${e.message}"); // Re-throw as a generic Exception
     }
   }
+  
 
   Future<List<UserTopic>> getRecentTopics(MyUser user) async {
     try {

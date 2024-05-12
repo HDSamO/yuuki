@@ -8,7 +8,7 @@ class UserTopic {
   String? author;
   String authorName;
   String description;
-  bool isPrivate;
+  bool private;
   List<Vocabulary> vocabularies;
   int lastOpen; // Assuming long can be represented by int in Flutter
   int startTime; // Assuming long can be represented by int in Flutter
@@ -25,7 +25,7 @@ class UserTopic {
     this.author,
     required this.authorName,
     required this.description,
-    required this.isPrivate,
+    required this.private,
     required this.vocabularies,
     required this.lastOpen,
     required this.startTime,
@@ -44,7 +44,7 @@ class UserTopic {
       author: topic.author,
       authorName: topic.authorName,
       description: topic.description,
-      isPrivate: topic.isPrivate,
+      private: topic.private,
       vocabularies: handleVocab(topic.vocabularies),
       lastOpen: DateTime.now().millisecondsSinceEpoch, // Use current time
       startTime: 0, // Assuming default start time (modify if needed)
@@ -64,7 +64,7 @@ class UserTopic {
       author: topic.author,
       authorName: topic.authorName,
       description: topic.description,
-      isPrivate: topic.isPrivate,
+      private: topic.private,
       vocabularies: handleVocab(topic.vocabularies),
       lastOpen: DateTime.now().millisecondsSinceEpoch, // Use current time
       startTime: 0, // Assuming default start time (modify if needed)
@@ -100,7 +100,7 @@ class UserTopic {
         output.add(Vocabulary(
           term: matchedVocab.term,
           definition: matchedVocab.definition,
-          isStarred: matchedVocab.isStarred,
+          stared: matchedVocab.stared,
           category: matchedVocab.category,
         ));
       } else {
@@ -118,7 +118,7 @@ class UserTopic {
       'author': author,
       'authorName': authorName,
       'description': description,
-      'isPrivate': isPrivate,
+      'private': private,
       'vocabularies': vocabularies.map((vocab) => vocab.toFirestore()).toList(),
       'lastOpen': lastOpen,
       'startTime': startTime,
@@ -138,7 +138,7 @@ class UserTopic {
       author: map['author'] as String?,
       authorName: map['authorName'] as String,
       description: map['description'] as String,
-      isPrivate: map['isPrivate'] as bool,
+      private: map['private'] as bool,
       vocabularies: (map['vocabularies'] as List)
           .map((vocabMap) => Vocabulary.fromMap(vocabMap))
           .toList(),
@@ -159,7 +159,7 @@ class UserTopic {
   String? get getAuthor => author;
   String get getAuthorName => authorName;
   String get getDescription => description;
-  bool get getIsPrivate => isPrivate;
+  bool get getPrivate => private;
   List<Vocabulary> get getVocabularies => vocabularies;
   int get getLastOpen => lastOpen;
   int get getStartTime => startTime;
@@ -176,7 +176,7 @@ class UserTopic {
   void setAuthor(String? value) => author = value;
   void setAuthorName(String? value) => author = value;
   void setDescription(String value) => description = value;
-  void setIsPrivate(bool value) => isPrivate = value;
+  void setPrivate(bool value) => private = value;
   void setVocabularies(List<Vocabulary> value) => vocabularies = value;
   void setLastOpen(int value) => lastOpen = value;
   void setStartTime(int value) => startTime = value;
