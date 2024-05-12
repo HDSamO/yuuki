@@ -4,6 +4,7 @@ import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/my_sign_up_page.dart';
 import 'package:yuuki/screens/example_screen.dart';
 import 'package:yuuki/screens/home_screen.dart';
+import 'package:yuuki/screens/library_screen.dart';
 import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/listeners/on_user_create_listener.dart';
@@ -11,7 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yuuki/utils/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:yuuki/widgets/onboarding_view.dart';
+import 'package:yuuki/screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,8 +56,43 @@ class _MyAppState extends State<MyApp> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Hiển thị màn hình loading nếu đang tải dữ liệu
             return Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
+              body: Stack(
+                children: [
+                  // Hình nền
+                  Image.asset(
+                    "assets/images/onboarding/img_background.jpg",
+                    fit: BoxFit.cover,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                  ),
+                  // Widget chứa văn bản và CircularProgressIndicator
+                  const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "YUUKI",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 46,
+                            fontFamily: "Jua"
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        CircularProgressIndicator(),
+                        SizedBox(height: 15,),
+                        Text(
+                          "Welcome, please wait...",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontFamily: "Jua"
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           } else if (snapshot.hasError) {
@@ -66,14 +102,14 @@ class _MyAppState extends State<MyApp> {
             );
           } else {
             if (!_onboarding!){
-              return OnboardingView();
+              return OnboardingScreen();
             }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng
             if (snapshot.data == null) {
               return LoginScreen();
             } else {
               // Hiển thị màn hình thông tin người dùng nếu đã tìm thấy người dùng
-              return ExampleScreen(user: snapshot.data);
+              return LibraryScreen(myUser: snapshot.data);
             }
           }
         },

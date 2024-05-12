@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/screens/example_screen.dart';
+import 'package:yuuki/screens/library_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +12,6 @@ import '../widgets/custom_login_button.dart';
 import '../widgets/custom_login_scaffold.dart';
 import '../theme/theme.dart';
 import '../results/user_result.dart';
-import '../widgets/loading_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               CircularProgressIndicator(),
               SizedBox(width: 16),
-              Text("Logging in..."),
+              Text("Loading..."),
             ],
           ),
           duration: Duration(seconds: 5),
@@ -78,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = false;
       });
+      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Hide the loading snackbar
 
       if (userResult.success) {
         setState(() {
@@ -92,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (_rememberMe){
           String? id = myUser!.id;
-          String? email = myUser!.email;
+          String? email = myUser.email;
 
           // Lưu thông tin người dùng vào SharedPreferences
           await saveUserToSharedPreferences(id, email);
@@ -103,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (e) => ExampleScreen(user: myUser),
+            builder: (e) => LibraryScreen(myUser: myUser),
           ),
         );
 

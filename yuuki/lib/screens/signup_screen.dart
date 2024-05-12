@@ -1,7 +1,6 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/theme/theme.dart';
 import 'package:yuuki/widgets/custom_login_button.dart';
 import 'package:yuuki/widgets/custom_login_scaffold.dart';
@@ -372,7 +371,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (e) => const LoginScreen(),
+                                ),
+                              );
                             },
                             child: Text(
                               'Sign in',

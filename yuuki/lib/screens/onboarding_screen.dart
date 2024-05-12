@@ -6,14 +6,14 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:yuuki/screens/signup_screen.dart';
 import 'package:yuuki/widgets/custom_login_button.dart';
 
-class OnboardingView extends StatefulWidget {
-  const OnboardingView({super.key});
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingView> createState() => _OnboardingViewState();
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingViewState extends State<OnboardingView> {
+class _OnboardingScreenState extends State<OnboardingScreen> {
   final controller = OnboardingItems();
   final pageController = PageController();
 

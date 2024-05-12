@@ -8,6 +8,8 @@ import 'package:yuuki/listeners/on_login_listener.dart';
 import 'package:yuuki/results/password_result.dart';
 import 'package:yuuki/results/user_result.dart';
 
+import '../models/user_topic.dart';
+
 
 class UserService {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -32,16 +34,40 @@ class UserService {
     }
   }
 
+  // Future<MyUser?> getUserByEmail(String email) async {
+  //   Query usersQuery = usersCollection.where('email', isEqualTo: email);
+  //   QuerySnapshot snapshot = await usersQuery.get();
+  //
+  //   if (snapshot.docs.isNotEmpty) {
+  //     return MyUser.fromMap(snapshot.docs.first.data()! as Map<String, dynamic>);
+  //   } else {
+  //     return null;
+  //   }
+  // }
+
   Future<MyUser?> getUserByEmail(String email) async {
     Query usersQuery = usersCollection.where('email', isEqualTo: email);
     QuerySnapshot snapshot = await usersQuery.get();
 
+
     if (snapshot.docs.isNotEmpty) {
-      return MyUser.fromMap(snapshot.docs.first.data()! as Map<String, dynamic>);
+      final doc = snapshot.docs.first;
+      print(doc.data());
+
+      final subcollectionRef = doc.reference.collection('userTopics');
+      final subcollectionSnapshot = await subcollectionRef.get();
+
+      final List<UserTopic> userTopics = subcollectionSnapshot.docs
+          .map((doc) => UserTopic.fromMap(doc.data()! as Map<String, dynamic>))
+          .toList();
+      MyUser? myUser = MyUser.fromMap(snapshot.docs.first.data()! as Map<String, dynamic>);
+      myUser?.userTopics = userTopics;
+      return myUser;
     } else {
       return null;
     }
   }
+
 
   Future<UserResult> addUser(MyUser user, String password) async {
   try {
