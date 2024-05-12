@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Vocabulary {
   final String term;
   final String definition;
-  final bool isStarred;
+  final bool stared;
   final String? category;
 
   Vocabulary({
     required this.term,
     required this.definition,
-    this.isStarred = false, // Optional with default value
+    this.stared = false, // Optional with default value
     this.category, // Optional
   });
 
@@ -17,8 +17,8 @@ class Vocabulary {
     return Vocabulary(
       term: map['term'] as String,
       definition: map['definition'] as String,
-      isStarred: map['isStarred'] as bool ?? false, // Handle null value
-      category: map['category'] as String, 
+      stared: map['stared'] as bool ?? false, // Handle null value
+      category: map['category'] as String?, 
     );
   }
 
@@ -26,7 +26,7 @@ class Vocabulary {
     return {
       'term': term,
       'definition': definition,
-      'isStarred': isStarred,
+      'stared': stared,
       'category': category,
     };
   }
