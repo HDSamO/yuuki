@@ -101,9 +101,9 @@ class _MyAppState extends State<MyApp> {
               body: Text('Error: ${snapshot.error}'),
             );
           } else {
-            if (!_onboarding!){
-              return OnboardingScreen();
-            }
+            // if (!_onboarding!){
+            //   return OnboardingScreen();
+            // }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng
             if (snapshot.data == null) {
               return LoginScreen();
