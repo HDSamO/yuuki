@@ -73,18 +73,18 @@ class _MyAppState extends State<MyApp> {
                         Text(
                           "YUUKI",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontSize: 46,
                             fontFamily: "Jua"
                           ),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         CircularProgressIndicator(),
-                        SizedBox(height: 15,),
+                        SizedBox(height: 10),
                         Text(
                           "Welcome, please wait...",
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 24,
                               fontFamily: "Jua"
                           ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
@@ -27,7 +28,7 @@ class ItemLibraryRecent extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Container(
         width: double.infinity,
-        height: 80,
+        height: 110,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
@@ -41,59 +42,59 @@ class ItemLibraryRecent extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   children: [
                     Expanded(
-                      child: Row(
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              currentTopic.title,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontFamily: "Cabin",
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                currentTopic.title,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: Dimensions.fontSize(context, 18),
+                                  fontFamily: "Cabin",
+                                ),
                               ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.delete_outline),
-                          ),
-                        ],
-                      )
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _buildItemInfo(
-                          context,
-                          "${currentTopic.vocabularies.length} Items",
+                            IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.delete_outline, size: 20,),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        const Icon(Icons.person, size: 12,),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            alignment: Alignment.center,
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _buildItemInfo(
+                            context,
+                            "${currentTopic.vocabularies.length} Items",
+                          ),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.person, size: 24,),
+                          const SizedBox(width: 8),
+                          Expanded(
                             child: Text(
                               currentTopic.authorName,
                               style: const TextStyle(
                                 color: Colors.black,
-                                fontSize: 12,
+                                fontSize: 16,
                                 fontFamily: "Cabin",
                               ),
                             ),
-                          )
-                        ),
-                        _buildStudyButton(context, currentTopic),
-                      ],
-                    )
+                          ),
+                          const SizedBox(width: 8),
+                          _buildStudyButton(context, userTopic)
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -145,7 +146,7 @@ class ItemLibraryRecent extends StatelessWidget {
         text,
         style: const TextStyle(
           color: Colors.black,
-          fontSize: 12,
+          fontSize: 14,
           fontFamily: "Cabin",
         ),
       ),
@@ -155,25 +156,23 @@ class ItemLibraryRecent extends StatelessWidget {
   Widget _buildStudyButton(BuildContext context, UserTopic userTopic) {
     return Container(
       alignment: Alignment.center,
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(217, 240, 255, 1),
-          borderRadius: BorderRadius.circular(100),
+      decoration: BoxDecoration(
+        color: Color.fromRGBO(217, 240, 255, 1),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: IconButton(
+        icon: Icon(
+          Icons.navigate_next,
+          size: 28,
         ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.navigate_next,
-            size: 28,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (e) => ChooseLanguageScreen(myUser: myUser, userTopic: this.userTopic),
-              ),
-            );
-          },
-        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (e) => ChooseLanguageScreen(myUser: myUser, userTopic: userTopic,),
+            ),
+          );
+        },
       ),
     );
   }

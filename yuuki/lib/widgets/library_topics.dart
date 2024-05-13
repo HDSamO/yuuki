@@ -53,10 +53,6 @@ class _LibraryTopicsState extends State<LibraryTopics> {
                   'Recent',
                   style: TextStyle(fontSize: 18),
                 ),
-                 Text(
-                  myUser.userTopics.length.toString(),
-                  style: TextStyle(fontSize: 18),
-                ),
                 const SizedBox(height: 10,),
                 Expanded(
                   child: ListView.builder(
