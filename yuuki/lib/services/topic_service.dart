@@ -5,8 +5,13 @@ import 'package:yuuki/listeners/on_topics_fetch_listener.dart';
 import 'package:yuuki/listeners/on_user_topic_create_listener.dart';
 import 'package:yuuki/models/folder.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/models/top_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/results/finish_study_result.dart';
+import 'package:yuuki/results/save_top_user_result.dart';
+import 'package:yuuki/results/start_study_result.dart';
+import 'package:yuuki/results/top_user_result.dart';
 import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/results/topic_result.dart';
 import 'package:yuuki/results/user_topic_result.dart';
@@ -15,6 +20,7 @@ import 'package:yuuki/results/user_topic_result.dart';
 
 class TopicController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
 
   Future<TopicResult> addTopic(MyUser user, Topic topic) async {
     try {
@@ -512,10 +518,305 @@ class TopicController {
     } on Exception catch (e) {
       print("Error fetching topics: $e"); // Log for debugging (remove in production)
       return []; // Return empty list on error
-    }
+    } 
   }
 
+  Future<StartStudyResult> startStudyUserTopic(MyUser user, String topicId) async {
+  try {
+    
+    final userId = user.id;
 
+    // Reference to the user's topic document
+    final userTopicRef = usersCollection.doc(userId).collection("userTopics").doc(topicId);
+
+    // Update the "startTime" field with current timestamp
+    await userTopicRef.update({"startTime": FieldValue.serverTimestamp()});
+
+    return StartStudyResult(success: true); // Return success result
+  } on FirebaseException catch (e) {
+    return StartStudyResult(success: false, errorMessage: e.message!); // Return failure result with error message
+  } catch (e) {
+    // Handle other exceptions (optional)
+    return StartStudyResult(success: false, errorMessage: e.toString()); // Return generic failure result
+  }
+}
+
+Future<FinishStudyResult> finishStudyUserTopic(MyUser user, String topicId, double score) async {
+  try {
+    // Get a reference to the users collection
+    final usersCollection = FirebaseFirestore.instance.collection("users");
+
+    final userId = user.id;
+
+    // Reference to the user's topic document
+    final userTopicRef = usersCollection.doc(userId).collection("userTopics").doc(topicId);
+
+    // Get the user topic document
+    final docSnapshot = await userTopicRef.get();
+
+    if (!docSnapshot.exists) {
+      return FinishStudyResult(success: false, errorMessage: "User topic document not found");
+    }
+
+    // Get the UserTopic data
+    final userTopic = UserTopic.fromMap(docSnapshot.data()! as Map<String, dynamic>);
+
+    // Calculate end time and last time
+    // final endTime = FieldValue.serverTimestamp(); // Use server timestamp
+    // final longStartTime = (userTopic.startTime as int?)?.millisecondsSinceEpoch ?? 0; // Handle potential null startTime
+    // final longEndTime = endTime.millisecondsSinceEpoch;
+    // final longLastTime = longEndTime - longStartTime;
+    final startTime = userTopic.startTime; // Assuming startTime is an int
+    // final currentTime = 
+    final endTime = DateTime.now().millisecondsSinceEpoch; // Use server timestamp
+    final longLastTime = endTime - (startTime ?? 0);
+
+    // Prepare updates for the user topic document
+    final updates = {
+      "endTime": endTime,
+      "lastTime": longLastTime,
+    };
+
+    // Update the user topic document
+    await userTopicRef.update(updates);
+
+    updateBestTimeAndScore(userTopicRef, score);
+
+    return FinishStudyResult(success: true);
+  } on FirebaseException catch (e) {
+    return FinishStudyResult(success: false, errorMessage: e.message!);
+  } catch (e) {
+    // Handle other exceptions (optional)
+    return FinishStudyResult(success: false, errorMessage: e.toString());
+  }
+}
+
+Future<void> updateBestTimeAndScore(DocumentReference userTopicRef, double score) async {
+  try {
+    // Get the user topic document
+    final docSnapshot = await userTopicRef.get();
+
+    if (!docSnapshot.exists) {
+      return; // User topic document not found
+    }
+
+    // Get the UserTopic data
+    final userTopic = UserTopic.fromMap(docSnapshot.data()! as Map<String, dynamic>);
+
+    if (userTopic == null) {
+      return; // UserTopic object is null
+    }
+
+    final longLastTime = userTopic.lastTime;
+    final longBestTime = userTopic.bestTime;
+    final double lastScore = userTopic.lastScore;
+    final double bestScore = userTopic.bestScore;
+
+    // Update best time if needed
+    final updates = {};
+    if (longLastTime < longBestTime || longBestTime == 0) {
+      updates["bestTime"] = longLastTime;
+    }
+
+    // Update best score if needed
+    if (lastScore > bestScore) {
+      updates["bestScore"] = lastScore;
+    }
+
+    // Update last score
+    updates["lastScore"] = score;
+
+    // Update the user topic document (if any updates)
+    if (updates.isNotEmpty) {
+      await userTopicRef.update(updates as Map<Object, Object?>);
+    }
+
+  } catch (e) {
+    // Handle errors (optional, you can log the error)
+    print("Error updating best time and score: $e");
+  }
+}
+
+Future<TopUserResult> getTopScorers(String topicId) async {
+  try {
+    // Reference the top scorers collection
+    final topScorersRef = FirebaseFirestore.instance
+        .collection('topics')
+        .doc(topicId)
+        .collection('topScorers');
+
+    // Query top scorers with sorting and limit
+    final querySnapshot = await topScorersRef
+        .orderBy('score', descending: true)
+        .orderBy('rawTime', descending: false)
+        .limit(10)
+        .get();
+
+    // Extract top user data
+    final topScorers = querySnapshot.docs.map((doc) => TopUser.fromMap(doc.data()! as Map<String, dynamic>)).toList();
+
+    // Return successful result
+    return TopUserResult(success: true, topScorers: topScorers);
+  } catch (e) {
+    // Handle errors
+    print("Error fetching top scorers: $e");
+    return TopUserResult(success: false, errorMessage: e.toString());
+  }
+}
+
+Future<TopUserResult> getTopViewers(String topicId) async {
+  try {
+    // Reference the top viewers collection
+    final topViewersRef = FirebaseFirestore.instance
+        .collection('topics')
+        .doc(topicId)
+        .collection('topViewers');
+
+    // Query top viewers with sorting and limit
+    final querySnapshot = await topViewersRef
+        .orderBy('viewCount', descending: true)
+        .limit(10)
+        .get();
+
+    // Extract top user data
+    final topViewers = querySnapshot.docs.map((doc) => TopUser.fromMap(doc.data()! as Map<String, dynamic>)).toList();
+
+    // Return successful result
+    return TopUserResult(success: true, topScorers: topViewers);
+  } catch (e) {
+    // Handle errors
+    print("Error fetching top viewers: $e");
+    return TopUserResult(success: false, errorMessage: e.toString());
+  }
+}
+
+Future<SaveTopUserResult> saveUserIfTopScorer(String topicId, MyUser user, double score, int rawTime, int viewCount) async {
+  try {
+    // Create a TopUser object
+    final topUser = TopUser(
+      name: user.name, // Assuming getName() exists in User
+      birthday: user.birthday, // Assuming methods exist in User
+      email: user.email,
+      phone: user.phone, // Assuming methods exist in User
+      score: score,
+      rawTime: rawTime,
+      viewCount: viewCount,
+    );
+
+    // Reference the top scorers collection
+    final topScorersRef = FirebaseFirestore.instance
+        .collection('topics')
+        .doc(topicId)
+        .collection('topScorers');
+
+    // Check if user already exists in top scorers
+    final existingDoc = await topScorersRef
+        .where('email', isEqualTo:  user.email)
+        .get()
+        .then((snapshot) => snapshot.docs.isEmpty ? null : snapshot.docs.first);
+
+    if (existingDoc == null) {
+      // User not found, check if score qualifies for top 10
+      final querySnapshot = await topScorersRef
+          .orderBy('score', descending: true)
+          .limit(10)
+          .get();
+
+    final lastDocScore = querySnapshot.docs.isEmpty ? 0 : querySnapshot.docs.last.data()['score'];  
+
+
+    final shouldAddUser = querySnapshot.docs.isEmpty ||
+    score > lastDocScore ||
+    (score == lastDocScore && rawTime < querySnapshot.docs.last.data()['rawTime']);
+
+      if (shouldAddUser) {
+        // Add user as a new top scorer
+        await topScorersRef.add(topUser.toFirestore());
+        return SaveTopUserResult(success: true);
+      } else {
+        return SaveTopUserResult(success: false, errorMessage: "Not top scorers");
+      }
+    } else {
+      // User exists, update if score qualifies
+      final existingTopUser = TopUser.fromMap(existingDoc.data()!);
+      if (score > existingTopUser.score ||
+          (score == existingTopUser.score && rawTime < existingTopUser.rawTime)) {
+        await existingDoc.reference.update({
+          'score': score,
+          'rawTime': rawTime,
+          'viewCount': viewCount,
+        });
+        return SaveTopUserResult(success: true);
+      } else {
+        return SaveTopUserResult(success: false, errorMessage: "Not top scorers");
+      }
+    }
+  } catch (e) {
+    print("Error saving top scorer: $e");
+    return SaveTopUserResult(success: false, errorMessage: e.toString());
+  }
+}
+
+Future<SaveTopUserResult> saveUserIfTopViewer(String topicId, MyUser user, double score, int rawTime , int viewCount) async {
+  try {
+    // Create a TopUser object
+    final topUser = TopUser(
+      name: user.name, // Assuming methods exist in User
+      birthday: user.birthday, // Assuming methods exist in User
+      email: user.email,
+      phone: user.phone, // Assuming methods exist in User
+      viewCount: viewCount,
+      rawTime: rawTime,
+      score: score,
+    );
+
+    // Reference the top viewers collection
+    final topViewersRef = FirebaseFirestore.instance
+        .collection('topics')
+        .doc(topicId)
+        .collection('topViewers');
+
+    // Check if user already exists in top viewers
+    final existingDoc = await topViewersRef
+        .where('email', isEqualTo: user.email)
+        .get()
+        .then((snapshot) => snapshot.docs.isEmpty ? null : snapshot.docs.first);
+
+    if (existingDoc == null) {
+      // User not found, check if viewCount qualifies for top 10
+      final querySnapshot = await topViewersRef
+          .orderBy('viewCount', descending: true)
+          .limit(10)
+          .get();
+
+      final shouldAddUser = querySnapshot.docs.isEmpty || viewCount > querySnapshot.docs.last.data()['viewCount'];
+
+      if (shouldAddUser) {
+        // Add user as a new top viewer
+        await topViewersRef.add(topUser.toFirestore());
+        return SaveTopUserResult(success: true);
+      } else {
+        return SaveTopUserResult(success: false, errorMessage: "Not a top viewer");
+      }
+    } else {
+      // User exists, update if viewCount qualifies
+      final existingTopUser = TopUser.fromMap(existingDoc.data()!);
+      if (viewCount > existingTopUser.viewCount) {
+        await existingDoc.reference.update({
+          'viewCount': viewCount,
+          'score': score, // Assuming score is also relevant for top viewers
+          'rawTime': rawTime, // Assuming rawTime is also relevant for top viewers
+        });
+        return SaveTopUserResult(success: true);
+      } else {
+        return SaveTopUserResult(success: false, errorMessage: "Not a top viewer");
+      }
+    }
+  } catch (e) {
+    print("Error saving top viewer: $e");
+    return SaveTopUserResult(success: false, errorMessage: e.toString());
+  }
+}
   
 
 
