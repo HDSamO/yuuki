@@ -19,10 +19,13 @@ class ExampleScreen extends StatelessWidget {
     List<Vocabulary> vocabularies = [
       Vocabulary(term: "apple", definition: "a fruit"),
       Vocabulary(term: "book", definition: "a written or printed work"),
-      Vocabulary(term: "cat", definition: "a small domesticated carnivorous mammal"),
+      Vocabulary(
+          term: "cat", definition: "a small domesticated carnivorous mammal"),
       Vocabulary(term: "dog", definition: "a domesticated carnivorous mammal"),
-      Vocabulary(term: "elephant", definition: "a very large herbivorous mammal"),
-      Vocabulary(term: "flower", definition: "the seed-bearing part of a plant"),
+      Vocabulary(
+          term: "elephant", definition: "a very large herbivorous mammal"),
+      Vocabulary(
+          term: "flower", definition: "the seed-bearing part of a plant"),
       Vocabulary(term: "guitar", definition: "a stringed musical instrument"),
       Vocabulary(term: "house", definition: "a building for human habitation"),
       Vocabulary(term: "ice cream", definition: "a sweet frozen food"),
@@ -61,11 +64,14 @@ class ExampleScreen extends StatelessWidget {
             const SizedBox(height: 40.0),
             CustomLoginButton(
               onPressed: () {
-                if (myUser != null){
+                if (myUser != null) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (e) => ChooseLanguageScreen(myUser: myUser, userTopic: myUserTopic,),
+                      builder: (e) => ChooseLanguageScreen(
+                        myUser: myUser!,
+                        userTopic: myUserTopic,
+                      ),
                     ),
                   );
                 }

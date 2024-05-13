@@ -2,11 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/widgets/customs/custom_login_button.dart';
+import 'package:yuuki/screens/flash_card_screen.dart';
 
 import '../models/my_user.dart';
 
 class ChooseStyleScreen extends StatelessWidget {
-  final MyUser? myUser;
+  final MyUser myUser;
   final UserTopic userTopic;
   final bool isEnVi;
 
@@ -40,7 +41,7 @@ class ChooseStyleScreen extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(32.0),
                     child: Image.asset(
                       'assets/images/learning/img_arrow_left.png',
                       width: 36,
@@ -56,7 +57,16 @@ class ChooseStyleScreen extends StatelessWidget {
                     children: [
                       CustomLoginButton(
                           onPressed: () {
-                            // code here
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (e) => FlashCardScreen(
+                                  myUser: myUser,
+                                  userTopic: userTopic,
+                                  isEnVi: isEnVi,
+                                ),
+                              ),
+                            );
                           },
                           text: "Learning by FlashCard",
                           width: double.infinity,

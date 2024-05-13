@@ -187,15 +187,14 @@ class TopicController {
             descending: true); // Order by lastOpen in descending order
 
         final QuerySnapshot querySnapshot = await recentTopicsQuery.get();
-
-        final List<UserTopic> userTopics = querySnapshot.docs.map((doc) {
-          //arrow function WITHOUT the arrow is the only way
-          UserTopic userTopic =
-              UserTopic.fromMap(doc.data()! as Map<String, dynamic>);
-          userTopic.setId(doc.id);
-          return userTopic;
-        } // Add the missing closing parenthesis here
-            ).toList();
+        final List<UserTopic> userTopics = querySnapshot.docs
+            .map((doc) { //arrow function WITHOUT the arrow is the only way
+                  UserTopic userTopic = UserTopic.fromMap(doc.data()! as Map<String, dynamic>);
+                  userTopic.setId(doc.id);
+                  return userTopic;
+                } // Add the missing closing parenthesis here
+            )
+            .toList();
 
         return userTopics;
       } else {

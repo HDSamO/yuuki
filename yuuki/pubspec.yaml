@@ -55,6 +55,8 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   shared_preferences: ^2.2.2
   expandable_menu: ^0.0.5
+  flip_card: ^0.7.0
+  flutter_tts: ^3.8.5
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +85,7 @@ flutter:
     - assets/images/
     - assets/images/login_signup/
     - assets/images/onboarding/
+    - assets/images/learning/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

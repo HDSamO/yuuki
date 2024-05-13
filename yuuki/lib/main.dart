@@ -2,9 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/my_sign_up_page.dart';
-import 'package:yuuki/screens/example_screen.dart';
 import 'package:yuuki/screens/home_screen.dart';
-import 'package:yuuki/screens/library_screen.dart';
+import 'package:yuuki/pages/library_page.dart';
 import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/listeners/on_user_create_listener.dart';
@@ -39,10 +38,14 @@ class _MyAppState extends State<MyApp> {
 
   void getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Ensure 'onboarding' key exists with a default value of false
+    bool initialOnboarding = prefs.getBool('onboarding') ?? false;
+    prefs.setBool('onboarding', initialOnboarding);
+
     setState(() {
       _userId = prefs.getString('id');
       _userEmail = prefs.getString('email');
-      _onboarding = prefs.getBool('onboarding') ?? false;
+      _onboarding = initialOnboarding; // Use the initial value
     });
   }
 
@@ -73,19 +76,17 @@ class _MyAppState extends State<MyApp> {
                         Text(
                           "YUUKI",
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 46,
                               fontFamily: "Jua"),
                         ),
-                        SizedBox(height: 20),
+                        SizedBox(height: 10),
                         CircularProgressIndicator(),
-                        SizedBox(
-                          height: 15,
-                        ),
+                        SizedBox(height: 10),
                         Text(
                           "Welcome, please wait...",
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontSize: 24,
                               fontFamily: "Jua"),
                         ),
@@ -97,19 +98,19 @@ class _MyAppState extends State<MyApp> {
             );
           } else if (snapshot.hasError) {
             // Xử lý lỗi nếu có
-            return Scaffold(
+              return Scaffold(
               body: Text('Error: ${snapshot.error}'),
             );
           } else {
-            // if (!_onboarding!){
-            //   return OnboardingScreen();
-            // }
+            if (!_onboarding!) {
+              return OnboardingScreen();
+            }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng
             if (snapshot.data == null) {
               return LoginScreen();
             } else {
               // Hiển thị màn hình thông tin người dùng nếu đã tìm thấy người dùng
-              return HomeScreen(user: snapshot.data);
+              return HomeScreen(user: snapshot.data!);
             }
           }
         },

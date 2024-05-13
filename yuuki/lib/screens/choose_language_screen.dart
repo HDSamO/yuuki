@@ -6,7 +6,7 @@ import '../models/my_user.dart';
 import '../models/vocabulary.dart';
 
 class ChooseLanguageScreen extends StatelessWidget {
-  final MyUser? myUser;
+  final MyUser myUser;
   final UserTopic userTopic;
 
   const ChooseLanguageScreen({super.key, required this.myUser, required this.userTopic});
@@ -34,7 +34,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(32.0),
                     child: Image.asset(
                       'assets/images/learning/img_arrow_left.png',
                       width: 36,
@@ -72,26 +72,26 @@ class ChooseLanguageScreen extends StatelessWidget {
                       ),
                     ),
                     // Vertical space between images
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
                     // Vietnamese to English Image
                     GestureDetector(
                       onTap: () {
-                        List<Vocabulary> updatedVocabularies = [];
-                        for (var vocabulary in userTopic.vocabularies) {
-                          String tempTerm = vocabulary.term;
-                          String tempDefinition = vocabulary.definition;
-
-                          // Create a new Vocabulary object with swapped values
-                          Vocabulary swappedVocabulary = Vocabulary(
-                            term: tempDefinition,
-                            definition: tempTerm,
-                          );
-
-                          updatedVocabularies.add(swappedVocabulary);
-                        }
-
-                        // Replace the existing list of vocabularies with the updated list
-                        userTopic.vocabularies = updatedVocabularies;
+                        // List<Vocabulary> updatedVocabularies = [];
+                        // for (var vocabulary in userTopic.vocabularies) {
+                        //   String tempTerm = vocabulary.term;
+                        //   String tempDefinition = vocabulary.definition;
+                        //
+                        //   // Create a new Vocabulary object with swapped values
+                        //   Vocabulary swappedVocabulary = Vocabulary(
+                        //     term: tempDefinition,
+                        //     definition: tempTerm,
+                        //   );
+                        //
+                        //   updatedVocabularies.add(swappedVocabulary);
+                        // }
+                        //
+                        // // Replace the existing list of vocabularies with the updated list
+                        // userTopic.vocabularies = updatedVocabularies;
 
                         Navigator.push(
                           context,

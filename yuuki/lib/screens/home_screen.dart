@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:motion_tab_bar/MotionBadgeWidget.dart';
 import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
+import 'package:yuuki/pages/community_page.dart';
 import 'package:yuuki/pages/home_page.dart';
 import 'package:yuuki/pages/profile_page.dart';
+import 'package:yuuki/pages/library_page.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/utils/const.dart';
 
 class HomeScreen extends StatefulWidget {
-  final MyUser? user;
+  final MyUser user;
 
   HomeScreen({required this.user});
 
@@ -106,11 +108,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: PageView(
           controller: controller,
           children: [
-            ProfilePage(user: widget.user),
             HomePage(user: widget.user),
-            Center(child: Text('Library')),
+            LibraryPage(myUser: widget.user),
             Center(child: Text('Add')),
-            Center(child: Text('Community')),
+            CommunityPage(myUser: widget.user),
+            ProfilePage(user: widget.user),
           ],
         ),
       ),
