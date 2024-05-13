@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomFragmentScaffold extends StatelessWidget {
-  const CustomFragmentScaffold({super.key, this.child});
-  final Widget? child;
+  final Widget child;
+  final String pageName;
+
+  const CustomFragmentScaffold({
+    super.key,
+    required this.child,
+    required this.pageName
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +28,10 @@ class CustomFragmentScaffold extends StatelessWidget {
                 ),
               ),
             ),
-            title: const Row(
+            title: Row(
               children: [
                 Text(
-                  'Library',
+                  pageName,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
@@ -48,7 +54,7 @@ class CustomFragmentScaffold extends StatelessWidget {
           ),
           extendBodyBehindAppBar: true,
           body: SafeArea(
-            child: child!,
+            child: child,
           ),
         ),
       ),

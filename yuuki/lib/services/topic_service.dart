@@ -172,7 +172,7 @@ class TopicController {
 
         final List<UserTopic> userTopics = querySnapshot.docs
             .map((doc) { //arrow function WITHOUT the arrow is the only way
-                  final userTopic = doc.data()! as UserTopic;
+                  UserTopic userTopic = UserTopic.fromMap(doc.data()! as Map<String, dynamic>);
                   userTopic.setId(doc.id);
                   return userTopic;
                 } // Add the missing closing parenthesis here

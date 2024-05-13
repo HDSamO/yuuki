@@ -2,9 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/my_sign_up_page.dart';
-import 'package:yuuki/screens/example_screen.dart';
 import 'package:yuuki/screens/home_screen.dart';
-import 'package:yuuki/screens/library_screen.dart';
+import 'package:yuuki/pages/library_page.dart';
 import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/listeners/on_user_create_listener.dart';
@@ -101,15 +100,15 @@ class _MyAppState extends State<MyApp> {
               body: Text('Error: ${snapshot.error}'),
             );
           } else {
-            // if (!_onboarding!){
-            //   return OnboardingScreen();
-            // }
+            if (!_onboarding!){
+              return OnboardingScreen();
+            }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng
             if (snapshot.data == null) {
               return LoginScreen();
             } else {
               // Hiển thị màn hình thông tin người dùng nếu đã tìm thấy người dùng
-              return LibraryScreen(myUser: snapshot.data);
+              return HomeScreen(user: snapshot.data!);
             }
           }
         },

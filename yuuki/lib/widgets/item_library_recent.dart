@@ -57,7 +57,7 @@ class ItemLibraryRecent extends StatelessWidget {
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: Dimensions.fontSize(context, 18),
-                                  fontFamily: "Cabin",
+                                  fontFamily: "QuicksandRegular",
                                 ),
                               ),
                             ),
@@ -86,7 +86,7 @@ class ItemLibraryRecent extends StatelessWidget {
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 16,
-                                fontFamily: "Cabin",
+                                fontFamily: "QuicksandRegular",
                               ),
                             ),
                           ),
@@ -147,7 +147,7 @@ class ItemLibraryRecent extends StatelessWidget {
         style: const TextStyle(
           color: Colors.black,
           fontSize: 14,
-          fontFamily: "Cabin",
+          fontFamily: "QuicksandRegular",
         ),
       ),
     );

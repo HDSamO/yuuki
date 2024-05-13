@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:yuuki/models/my_user.dart';
-import 'package:yuuki/screens/example_screen.dart';
-import 'package:yuuki/screens/library_screen.dart';
+import 'package:yuuki/pages/library_page.dart';
+import 'package:yuuki/screens/home_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (e) => LibraryScreen(myUser: myUser),
+            builder: (e) => HomeScreen(user: myUser!),
           ),
         );
 

@@ -34,41 +34,6 @@ class UserService {
     }
   }
 
-  // Future<MyUser?> getUserByEmail(String email) async {
-  //   Query usersQuery = usersCollection.where('email', isEqualTo: email);
-  //   QuerySnapshot snapshot = await usersQuery.get();
-  //
-  //   if (snapshot.docs.isNotEmpty) {
-  //     return MyUser.fromMap(snapshot.docs.first.data()! as Map<String, dynamic>);
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
-  Future<MyUser?> getUserByEmail(String email) async {
-    Query usersQuery = usersCollection.where('email', isEqualTo: email);
-    QuerySnapshot snapshot = await usersQuery.get();
-
-
-    if (snapshot.docs.isNotEmpty) {
-      final doc = snapshot.docs.first;
-      print(doc.data());
-
-      final subcollectionRef = doc.reference.collection('userTopics');
-      final subcollectionSnapshot = await subcollectionRef.get();
-
-      final List<UserTopic> userTopics = subcollectionSnapshot.docs
-          .map((doc) => UserTopic.fromMap(doc.data()! as Map<String, dynamic>))
-          .toList();
-      MyUser? myUser = MyUser.fromMap(snapshot.docs.first.data()! as Map<String, dynamic>);
-      myUser?.userTopics = userTopics;
-      return myUser;
-    } else {
-      return null;
-    }
-  }
-
-
   Future<UserResult> addUser(MyUser user, String password) async {
   try {
     // Create a new user with email and password
@@ -109,33 +74,57 @@ class UserService {
   }
 }
 
-  Future<UserResult> userLogin(String email, String password) async {
-  try {
-    final UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
-    final User? firebaseUser = userCredential.user;
+Future<MyUser?> getUserByEmail(String email) async {
+    Query usersQuery = usersCollection.where('email', isEqualTo: email);
+    QuerySnapshot snapshot = await usersQuery.get();
 
-    if (firebaseUser != null) {
-      final DocumentReference userRef = firestore.collection("users").doc(firebaseUser.uid);
-      final DocumentSnapshot userSnapshot = await userRef.get();
 
-      if (userSnapshot.exists) {
-        // final MyUser user = userSnapshot.data() as MyUser;
-        final MyUser user = MyUser.fromMap(userSnapshot.data() as Map<String, dynamic>);
-        // Save login history
-        // ... (Not yet implemented)
-        return UserResult(success: true, user: user);
-      } else {
-        return UserResult(success: false, errorMessage: "User data not found");
-      }
+    if (snapshot.docs.isNotEmpty) {
+      final doc = snapshot.docs.first;
+      print(doc.data());
+
+      final subcollectionRef = doc.reference.collection('userTopics');
+      final subcollectionSnapshot = await subcollectionRef.get();
+
+      final List<UserTopic> userTopics = subcollectionSnapshot.docs
+          .map((doc) => UserTopic.fromMap(doc.data()! as Map<String, dynamic>))
+          .toList();
+      MyUser? myUser = MyUser.fromMap(snapshot.docs.first.data()! as Map<String, dynamic>);
+      myUser.id = doc.id; //use document id
+      myUser?.userTopics = userTopics;
+      return myUser;
     } else {
-      return UserResult(success: false, errorMessage: "User not found");
+      return null;
     }
-  } on FirebaseAuthException catch (e) {
-    return UserResult(success: false, errorMessage: "Login failed: ${e.message}");
-  } catch (e) {
-    return UserResult(success: false, errorMessage: "An error occurred: ${e.toString()}");
   }
-}
+  Future<UserResult> userLogin(String email, String password) async {
+    try {
+      final UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      final User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        final DocumentReference userRef = firestore.collection("users").doc(firebaseUser.uid);
+        final DocumentSnapshot userSnapshot = await userRef.get();
+
+        if (userSnapshot.exists) {
+          // final MyUser user = userSnapshot.data() as MyUser;
+          MyUser user = MyUser.fromMap(userSnapshot.data() as Map<String, dynamic>);
+          user.id = firebaseUser.uid;
+          // Save login history
+          // ... (Not yet implemented)
+          return UserResult(success: true, user: user);
+        } else {
+          return UserResult(success: false, errorMessage: "User data not found");
+        }
+      } else {
+        return UserResult(success: false, errorMessage: "User not found");
+      }
+    } on FirebaseAuthException catch (e) {
+      return UserResult(success: false, errorMessage: "Login failed: ${e.message}");
+    } catch (e) {
+      return UserResult(success: false, errorMessage: "An error occurred: ${e.toString()}");
+    }
+  }
 
 //not tested
 Future<PasswordResult> changePassword(String newPassword) async {

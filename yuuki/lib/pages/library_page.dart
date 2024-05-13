@@ -5,15 +5,15 @@ import 'package:yuuki/widgets/library_topics.dart';
 
 import '../models/my_user.dart';
 
-class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({super.key, required this.myUser});
-  final MyUser? myUser;
+class LibraryPage extends StatefulWidget {
+  const LibraryPage({super.key, required this.myUser});
+  final MyUser myUser;
 
   @override
-  _LibraryScreenState createState() => _LibraryScreenState();
+  State<LibraryPage> createState() => _LibraryPageState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProviderStateMixin {
+class _LibraryPageState extends State<LibraryPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -31,6 +31,7 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return CustomFragmentScaffold(
+      pageName: 'Library',
       child: Column(
         children: [
           Container(

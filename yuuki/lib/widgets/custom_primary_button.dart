@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-class CustomLoginButton extends StatelessWidget {
+class CustomPrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
   final double width;
   final double height;
+  final Color color;
 
-  const CustomLoginButton({
+  const CustomPrimaryButton({
     super.key,
     required this.onPressed,
     required this.text,
     required this.width,
-    required this.height
+    required this.height,
+    required this.color
   });
 
   @override
@@ -23,19 +25,12 @@ class CustomLoginButton extends StatelessWidget {
         height: height,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(27),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF397CFF),
-              Color(0x803DB7FC), // 0x80 for 50% opacity
-            ],
-          ),
+          color: color
         ),
         child: Center(
           child: Text(
             text,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
               fontWeight: FontWeight.bold,
