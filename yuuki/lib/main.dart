@@ -73,21 +73,21 @@ class _MyAppState extends State<MyApp> {
                         Text(
                           "YUUKI",
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 46,
-                            fontFamily: "Jua"
-                          ),
+                              color: Colors.white,
+                              fontSize: 46,
+                              fontFamily: "Jua"),
                         ),
                         SizedBox(height: 20),
                         CircularProgressIndicator(),
-                        SizedBox(height: 15,),
+                        SizedBox(
+                          height: 15,
+                        ),
                         Text(
                           "Welcome, please wait...",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 24,
-                              fontFamily: "Jua"
-                          ),
+                              fontFamily: "Jua"),
                         ),
                       ],
                     ),
@@ -109,7 +109,7 @@ class _MyAppState extends State<MyApp> {
               return LoginScreen();
             } else {
               // Hiển thị màn hình thông tin người dùng nếu đã tìm thấy người dùng
-              return LibraryScreen(myUser: snapshot.data);
+              return HomeScreen(user: snapshot.data);
             }
           }
         },

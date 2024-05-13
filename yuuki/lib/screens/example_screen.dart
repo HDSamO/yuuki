@@ -7,7 +7,7 @@ import 'package:yuuki/models/my_user.dart';
 import '../models/topic.dart';
 import '../models/user_topic.dart';
 import '../models/vocabulary.dart';
-import '../widgets/custom_login_button.dart';
+import '../widgets/customs/custom_login_button.dart';
 
 class ExampleScreen extends StatelessWidget {
   final MyUser? myUser;

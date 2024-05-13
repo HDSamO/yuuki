@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/theme/theme.dart';
-import 'package:yuuki/widgets/custom_login_button.dart';
-import 'package:yuuki/widgets/custom_login_scaffold.dart';
+import 'package:yuuki/widgets/customs/custom_login_button.dart';
+import 'package:yuuki/widgets/customs/custom_login_scaffold.dart';
 
 import '../results/user_result.dart';
 import '../services/user_service.dart';
-import '../widgets/custom_input_text.dart';
+import '../widgets/customs/custom_input_text.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

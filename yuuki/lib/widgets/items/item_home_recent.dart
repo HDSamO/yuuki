@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/utils/demension.dart';
 
-class Task_Widget extends StatelessWidget {
+class ItemHomeResent extends StatelessWidget {
   final String title;
   final String authorName;
+  final int view;
 
-  Task_Widget({
+  ItemHomeResent({
     required this.title,
     required this.authorName,
+    required this.view,
   });
 
   @override
@@ -78,7 +80,7 @@ class Task_Widget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "100 Views",
+                        "$view views",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: Dimensions.fontSize(context, 12),

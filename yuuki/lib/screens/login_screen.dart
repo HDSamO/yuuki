@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/screens/example_screen.dart';
-import 'package:yuuki/screens/library_screen.dart';
+import 'package:yuuki/screens/home_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../screens/signup_screen.dart';
-import '../widgets/custom_input_text.dart';
-import '../widgets/custom_login_button.dart';
-import '../widgets/custom_login_scaffold.dart';
+import '../widgets/customs/custom_input_text.dart';
+import '../widgets/customs/custom_login_button.dart';
+import '../widgets/customs/custom_login_scaffold.dart';
 import '../theme/theme.dart';
 import '../results/user_result.dart';
 
@@ -39,12 +39,12 @@ class _LoginScreenState extends State<LoginScreen> {
       prefs.setString('id', id);
     }
 
-    if (email != null){
+    if (email != null) {
       prefs.setString('email', email);
     }
   }
 
-  void _handleSubmit() async{
+  void _handleSubmit() async {
     setState(() {
       _isSubmit = true;
     });
@@ -72,13 +72,15 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Chờ cho đến khi quá trình đăng nhập hoàn thành
-      UserResult userResult = await _userController.userLogin(username, password);
+      UserResult userResult =
+          await _userController.userLogin(username, password);
 
       // After login process completed
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).hideCurrentSnackBar(); // Hide the loading snackbar
+      ScaffoldMessenger.of(context)
+          .hideCurrentSnackBar(); // Hide the loading snackbar
 
       if (userResult.success) {
         setState(() {
@@ -91,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         MyUser? myUser = userResult.user;
 
-        if (_rememberMe){
+        if (_rememberMe) {
           String? id = myUser!.id;
           String? email = myUser.email;
 
@@ -104,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (e) => LibraryScreen(myUser: myUser),
+            builder: (e) => HomeScreen(user: myUser),
           ),
         );
 
@@ -147,8 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       topLeft: Radius.circular(30.0),
                       topRight: Radius.circular(30.0),
                       bottomLeft: Radius.circular(30.0),
-                      bottomRight: Radius.circular(30.0)
-                  ),
+                      bottomRight: Radius.circular(30.0)),
                 ),
                 child: Form(
                   key: _formLoginKey,
@@ -158,11 +159,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text(
                         'LOGIN',
                         style: TextStyle(
-                          fontSize: 26.0,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF57A4FF),
-                          fontFamily: "Cabin"
-                        ),
+                            fontSize: 26.0,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF57A4FF),
+                            fontFamily: "Cabin"),
                       ),
                       const SizedBox(
                         height: 30.0,
@@ -185,7 +185,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-
                       const SizedBox(
                         height: 25.0,
                       ),

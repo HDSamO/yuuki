@@ -11,11 +11,13 @@ import 'package:tab_container/tab_container.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
-import 'package:yuuki/widgets/task_witgets.dart';
+import 'package:yuuki/widgets/items/item_home_recent.dart';
+import 'package:yuuki/widgets/items/item_home_published.dart';
 
 class HomePage extends StatefulWidget {
   final MyUser? user;
@@ -174,23 +176,24 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              FutureBuilder<TopicListResult>(
-                future: TopicController().getRandomTopics(),
-                builder: (context, snapshot) {
+              FutureBuilder<List<UserTopic>>(
+                future: TopicController().getRecentTopics(widget.user!),
+                builder: (context, AsyncSnapshot<List<UserTopic>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    final recentTopics = snapshot.data?.topics ?? [];
+                    final recentTopics = snapshot.data ?? [];
                     return Container(
                       height: 180,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: recentTopics.map((topic) {
-                          return Task_Widget(
+                          return ItemHomeResent(
                             title: topic.title,
                             authorName: topic.authorName,
+                            view: topic.view,
                           );
                         }).toList(),
                       ),
@@ -227,9 +230,11 @@ class _HomePageState extends State<HomePage> {
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final topic = recentTopics[index];
-                        return Task_Widget(
+                        return ItemHomePublished(
                           title: topic.title,
                           authorName: topic.authorName,
+                          view: topic.views,
+                          vocabulary: topic.vocabularies.length,
                         );
                       },
                       itemCount: recentTopics.length,
