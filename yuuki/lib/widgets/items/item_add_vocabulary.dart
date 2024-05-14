@@ -22,6 +22,13 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
   TextEditingController termController = TextEditingController();
   TextEditingController definitionController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    termController.text = widget.termController.text;
+    definitionController.text = widget.definitionController.text;
+  }
+
   bool hasContent() {
     return termController.text.isNotEmpty ||
         definitionController.text.isNotEmpty;
