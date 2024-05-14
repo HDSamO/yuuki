@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_style_screen.dart';
+import 'package:yuuki/services/topic_service.dart';
 
 import '../models/my_user.dart';
 
-class ChooseLanguageScreen extends StatelessWidget {
+class ChooseLanguageScreen extends StatefulWidget {
   final MyUser myUser;
   final UserTopic userTopic;
 
   const ChooseLanguageScreen({super.key, required this.myUser, required this.userTopic});
+
+  @override
+  State<ChooseLanguageScreen> createState() => _ChooseLanguageScreenState();
+}
+
+class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
+  final TopicController topicController = TopicController();
+
+  @override
+  void initState() {
+    super.initState();
+    topicController.viewTopic(widget.myUser, widget.userTopic.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,11 +66,11 @@ class ChooseLanguageScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (e) => ChooseStyleScreen(
-                              myUser: myUser,
-                              userTopic: userTopic,
-                              isEnVi: true,
-                            )
+                              builder: (e) => ChooseStyleScreen(
+                                myUser: widget.myUser,
+                                userTopic: widget.userTopic,
+                                isEnVi: true,
+                              )
                           ),
                         );
                       },
@@ -74,35 +88,17 @@ class ChooseLanguageScreen extends StatelessWidget {
                     // Vietnamese to English Image
                     GestureDetector(
                       onTap: () {
-                        // List<Vocabulary> updatedVocabularies = [];
-                        // for (var vocabulary in userTopic.vocabularies) {
-                        //   String tempTerm = vocabulary.term;
-                        //   String tempDefinition = vocabulary.definition;
-                        //
-                        //   // Create a new Vocabulary object with swapped values
-                        //   Vocabulary swappedVocabulary = Vocabulary(
-                        //     term: tempDefinition,
-                        //     definition: tempTerm,
-                        //   );
-                        //
-                        //   updatedVocabularies.add(swappedVocabulary);
-                        // }
-                        //
-                        // // Replace the existing list of vocabularies with the updated list
-                        // userTopic.vocabularies = updatedVocabularies;
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (e) => ChooseStyleScreen(
-                              myUser: myUser,
-                              userTopic: userTopic,
+                              myUser: widget.myUser,
+                              userTopic: widget.userTopic,
                               isEnVi: false,
                             ),
                           ),
                         );
                       },
-
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20.0),
