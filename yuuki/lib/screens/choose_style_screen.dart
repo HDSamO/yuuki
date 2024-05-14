@@ -4,7 +4,7 @@ import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/flash_card_screen.dart';
 import 'package:yuuki/screens/language_pair_screen.dart';
 import 'package:yuuki/screens/quiz_screen.dart';
-import 'package:yuuki/widgets/custom_login_button.dart';
+import 'package:yuuki/widgets/customs/custom_login_button.dart';
 
 import '../models/my_user.dart';
 

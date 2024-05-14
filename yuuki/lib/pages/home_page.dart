@@ -11,11 +11,13 @@ import 'package:tab_container/tab_container.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
-import 'package:yuuki/widgets/task_witgets.dart';
+import 'package:yuuki/widgets/items/item_home_recent.dart';
+import 'package:yuuki/widgets/items/item_home_published.dart';
 
 class HomePage extends StatefulWidget {
   final MyUser? user;
@@ -174,23 +176,23 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              FutureBuilder<TopicListResult>(
-                future: TopicController().getRandomTopics(),
-                builder: (context, snapshot) {
+              FutureBuilder<List<UserTopic>>(
+                future: TopicController().getRecentTopics(widget.user!),
+                builder: (context, AsyncSnapshot<List<UserTopic>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    final recentTopics = snapshot.data?.topics ?? [];
+                    final recentTopics = snapshot.data ?? [];
                     return Container(
                       height: 180,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: recentTopics.map((topic) {
-                          return Task_Widget(
-                            title: topic.title,
-                            authorName: topic.authorName,
+                        children: recentTopics.map((userTopic) {
+                          return ItemHomeResent(
+                            userTopic: userTopic,
+                            user: widget.user!,
                           );
                         }).toList(),
                       ),
@@ -227,9 +229,9 @@ class _HomePageState extends State<HomePage> {
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final topic = recentTopics[index];
-                        return Task_Widget(
-                          title: topic.title,
-                          authorName: topic.authorName,
+                        return ItemHomePublished(
+                          topic: topic,
+                          user: widget.user!,
                         );
                       },
                       itemCount: recentTopics.length,
@@ -242,7 +244,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
       fullyStretchable: true,
-      backgroundColor: AppColors.backroundColor,
+      // backgroundColor: AppColors.backroundColor,
       appBarColor: AppColors.mainColor,
     );
   }
@@ -283,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.transparent,
                 child: CircleAvatar(
                   backgroundImage: NetworkImage(
-                      "https://randomuser.me/api/portraits/men/1.jpg"),
+                      "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
                   radius: 70.0,
                 ),
               ),

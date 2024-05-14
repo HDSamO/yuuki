@@ -9,12 +9,11 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/utils/demension.dart';
-import 'package:yuuki/widgets/custom_login_button.dart';
-import 'package:yuuki/widgets/custom_primary_button.dart';
-import 'package:yuuki/widgets/item_flash_card.dart';
+import 'package:yuuki/widgets/customs/custom_primary_button.dart';
+import 'package:yuuki/widgets/items/item_flash_card.dart';
 
 import '../models/vocabulary.dart';
-import '../widgets/item_quiz.dart';
+import '../widgets/items/item_quiz.dart';
 
 class QuizScreen extends StatefulWidget {
   final MyUser myUser;

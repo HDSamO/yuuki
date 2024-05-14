@@ -38,16 +38,21 @@ class _MyAppState extends State<MyApp> {
 
   void getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Ensure 'onboarding' key exists with a default value of false
+    bool initialOnboarding = prefs.getBool('onboarding') ?? false;
+    prefs.setBool('onboarding', initialOnboarding);
+
     setState(() {
       _userId = prefs.getString('id');
       _userEmail = prefs.getString('email');
-      _onboarding = prefs.getBool('onboarding') ?? false;
+      _onboarding = initialOnboarding; // Use the initial value
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: Colors.blue,
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: getMyUser(),
@@ -72,10 +77,9 @@ class _MyAppState extends State<MyApp> {
                         Text(
                           "YUUKI",
                           style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 46,
-                            fontFamily: "Jua"
-                          ),
+                              color: Colors.black,
+                              fontSize: 46,
+                              fontFamily: "Jua"),
                         ),
                         SizedBox(height: 10),
                         CircularProgressIndicator(),
@@ -85,8 +89,7 @@ class _MyAppState extends State<MyApp> {
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 24,
-                              fontFamily: "Jua"
-                          ),
+                              fontFamily: "Jua"),
                         ),
                       ],
                     ),
@@ -100,7 +103,7 @@ class _MyAppState extends State<MyApp> {
               body: Text('Error: ${snapshot.error}'),
             );
           } else {
-            if (!_onboarding!){
+            if (!_onboarding!) {
               return OnboardingScreen();
             }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng

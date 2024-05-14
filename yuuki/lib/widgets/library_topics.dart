@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/services/topic_service.dart';
-import 'package:yuuki/widgets/item_library_progress.dart';
+import 'package:yuuki/widgets/items/item_library_progress.dart';
 
 import '../models/my_user.dart';
 import '../models/user_topic.dart';
-import 'item_library_recent.dart';
+import 'items/item_library_recent.dart';
 
 class LibraryTopics extends StatefulWidget {
   const LibraryTopics({super.key, required this.myUser});

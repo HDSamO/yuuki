@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yuuki/widgets/custom_fragment_scaffold.dart';
+import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 
 import '../models/my_user.dart';
 

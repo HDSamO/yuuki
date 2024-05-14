@@ -7,8 +7,8 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/utils/demension.dart';
 
-import '../models/vocabulary.dart';
-import '../screens/choose_language_screen.dart';
+import '../../models/vocabulary.dart';
+import '../../screens/choose_language_screen.dart';
 
 class ItemLibraryRecent extends StatelessWidget {
   final MyUser myUser;
@@ -49,24 +49,27 @@ class ItemLibraryRecent extends StatelessWidget {
                 child: Column(
                   children: [
                     Expanded(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                currentTopic.title,
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: Dimensions.fontSize(context, 18),
-                                  fontFamily: "QuicksandRegular",
-                                ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              currentTopic.title,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: Dimensions.fontSize(context, 18),
+                                fontFamily: "QuicksandRegular",
                               ),
                             ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.delete_outline, size: 20,),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              size: 20,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
                     ),
                     Expanded(
                       child: Row(
@@ -78,7 +81,10 @@ class ItemLibraryRecent extends StatelessWidget {
                             "${currentTopic.vocabularies.length} Items",
                           ),
                           const SizedBox(width: 12),
-                          const Icon(Icons.person, size: 24,),
+                          const Icon(
+                            Icons.person,
+                            size: 24,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -110,10 +116,13 @@ class ItemLibraryRecent extends StatelessWidget {
     List<Vocabulary> vocabularies = [
       Vocabulary(term: "apple", definition: "a fruit"),
       Vocabulary(term: "book", definition: "a written or printed work"),
-      Vocabulary(term: "cat", definition: "a small domesticated carnivorous mammal"),
+      Vocabulary(
+          term: "cat", definition: "a small domesticated carnivorous mammal"),
       Vocabulary(term: "dog", definition: "a domesticated carnivorous mammal"),
-      Vocabulary(term: "elephant", definition: "a very large herbivorous mammal"),
-      Vocabulary(term: "flower", definition: "the seed-bearing part of a plant"),
+      Vocabulary(
+          term: "elephant", definition: "a very large herbivorous mammal"),
+      Vocabulary(
+          term: "flower", definition: "the seed-bearing part of a plant"),
       Vocabulary(term: "guitar", definition: "a stringed musical instrument"),
       Vocabulary(term: "house", definition: "a building for human habitation"),
       Vocabulary(term: "ice cream", definition: "a sweet frozen food"),
@@ -169,7 +178,10 @@ class ItemLibraryRecent extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (e) => ChooseLanguageScreen(myUser: myUser, userTopic: userTopic,),
+              builder: (e) => ChooseLanguageScreen(
+                myUser: myUser,
+                userTopic: userTopic,
+              ),
             ),
           );
         },

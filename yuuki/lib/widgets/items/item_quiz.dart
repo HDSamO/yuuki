@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/utils/demension.dart';
-import 'package:yuuki/widgets/custom_quiz_button.dart';
+import 'package:yuuki/widgets/customs/custom_quiz_button.dart';
 
 class ItemQuiz extends StatelessWidget {
   const ItemQuiz({super.key});
