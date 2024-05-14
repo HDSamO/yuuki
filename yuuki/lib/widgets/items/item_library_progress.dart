@@ -5,8 +5,8 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/utils/demension.dart';
 
-import '../models/vocabulary.dart';
-import '../screens/choose_language_screen.dart';
+import '../../models/vocabulary.dart';
+import '../../screens/choose_language_screen.dart';
 
 class ItemLibraryProgress extends StatelessWidget {
   final MyUser myUser;

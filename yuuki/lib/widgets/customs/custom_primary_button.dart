@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yuuki/utils/demension.dart';
 
 class CustomPrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -24,15 +25,15 @@ class CustomPrimaryButton extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(27),
+          borderRadius: BorderRadius.circular(Dimensions.radius(context, 27)),
           color: color
         ),
         child: Center(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: Dimensions.fontSize(context, 20),
               fontWeight: FontWeight.bold,
             ),
           ),

@@ -7,7 +7,6 @@ import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
 class CustomDialog extends StatelessWidget {
-  final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -17,7 +16,7 @@ class CustomDialog extends StatelessWidget {
     return Dialog(
       // barrierDismissible: false,
       child: Container(
-        height: 400,
+        height: 320,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -57,30 +56,6 @@ class CustomDialog extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  TextField(
-                    cursorColor: Colors.blue,
-                    controller: _oldPasswordController,
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(
-                          color: Colors.blue,
-                          width: 2.0,
-                        ),
-                      ),
-                      labelText: 'Old password',
-                      labelStyle: TextStyle(
-                        color: Colors.blue,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
                   TextField(
                     controller: _newPasswordController,
                     obscureText: true,

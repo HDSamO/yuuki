@@ -42,10 +42,9 @@ class ChooseLanguageScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     // English to Vietnamese Image
                     GestureDetector(
@@ -72,7 +71,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                       ),
                     ),
                     // Vertical space between images
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.16),
                     // Vietnamese to English Image
                     GestureDetector(
                       onTap: () {
@@ -116,7 +115,6 @@ class ChooseLanguageScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
               ],
             ),
           ),

@@ -2,7 +2,9 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_change_password.dart';
@@ -60,7 +62,7 @@ class ProfilePage extends StatelessWidget {
                           color: Colors.transparent,
                           child: CircleAvatar(
                             backgroundImage: NetworkImage(
-                                "https://randomuser.me/api/portraits/men/1.jpg"),
+                                "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
                             radius: 70.0,
                           ),
                         ),
@@ -144,6 +146,22 @@ class ProfilePage extends StatelessWidget {
               icon: Icon(Icons.logout),
               text: "Logout",
               more: false,
+              onTap: () {
+                Future<void> saveUserToSharedPreferences() async {
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString('id', '');
+                  prefs.setString('email', '');
+                }
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginScreen(),
+                  ),
+                  (route) => false,
+                );
+              },
             ),
             SizedBox(height: Dimensions.height(context, 20)),
           ],

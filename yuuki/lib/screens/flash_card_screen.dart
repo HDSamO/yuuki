@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/widgets/customs/custom_primary_button.dart';
-import 'package:yuuki/widgets/item_flash_card.dart';
+import 'package:yuuki/widgets/items/item_flash_card.dart';
 
 import '../models/vocabulary.dart';
 

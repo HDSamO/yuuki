@@ -6,7 +6,7 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/models/vocabulary.dart';
 
-import '../models/my_user.dart';
+import '../../models/my_user.dart';
 
 class ItemFlashCard extends StatefulWidget {
   final MyUser myUser;
