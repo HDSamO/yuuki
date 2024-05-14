@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/flash_card_screen.dart';
+import 'package:yuuki/screens/language_pair_screen.dart';
+import 'package:yuuki/screens/quiz_screen.dart';
 import 'package:yuuki/widgets/custom_login_button.dart';
 
 import '../models/my_user.dart';
@@ -75,7 +77,16 @@ class ChooseStyleScreen extends StatelessWidget {
                       const SizedBox(height: 36),
                       CustomLoginButton(
                           onPressed: () {
-                            // code here
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (e) => QuizScreen(
+                                  myUser: myUser,
+                                  userTopic: userTopic,
+                                  isEnVi: isEnVi,
+                                ),
+                              ),
+                            );
                           },
                           text: "Learning by MultiChoice",
                           width: double.infinity,
@@ -84,7 +95,16 @@ class ChooseStyleScreen extends StatelessWidget {
                       const SizedBox(height: 36),
                       CustomLoginButton(
                           onPressed: () {
-                            // code here
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (e) => LanguagePairScreen(
+                                  myUser: myUser,
+                                  userTopic: userTopic,
+                                  isEnVi: isEnVi,
+                                ),
+                              ),
+                            );
                           },
                           text: "Learning by Language-pair",
                           width: double.infinity,
