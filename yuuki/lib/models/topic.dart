@@ -77,7 +77,7 @@ class Topic {
             .map((userMap) => TopUser.fromMap(userMap))
             .toList()
         : null,
-    bestViewers: map['bestViewers'] != null
+      bestViewers: map['bestViewers'] != null
         ? (map['bestViewers'] as List)
             .map((userMap) => TopUser.fromMap(userMap))
             .toList()

@@ -2,14 +2,14 @@ import "package:yuuki/models/my_user.dart";
 
 
 class TopUser {
-  final String name;
-  final String birthday;
-  final String email;
-  final String phone;
-  final double score;
-  final int rawTime; // Assuming long can be represented by int in Flutter
-  final String? formattedTime;
-  final int viewCount;
+  String name;
+  String birthday;
+  String email;
+  String phone;
+  double score;
+  int rawTime; // Assuming long can be represented by int in Flutter
+  String? formattedTime;
+  int viewCount;
 
   TopUser({
     required this.name,
