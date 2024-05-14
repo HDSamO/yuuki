@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 8),
               FutureBuilder<TopicListResult>(
-                future: TopicController().getRandomTopics(),
+                future: TopicController().getPublishedTopics(widget.user!),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
