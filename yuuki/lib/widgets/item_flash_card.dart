@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/models/vocabulary.dart';
 
@@ -9,26 +10,27 @@ import '../models/my_user.dart';
 
 class ItemFlashCard extends StatefulWidget {
   final MyUser myUser;
-  final UserTopic userTopic;
+  final UserTopic? userTopic;
+  final Topic? topic;
   final Vocabulary vocabulary;
   final String text;
   final bool isEnVi;
 
   const ItemFlashCard({
-    super.key,
+    Key? key,
     required this.myUser,
-    required this.userTopic,
+    this.userTopic,
+    this.topic,
     required this.text,
     required this.isEnVi,
-    required this.vocabulary
-  });
+    required this.vocabulary,
+  }) : super(key: key);
 
   @override
   State<ItemFlashCard> createState() => _ItemFlashCardState();
 }
+
 class _ItemFlashCardState extends State<ItemFlashCard> {
-  late MyUser myUser;
-  late UserTopic userTopic;
   late Vocabulary vocabulary;
   late String text;
   late bool isEnVi;
@@ -37,8 +39,6 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
   @override
   void initState() {
     super.initState();
-    myUser = widget.myUser;
-    userTopic = widget.userTopic;
     vocabulary = widget.vocabulary;
     text = widget.text;
     isEnVi = widget.isEnVi;
@@ -53,7 +53,7 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
       });
     }
 
-    if (widget.isEnVi != isEnVi){
+    if (widget.isEnVi != isEnVi) {
       setState(() {
         isEnVi = widget.isEnVi;
       });
@@ -86,7 +86,8 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
                         },
                         child: Container(
                           width: 140,
-                          padding: EdgeInsets.symmetric(horizontal: 26, vertical: 3),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 26, vertical: 3),
                           decoration: BoxDecoration(
                             color: Color(0xFFD9F0FF),
                             borderRadius: BorderRadius.circular(20),
@@ -94,10 +95,12 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
                           child: Center(
                             child: Row(
                               children: [
-                                Icon(Icons.lightbulb_outline, size: 24, color: Colors.black),
+                                Icon(Icons.lightbulb_outline,
+                                    size: 24, color: Colors.black),
                                 Text(
                                   "Hint",
-                                  style: TextStyle(fontSize: 28, color: Colors.black),
+                                  style: TextStyle(
+                                      fontSize: 28, color: Colors.black),
                                 ),
                               ],
                             ),
@@ -105,34 +108,45 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
                         ),
                       ),
                       IconButton(
-                        onPressed: (){
+                        onPressed: () {
                           setState(() {
-                            // code here
+                            // Code here
                           });
                         },
-                        icon: vocabulary.stared ? Icon(Icons.star, size: 48, color: Colors.yellow,) : Icon(Icons.star_border, size: 48, color: Colors.white),
+                        icon: vocabulary.stared
+                            ? Icon(
+                                Icons.star,
+                                size: 48,
+                                color: Colors.yellow,
+                              )
+                            : Icon(Icons.star_border,
+                                size: 48, color: Colors.white),
                       ),
                       IconButton(
-                        onPressed: (){
+                        onPressed: () {
                           speak(text, isEnVi);
                         },
-                        icon: Icon(Icons.volume_up, size: 48, color: Colors.black,),
+                        icon: Icon(
+                          Icons.volume_up,
+                          size: 48,
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Expanded(
-                    child: Center(
-                      child: Text(
-                        textAlign: TextAlign.center,
-                        text,
-                        style: TextStyle(fontSize: 52, color: Colors.black),
-                      ),
-                    )
+                  child: Center(
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 52, color: Colors.black),
+                    ),
+                  ),
                 ),
               ],
             ),
-          )
+          ),
         ),
       ),
     );

@@ -36,7 +36,7 @@ class ProfilePage extends StatelessWidget {
     return CustomFragmentScaffold(
       pageName: 'My Profile',
       child: Container(
-        color: AppColors.backroundColor,
+        // color: AppColors.backroundColor,
         child: Column(
           children: [
             Expanded(
@@ -99,14 +99,7 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         child: ElevatedButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return CustomDialog();
-                              },
-                            );
-                          },
+                          onPressed: () {},
                           child: Text(
                             'Edit profile',
                             style: TextStyle(
@@ -119,12 +112,11 @@ class ProfilePage extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.transparent,
                             backgroundColor: Colors.transparent,
-                            elevation:
-                                0, // Set elevation to 0 to match the Container decoration
-                            padding: EdgeInsets.zero, // Remove default padding
+                            elevation: 0,
+                            padding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20),
-                            ), // Set the color when pressed to transparent
+                            ),
                           ),
                         ),
                       ),
@@ -138,6 +130,14 @@ class ProfilePage extends StatelessWidget {
               icon: Icon(Icons.change_circle),
               text: "Change password",
               more: true,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CustomDialog();
+                  },
+                );
+              },
             ),
             SizedBox(height: Dimensions.height(context, 20)),
             CustomItemProfile(

@@ -52,6 +52,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: Colors.blue,
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: getMyUser(),
@@ -98,7 +99,7 @@ class _MyAppState extends State<MyApp> {
             );
           } else if (snapshot.hasError) {
             // Xử lý lỗi nếu có
-              return Scaffold(
+            return Scaffold(
               body: Text('Error: ${snapshot.error}'),
             );
           } else {

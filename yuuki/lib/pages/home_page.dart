@@ -189,11 +189,10 @@ class _HomePageState extends State<HomePage> {
                       height: 180,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: recentTopics.map((topic) {
+                        children: recentTopics.map((userTopic) {
                           return ItemHomeResent(
-                            title: topic.title,
-                            authorName: topic.authorName,
-                            view: topic.view,
+                            userTopic: userTopic,
+                            user: widget.user!,
                           );
                         }).toList(),
                       ),
@@ -231,10 +230,8 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         final topic = recentTopics[index];
                         return ItemHomePublished(
-                          title: topic.title,
-                          authorName: topic.authorName,
-                          view: topic.views,
-                          vocabulary: topic.vocabularies.length,
+                          topic: topic,
+                          user: widget.user!,
                         );
                       },
                       itemCount: recentTopics.length,
@@ -247,7 +244,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
       fullyStretchable: true,
-      backgroundColor: AppColors.backroundColor,
+      // backgroundColor: AppColors.backroundColor,
       appBarColor: AppColors.mainColor,
     );
   }
@@ -288,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.transparent,
                 child: CircleAvatar(
                   backgroundImage: NetworkImage(
-                      "https://randomuser.me/api/portraits/men/1.jpg"),
+                      "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
                   radius: 70.0,
                 ),
               ),

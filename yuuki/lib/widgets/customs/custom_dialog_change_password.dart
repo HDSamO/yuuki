@@ -1,13 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yuuki/results/password_result.dart';
+import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
 class CustomDialog extends StatelessWidget {
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      // barrierDismissible: false,
       child: Container(
         height: 400,
         decoration: BoxDecoration(
@@ -34,47 +42,103 @@ class CustomDialog extends StatelessWidget {
                 "Change password",
                 style: TextStyle(
                   fontSize: Dimensions.fontSize(context, 20),
-                  fontFamily: "QuicksandRegular",
+                  fontFamily: "Quicksand",
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            Text(
-              "Old password",
-              style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
-                fontFamily: "QuicksandRegular",
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+            SizedBox(
+              height: 20,
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              child: Column(
+                children: [
+                  TextField(
+                    cursorColor: Colors.blue,
+                    controller: _oldPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 2.0,
+                        ),
+                      ),
+                      labelText: 'Old password',
+                      labelStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: _newPasswordController,
+                    obscureText: true,
+                    cursorColor: Colors.blue,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 2.0,
+                        ),
+                      ),
+                      labelText: 'New password',
+                      labelStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    cursorColor: Colors.blue,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 2.0,
+                        ),
+                      ),
+                      labelText: 'Confirm new password',
+                      labelStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            TextField(),
-            Text(
-              "New password",
-              style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
-                fontFamily: "QuicksandRegular",
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
+            SizedBox(
+              height: 20,
             ),
-            TextField(),
-            Text(
-              "Confilm password",
-              style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
-                fontFamily: "QuicksandRegular",
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextField(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Text(
                     "Cancel",
                     style: TextStyle(
@@ -85,17 +149,65 @@ class CustomDialog extends StatelessWidget {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 8,
-                        horizontal: 32,
-                      ),
-                      foregroundColor: Color(0xffec5b5b),
-                      side: BorderSide(
-                        color: Color(0xffec5b5b),
-                      )),
+                    padding: EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 40,
+                    ),
+                    foregroundColor: Color(0xffec5b5b),
+                    side: BorderSide(
+                      color: Color(0xffec5b5b),
+                    ),
+                  ),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    String newPassword = _newPasswordController.text;
+                    String confirmPassword = _confirmPasswordController.text;
+
+                    if (newPassword != confirmPassword) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Text(
+                                'New password and confirm password do not match.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      PasswordResult result =
+                          await UserService().changePassword(newPassword);
+                      if (result.success) {
+                        Navigator.pop(context);
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Error'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    }
+                  },
                   child: Text(
                     "Change",
                     style: TextStyle(
@@ -105,10 +217,10 @@ class CustomDialog extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  style: OutlinedButton.styleFrom(
+                  style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(
                       vertical: 8,
-                      horizontal: 32,
+                      horizontal: 40,
                     ),
                     backgroundColor: AppColors.mainColor,
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:motion_tab_bar/MotionBadgeWidget.dart';
 import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
+import 'package:yuuki/pages/add_page.dart';
 import 'package:yuuki/pages/community_page.dart';
 import 'package:yuuki/pages/home_page.dart';
 import 'package:yuuki/pages/profile_page.dart';
@@ -110,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             HomePage(user: widget.user),
             LibraryPage(myUser: widget.user),
-            Center(child: Text('Add')),
+            AddPage(user: widget.user),
             CommunityPage(myUser: widget.user),
             ProfilePage(user: widget.user),
           ],

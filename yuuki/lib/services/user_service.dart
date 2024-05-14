@@ -139,7 +139,7 @@ class UserService {
   }
 
 //not tested
-  Future<PasswordResult> changePassword(String newPassword) async {
+  Future<PasswordResult> changePassword(String newPassword,) async {
     final User? user = firebaseAuth.currentUser;
 
     if (user != null) {

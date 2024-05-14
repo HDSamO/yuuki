@@ -119,7 +119,10 @@ class ItemLibraryProgress extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (e) => ChooseLanguageScreen(myUser: myUser, userTopic: userTopic,),
+                builder: (e) => ChooseLanguageScreen(
+                  myUser: myUser,
+                  userTopic: userTopic,
+                ),
               ),
             );
           },
