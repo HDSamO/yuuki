@@ -4,12 +4,11 @@ class LearningResult {
   // Assuming QuestionAnswer class is already defined (refer to previous conversion)
   final List<QuestionAnswer> questionAnswers;
   double? avgScore;
-  int rawTime;
+  int? rawTime;
   String? formattedTime;
 
-  LearningResult({required this.questionAnswers, required this.rawTime}) {
+  LearningResult({required this.questionAnswers}) {
     calculateAvgScore();
-    convertRawTimeToFormattedTime();
   }
 
   void calculateAvgScore() {
@@ -26,9 +25,9 @@ class LearningResult {
   }
 
   String? convertRawTimeToFormattedTime() {
-    final hours = Duration(milliseconds: rawTime).inHours;
-    final minutes = Duration(milliseconds: rawTime).inMinutes % 60;
-    final seconds = Duration(milliseconds: rawTime).inSeconds % 60;
+    final hours = Duration(milliseconds: rawTime!).inHours;
+    final minutes = Duration(milliseconds: rawTime!).inMinutes % 60;
+    final seconds = Duration(milliseconds: rawTime!).inSeconds % 60;
 
     formattedTime = "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
     return formattedTime;

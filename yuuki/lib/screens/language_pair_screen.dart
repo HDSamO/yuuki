@@ -1,12 +1,10 @@
-import 'dart:async';
-import 'dart:math';
-
-import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/models/question_answer.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/widgets/custom_primary_button.dart';
 
@@ -32,6 +30,7 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
   int _index = 0;
   int _currentVocabulary = 1;
   TextEditingController _answerController = TextEditingController();
+  List<QuestionAnswer> _questionAnswers = [];
 
   late int _totalVocabulary;
   late double _progress;
@@ -57,8 +56,6 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
 
     return newVocabularies;
   }
-
-
 
   @override
   void initState() {
@@ -322,6 +319,26 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
               SizedBox(height: 16),
               GestureDetector(
                 onTap: () {
+                  // Kết thúc học và chuyển trang
+                  if (_index == _totalVocabulary - 1){
+                    _questionAnswers.add(
+                        QuestionAnswer(
+                            vocabulary: _updatedVocabularies[_index],
+                            answer: _answerController.text.trim(),
+                            check: true
+                        )
+                    );
+                    LearningResult learningResult = LearningResult(questionAnswers: _questionAnswers);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  }
+                  _questionAnswers.add(
+                      QuestionAnswer(
+                          vocabulary: _updatedVocabularies[_index],
+                          answer: _answerController.text.trim(),
+                          check: true
+                      )
+                  );
                   _navigate(1);
                   Navigator.pop(context);
                 },
@@ -398,6 +415,26 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
               SizedBox(height: 30,),
               GestureDetector(
                 onTap: () {
+                  // Kết thúc học và chuyển trang
+                  if (_index == _totalVocabulary - 1){
+                    _questionAnswers.add(
+                        QuestionAnswer(
+                            vocabulary: _updatedVocabularies[_index],
+                            answer: _answerController.text.trim(),
+                            check: false
+                        )
+                    );
+                    LearningResult learningResult = LearningResult(questionAnswers: _questionAnswers);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  }
+                  _questionAnswers.add(
+                      QuestionAnswer(
+                          vocabulary: _updatedVocabularies[_index],
+                          answer: _answerController.text.trim(),
+                          check: false
+                      )
+                  );
                   _navigate(1);
                   Navigator.pop(context);
                 },

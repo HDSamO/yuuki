@@ -16,8 +16,6 @@ import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/results/topic_result.dart';
 import 'package:yuuki/results/user_topic_result.dart';
 
-
-
 class TopicController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');

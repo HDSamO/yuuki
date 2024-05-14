@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_style_screen.dart';
 
 import '../models/my_user.dart';
 
-class ChooseLanguageScreen extends StatelessWidget {
+class ScoreScreen extends StatelessWidget {
   final MyUser myUser;
   final UserTopic userTopic;
+  final LearningResult learningResult;
 
-  const ChooseLanguageScreen({super.key, required this.myUser, required this.userTopic});
+  const ScoreScreen({
+    super.key,
+    required this.myUser,
+    required this.userTopic,
+    required this.learningResult
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +41,10 @@ class ChooseLanguageScreen extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
-                    child: Image.asset(
-                      'assets/images/learning/img_arrow_left.png',
-                      width: 36,
-                      height: 36,
-                    ),
+                    child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.cancel, size: 32, color: Colors.black,),
+                    )
                   ),
                 ),
                 Column(
@@ -52,11 +58,11 @@ class ChooseLanguageScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (e) => ChooseStyleScreen(
-                              myUser: myUser,
-                              userTopic: userTopic,
-                              isEnVi: true,
-                            )
+                              builder: (e) => ChooseStyleScreen(
+                                myUser: myUser,
+                                userTopic: userTopic,
+                                isEnVi: true,
+                              )
                           ),
                         );
                       },
