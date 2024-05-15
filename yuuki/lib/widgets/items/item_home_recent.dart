@@ -2,6 +2,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_language_screen.dart';
 import 'package:yuuki/screens/view_topic.dart';
@@ -12,10 +13,12 @@ enum SampleItem { view, edit }
 
 class ItemHomeResent extends StatefulWidget {
   final UserTopic userTopic;
+  final Topic? topic;
   final MyUser user;
 
   ItemHomeResent({
     required this.userTopic,
+    this.topic,
     required this.user,
   });
 
@@ -103,7 +106,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          "${widget.userTopic.view} views",
+                          "${widget.topic != null ? widget.topic!.views : widget.userTopic.view} views",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: Dimensions.fontSize(context, 12),

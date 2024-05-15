@@ -116,23 +116,25 @@ class TopicController {
     }
   }
 
-  Future<List<Topic>> getTopTopicsByViews() async {
+  Future<TopicListResult> getTopTopicsByViews() async {
     try {
       final CollectionReference topicsCollection =
-          _firestore.collection("topics");
+          FirebaseFirestore.instance.collection("topics");
       final Query topTopicsQuery = topicsCollection
-          .where("private", isEqualTo: "false")
-          .orderBy("views", descending: true)
-          .limit(10);
+          .where("private", isEqualTo: false)
+          .orderBy("views", descending: true);
 
       final QuerySnapshot querySnapshot = await topTopicsQuery.get();
 
-      final List<Topic> topTopics =
-          querySnapshot.docs.map((doc) => doc.data()! as Topic).toList();
-      return topTopics;
+      final List<Topic> topTopics = querySnapshot.docs
+          .map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>))
+          .toList();
+
+      return TopicListResult(success: true, topics: topTopics);
     } on FirebaseException catch (e) {
-      throw Exception(
-          "Error fetching top topics: ${e.message}"); // Re-throw as a generic Exception
+      return TopicListResult(
+          success: false,
+          errorMessage: e.message); // Re-throw as a generic Exception
     }
   }
 
@@ -569,7 +571,8 @@ class TopicController {
         final DocumentSnapshot userTopicSnapshot = await userTopicRef.get();
 
         if (userTopicSnapshot.exists) {
-          final UserTopic userTopic = UserTopic.fromMap(userTopicSnapshot.data() as Map<String, dynamic>);
+          final UserTopic userTopic = UserTopic.fromMap(
+              userTopicSnapshot.data() as Map<String, dynamic>);
           return userTopic;
         } else {
           return null; // User topic not found
@@ -668,12 +671,14 @@ class TopicController {
   //   }
   // }
 
-  Future<StartStudyResult> startStudyUserTopic(MyUser user, String topicId) async {
+  Future<StartStudyResult> startStudyUserTopic(
+      MyUser user, String topicId) async {
     try {
       final userId = user.id;
 
       // Reference to the user's topic document
-      final userTopicRef = usersCollection.doc(userId).collection("userTopics").doc(topicId);
+      final userTopicRef =
+          usersCollection.doc(userId).collection("userTopics").doc(topicId);
 
       final int currentTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
@@ -682,10 +687,14 @@ class TopicController {
 
       return StartStudyResult(success: true); // Return success result
     } on FirebaseException catch (e) {
-      return StartStudyResult(success: false, errorMessage: e.message!); // Return failure result with error message
+      return StartStudyResult(
+          success: false,
+          errorMessage: e.message!); // Return failure result with error message
     } catch (e) {
       // Handle other exceptions (optional)
-      return StartStudyResult(success: false, errorMessage: e.toString()); // Return generic failure result
+      return StartStudyResult(
+          success: false,
+          errorMessage: e.toString()); // Return generic failure result
     }
   }
 

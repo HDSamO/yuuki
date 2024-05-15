@@ -20,7 +20,8 @@ class Folder {
       topics: (map['topics'] as List)
           .map((topicMap) => UserTopic.fromMap(topicMap))
           .toList(),
-      lastOpen: map['lastOpen'] as int,
+      lastOpen: map['lastOpen'] != null ?
+        map['lastOpen'] as int: 0,
     );
   }
 

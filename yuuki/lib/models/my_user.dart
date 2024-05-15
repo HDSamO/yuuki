@@ -8,8 +8,8 @@ class MyUser {
   String email;
   String phone;
   UserTopic? starredTopic;
-  List<Folder> folders = [];
-  List<UserTopic> userTopics = [];
+  List<Folder>? folders = [];
+  List<UserTopic>? userTopics = [];
 
   MyUser({
     this.id,
@@ -23,28 +23,52 @@ class MyUser {
   });
 
   // Factory constructor for mapping from Firestore data
+
   factory MyUser.fromMap(Map<String, dynamic> data) {
     return MyUser(
-      id: data['id'],
-      name: data['name'],
-      birthday: data['birthday'],
-      email: data['email'],
-      phone: data['phone'],
+      id: data['id'] as String,
+      name: data['name'] as String,
+      birthday: data['birthday'] as String,
+      email: data['email'] as String,
+      phone: data['phone'] as String,
       starredTopic: data['starredTopic'] != null
-          ? UserTopic.fromMap(data['starredTopic'] as Map<String, dynamic>)
+          ? UserTopic.fromMapStar(data['starredTopic'])
           : null,
-      folders: (data['folders'] as List<dynamic>?)
-              ?.map((folderData) =>
-                  Folder.fromMap(folderData as Map<String, dynamic>))
-              .toList() ??
-          [],
-      userTopics: (data['userTopics'] as List<dynamic>?)
-              ?.map((topicData) =>
-                  UserTopic.fromMap(topicData as Map<String, dynamic>))
-              .toList() ??
-          [],
+      folders: data['folders'] != null
+          ? (data['folders'] as List)
+              .map((folderData) => Folder.fromMap(folderData))
+              .toList()
+          : null,
+      userTopics: data['userTopics'] != null
+          ? (data['userTopics'] as List)
+              .map((topicData) => UserTopic.fromMap(topicData))
+              .toList()
+          : null,
     );
   }
+
+  // factory MyUser.fromMap(Map<String, dynamic> data) {
+  //   return MyUser(
+  //     id: data['id'],
+  //     name: data['name'],
+  //     birthday: data['birthday'],
+  //     email: data['email'],
+  //     phone: data['phone'],
+  //     starredTopic: data['starredTopic'] != null
+  //         ? UserTopic.fromMap(data['starredTopic'] as Map<String, dynamic>)
+  //         : null,
+  //     folders: (data['folders'] as List<dynamic>?)
+  //             ?.map((folderData) =>
+  //                 Folder.fromMap(folderData as Map<String, dynamic>))
+  //             .toList() ??
+  //         [],
+  //     userTopics: (data['userTopics'] as List<dynamic>?)
+  //             ?.map((topicData) =>
+  //                 UserTopic.fromMap(topicData as Map<String, dynamic>))
+  //             .toList() ??
+  //         [],
+  //   );
+  // }
 
   factory MyUser.fromMapUser(Map<String, dynamic> data) {
     return MyUser(
@@ -64,8 +88,8 @@ class MyUser {
       'email': email,
       'phone': phone,
       'starredTopic': starredTopic?.toFirestore(),
-      'folders': folders.map((folder) => folder.toFirestore()).toList(),
-      'userTopics': userTopics.map((topic) => topic.toFirestore()).toList(),
+      'folders': folders!.map((folder) => folder.toFirestore()).toList(),
+      'userTopics': userTopics!.map((topic) => topic.toFirestore()).toList(),
     };
   }
 

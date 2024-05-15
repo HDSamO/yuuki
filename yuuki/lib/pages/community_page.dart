@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/services/topic_service.dart';
@@ -51,7 +52,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   ),
                 ),
               ),
-              FutureBuilder<List<QueryDocumentSnapshot>>(
+              FutureBuilder<List<MyUser>>(
                 future: UserService().getUserList(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -70,9 +71,7 @@ class _CommunityPageState extends State<CommunityPage> {
                         scrollDirection: Axis.horizontal,
                         itemCount: users?.length ?? 0,
                         itemBuilder: (context, index) {
-                          final userMap =
-                              users![index].data() as Map<String, dynamic>;
-                          final user = MyUser.fromMapUser(userMap);
+                          final user = users![index];
                           return ItemCommunityPeople(user: user);
                         },
                       ),
@@ -93,22 +92,24 @@ class _CommunityPageState extends State<CommunityPage> {
                   ),
                 ),
               ),
-              FutureBuilder<List<UserTopic>>(
-                future: TopicController().getRecentTopics(widget.myUser!),
-                builder: (context, AsyncSnapshot<List<UserTopic>> snapshot) {
+              FutureBuilder<TopicListResult>(
+                future: TopicController().getTopTopicsByViews(),
+                builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
-                    final recentTopics = snapshot.data ?? [];
+                    final recentTopics = snapshot.data?.topics ?? [];
                     return Container(
                       height: 180,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: recentTopics.map((userTopic) {
+                        children: recentTopics.map((topic) {
+                          UserTopic userTopic = UserTopic.fromTopic(topic);
                           return ItemHomeResent(
                             userTopic: userTopic,
+                            topic: topic,
                             user: widget.myUser!,
                           );
                         }).toList(),
@@ -146,6 +147,7 @@ class _CommunityPageState extends State<CommunityPage> {
                         children: randomTopics.map((topic) {
                           UserTopic userTopic = UserTopic.fromTopic(topic);
                           return ItemHomeResent(
+                            topic: topic,
                             userTopic: userTopic,
                             user: widget.myUser!,
                           );

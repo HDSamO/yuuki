@@ -131,6 +131,28 @@ class UserTopic {
     };
   }
 
+  // factory UserTopic.fromMap(Map<String, dynamic> map) {
+  //   return UserTopic(
+  //     id: map['id'] as String,
+  //     title: map['title'] as String,
+  //     author: map['author'] as String?,
+  //     authorName: map['authorName'] as String,
+  //     description: map['description'] as String,
+  //     private: map['private'] as bool,
+  //     vocabularies: (map['vocabularies'] as List)
+  //         .map((vocabMap) => Vocabulary.fromMap(vocabMap))
+  //         .toList(),
+  //     lastOpen: map['lastOpen'] as int,
+  //     startTime: map['startTime'] as int,
+  //     endTime: map['endTime'] as int,
+  //     lastTime: map['lastTime'] as int,
+  //     bestTime: map['bestTime'] as int,
+  //     lastScore: 0.5,
+  //     bestScore: 5.2,
+  //     view: map['view'] as int,
+  //   );
+  // }
+
   factory UserTopic.fromMap(Map<String, dynamic> map) {
     return UserTopic(
       id: map['id'] as String,
@@ -138,18 +160,64 @@ class UserTopic {
       author: map['author'] as String?,
       authorName: map['authorName'] as String,
       description: map['description'] as String,
-      private: map['private'] as bool,
+      private: map['private'] != null ?
+        map['private'] as bool: false,
       vocabularies: (map['vocabularies'] as List)
           .map((vocabMap) => Vocabulary.fromMap(vocabMap))
           .toList(),
-      lastOpen: map['lastOpen'] as int,
-      startTime: map['startTime'] as int,
-      endTime: map['endTime'] as int,
-      lastTime: map['lastTime'] as int,
-      bestTime: map['bestTime'] as int,
-      lastScore: map['lastScore'] as double,
-      bestScore: map['bestScore'] as double,
-      view: map['view'] as int,
+      lastOpen: map['lastOpen'] != null ?
+        map['lastOpen'] as int: 0,
+      startTime: map['startTime'] != null ?
+        map['startTime'] as int: 0,
+      endTime: map['endTime'] != null ?
+        map['endTime'] as int: 0,
+      lastTime: map['lastTime'] != null ?
+        map['lastTime'] as int: 0,
+      bestTime: map['bestTime'] != null ?
+        map['bestTime'] as int: 0,
+      lastScore: 0.5,
+      bestScore: 5.2,
+      view: map['view'] != null ?
+        map['view'] as int: 0,
+    );
+  }
+
+  factory UserTopic.fromMapStar(Map<String, dynamic> map) {
+    return UserTopic(
+      id: map['id'] != null ?
+        map['id'] as String : "Star",
+
+      title: map['title'] != null ? 
+        map['title'] as String : "Star",
+
+      author: map['author'] != null ?
+        map['author'] as String? : "Star",
+
+      authorName: map['authorName'] != null ?
+        map['authorName'] as String : "Star",
+
+      description: map['description'] != null ?
+        map['description'] as String : "Star",
+
+      private: map['private'] != null ?
+        map['private'] as bool : true,
+      vocabularies: (map['vocabularies'] as List)
+          .map((vocabMap) => Vocabulary.fromMap(vocabMap))
+          .toList(),
+      lastOpen: map['lastOpen'] != null ?
+        map['lastOpen'] as int: 0,
+      startTime: map['startTime'] != null ?
+        map['startTime'] as int: 0,
+      endTime: map['endTime'] != null ?
+        map['endTime'] as int: 0,
+      lastTime: map['lastTime'] != null ?
+        map['lastTime'] as int: 0,
+      bestTime: map['bestTime'] != null ?
+        map['bestTime'] as int: 0,
+      lastScore: 0.5,
+      bestScore: 5.2,
+      view: map['view'] != null ?
+        map['view'] as int: 0,
     );
   }
 

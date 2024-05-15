@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:yuuki/listeners/on_password_change_listener.dart';
 import 'package:yuuki/listeners/on_password_reset_listener.dart';
+import 'package:yuuki/models/folder.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/listeners/on_user_create_listener.dart';
 import 'package:yuuki/listeners/on_login_listener.dart';
@@ -16,10 +17,37 @@ class UserService {
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  // Get all users
-  Future<List<QueryDocumentSnapshot>> getUserList() async {
-    final snapshot = await usersCollection.get();
-    return snapshot.docs;
+  Future<List<MyUser>> getUserList() async {
+    final userSnapshots = await usersCollection.get();
+    print('abc');
+    // Convert snapshots to MyUser objects (without subcollections)
+    final users = userSnapshots.docs
+        .map((doc) => MyUser.fromMap(doc.data()! as Map<String, dynamic>))
+        .toList();
+    print(users);
+    // Loop through users and fetch subcollections if needed
+    for (var user in users) {
+      await _fetchSubcollections(user);
+    }
+    print(users);
+
+    return users;
+  }
+
+  Future<void> _fetchSubcollections(MyUser user) async {
+    // Reference the subcollections for this user
+    final foldersRef = usersCollection.doc(user.id).collection('folders');
+    final userTopicsRef = usersCollection.doc(user.id).collection('userTopics');
+
+    // Retrieve folders
+    final folderSnapshots = await foldersRef.get();
+    user.folders =
+        folderSnapshots.docs.map((doc) => Folder.fromMap(doc.data()!)).toList();
+    // Retrieve user topics
+    final userTopicSnapshots = await userTopicsRef.get();
+    user.userTopics = userTopicSnapshots.docs
+        .map((doc) => UserTopic.fromMap(doc.data()!))
+        .toList();
   }
 
   //not tested
