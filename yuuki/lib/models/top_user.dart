@@ -1,6 +1,5 @@
 import "package:yuuki/models/my_user.dart";
 
-
 class TopUser {
   String name;
   String birthday;
@@ -22,7 +21,8 @@ class TopUser {
     required this.viewCount,
   });
 
-  factory TopUser.fromUser(MyUser user, double score, int rawTime, int viewCount) {
+  factory TopUser.fromUser(
+      MyUser user, double score, int rawTime, int viewCount) {
     return TopUser(
       name: user.name,
       birthday: user.birthday,
