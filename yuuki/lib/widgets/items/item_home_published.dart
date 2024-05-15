@@ -6,9 +6,13 @@ import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_language_screen.dart';
+import 'package:yuuki/screens/view_topic.dart';
+import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
-class ItemHomePublished extends StatelessWidget {
+enum SampleItem { view, edit }
+
+class ItemHomePublished extends StatefulWidget {
   final Topic topic;
   final MyUser user;
 
@@ -18,15 +22,21 @@ class ItemHomePublished extends StatelessWidget {
   });
 
   @override
+  State<ItemHomePublished> createState() => _ItemHomePublishedState();
+}
+
+class _ItemHomePublishedState extends State<ItemHomePublished> {
+  @override
   Widget build(BuildContext context) {
-    UserTopic userTopic = UserTopic.fromTopic(topic);
+    SampleItem? selectedItem;
+    UserTopic userTopic = UserTopic.fromTopic(widget.topic);
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (e) => ChooseLanguageScreen(
-              myUser: user,
+              myUser: widget.user,
               userTopic: userTopic,
             ),
           ),
@@ -56,7 +66,7 @@ class ItemHomePublished extends StatelessWidget {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    topic.title,
+                    widget.topic.title,
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: Dimensions.fontSize(context, 20),
@@ -76,7 +86,7 @@ class ItemHomePublished extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          "${topic.vocabularies.length} items",
+                          "${widget.topic.vocabularies.length} items",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: Dimensions.fontSize(context, 12),
@@ -96,7 +106,7 @@ class ItemHomePublished extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          "${topic.views} views",
+                          "${widget.topic.views} views",
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: Dimensions.fontSize(context, 12),
@@ -131,7 +141,7 @@ class ItemHomePublished extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        topic.authorName,
+                        widget.topic.authorName,
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: Dimensions.fontSize(context, 16),
@@ -139,7 +149,71 @@ class ItemHomePublished extends StatelessWidget {
                         ),
                       ),
                     ),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+                    PopupMenuButton<SampleItem>(
+                      initialValue: selectedItem,
+                      color: AppColors.mainColor,
+                      onSelected: (SampleItem item) {
+                        setState(() {
+                          selectedItem = item;
+                        });
+                        if (item == SampleItem.view) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ViewTopic(
+                                userTopic: userTopic,
+                                user: widget.user,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<SampleItem>>[
+                        const PopupMenuItem<SampleItem>(
+                          value: SampleItem.view,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.visibility,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                'View',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Quicksand",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<SampleItem>(
+                          value: SampleItem.edit,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                'Edit',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Quicksand",
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ],
