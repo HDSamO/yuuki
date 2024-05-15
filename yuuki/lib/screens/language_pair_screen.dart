@@ -6,6 +6,8 @@ import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/question_answer.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/screens/score_screen.dart';
+import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/widgets/customs/custom_primary_button.dart';
 
 import '../models/vocabulary.dart';
@@ -31,6 +33,7 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
   int _currentVocabulary = 1;
   TextEditingController _answerController = TextEditingController();
   List<QuestionAnswer> _questionAnswers = [];
+  TopicController _topicController = TopicController();
 
   late int _totalVocabulary;
   late double _progress;
@@ -70,6 +73,8 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
     } else {
       _updatedVocabularies = widget.userTopic.vocabularies;
     }
+
+    _topicController.startStudyUserTopic(widget.myUser, widget.userTopic.id);
   }
 
   @override
@@ -141,18 +146,17 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
                                     content: Text("Bạn có muốn thoát không?"),
                                     actions: [
                                       TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(
-                                              context); // Close the dialog
-                                          Navigator.pop(
-                                              context); // Close the screen
+                                        onPressed: () async {
+                                          getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+
+                                          Navigator.pop(context); // Close the dialog
+                                          Navigator.pop(context); // Close the screen
                                         },
                                         child: Text("Có"),
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          Navigator.pop(
-                                              context); // Close the dialog
+                                          Navigator.pop(context); // Close the dialog
                                         },
                                         child: Text("Không"),
                                       ),
@@ -301,6 +305,38 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
     );
   }
 
+  Future<LearningResult> getLearningResult(MyUser myUser, UserTopic userTopic, List<QuestionAnswer> questionAnswers) async {
+    // Calculate the learning result
+    LearningResult learningResult = LearningResult(questionAnswers: questionAnswers);
+    learningResult.calculateAvgScore();
+    print("Score: ${learningResult.avgScore}");
+
+    // Finish the study session for the user topic
+    await _topicController.finishStudyUserTopic(
+      myUser,
+      userTopic.id,
+      learningResult.avgScore ?? 0.0,
+    );
+
+    // Fetch the updated user topic
+    UserTopic? updatedUserTopic = await _topicController.getUserTopicforUser(myUser, userTopic.id);
+
+    // Process the raw time if the updated user topic is available
+    if (updatedUserTopic != null) {
+      saveRawTime(learningResult, updatedUserTopic);
+    } else {
+      print('Error: Unable to fetch updated UserTopic.');
+    }
+
+    return learningResult;
+  }
+
+  void saveRawTime(LearningResult learningResult, UserTopic userTopic) {
+    int rawTime = userTopic.endTime - userTopic.startTime;
+    learningResult.rawTime = rawTime;
+    print("Raw time real: ${learningResult.convertRawTimeToFormattedTime()}");
+  }
+
   void _navigate(int direction) {
     setState(() {
       if (_index + direction >= 0 && _index + direction < _totalVocabulary) {
@@ -351,29 +387,31 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
+                  _questionAnswers.add(QuestionAnswer(
+                      vocabulary: _updatedVocabularies[_index],
+                      answer: _answerController.text.trim(),
+                      check: true));
+
                   // Kết thúc học và chuyển trang
-                  if (_index == _totalVocabulary - 1){
-                    _questionAnswers.add(
-                        QuestionAnswer(
-                            vocabulary: _updatedVocabularies[_index],
-                            answer: _answerController.text.trim(),
-                            check: true
-                        )
+                  if (_index == _totalVocabulary - 1) {
+                    LearningResult learningResult = await getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (e) => ScoreScreen(
+                            myUser: widget.myUser,
+                            userTopic: widget.userTopic,
+                            learningResult: learningResult,
+                            isEnVi: widget.isEnVi,
+                          )
+                      ),
                     );
-                    LearningResult learningResult = LearningResult(questionAnswers: _questionAnswers);
-                    Navigator.pop(context);
+                  } else {
+                    _navigate(1);
                     Navigator.pop(context);
                   }
-                  _questionAnswers.add(
-                      QuestionAnswer(
-                          vocabulary: _updatedVocabularies[_index],
-                          answer: _answerController.text.trim(),
-                          check: true
-                      )
-                  );
-                  _navigate(1);
-                  Navigator.pop(context);
                 },
                 child: Container(
                     height: 54,
@@ -453,29 +491,41 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
                 height: 30,
               ),
               GestureDetector(
-                onTap: () {
-                  // Kết thúc học và chuyển trang
-                  if (_index == _totalVocabulary - 1){
-                    _questionAnswers.add(
-                        QuestionAnswer(
-                            vocabulary: _updatedVocabularies[_index],
-                            answer: _answerController.text.trim(),
-                            check: false
-                        )
-                    );
-                    LearningResult learningResult = LearningResult(questionAnswers: _questionAnswers);
+                onTap: () async {
+                  // Add the current answer to the list
+                  _questionAnswers.add(QuestionAnswer(
+                    vocabulary: _updatedVocabularies[_index],
+                    answer: _answerController.text.trim(),
+                    check: false,
+                  ));
+
+                  // Check if this is the last vocabulary item
+                  if (_index == _totalVocabulary - 1) {
+                    // Get the learning result
+                    LearningResult learningResult = await getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+
+                    // Pop the current context to close the dialog or current screen
                     Navigator.pop(context);
+
+                    // Navigate to the ScoreScreen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ScoreScreen(
+                          myUser: widget.myUser,
+                          userTopic: widget.userTopic,
+                          learningResult: learningResult,
+                          isEnVi: widget.isEnVi,
+                        ),
+                      ),
+                    );
+                  } else {
+                    // If not the last item, navigate to the next item
+                    _navigate(1);
+
+                    // Optionally pop the current context if necessary
                     Navigator.pop(context);
                   }
-                  _questionAnswers.add(
-                      QuestionAnswer(
-                          vocabulary: _updatedVocabularies[_index],
-                          answer: _answerController.text.trim(),
-                          check: false
-                      )
-                  );
-                  _navigate(1);
-                  Navigator.pop(context);
                 },
                 child: Container(
                     height: 54,

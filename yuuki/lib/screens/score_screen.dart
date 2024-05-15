@@ -1,127 +1,126 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/user_topic.dart';
-import 'package:yuuki/screens/choose_style_screen.dart';
+import 'package:yuuki/screens/check_answer_screen.dart';
+import 'package:yuuki/utils/demension.dart';
+import 'package:yuuki/widgets/customs/custom_login_button.dart';
 
 import '../models/my_user.dart';
 
 class ScoreScreen extends StatelessWidget {
   final MyUser myUser;
   final UserTopic userTopic;
+  final bool isEnVi;
   final LearningResult learningResult;
 
   const ScoreScreen({
     super.key,
     required this.myUser,
     required this.userTopic,
-    required this.learningResult
+    required this.isEnVi,
+    required this.learningResult,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Determine the background image and header text based on the score
+    String backgroundImage = learningResult.avgScore! < 50
+        ? "assets/images/learning/img_bad_result.png"
+        : "assets/images/learning/img_good_result.png";
+    String headerText = learningResult.avgScore! < 50
+        ? "Don't Give Up!!"
+        : "Keep Going";
+
     return SafeArea(
       child: Scaffold(
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/images/onboarding/img_background.jpg"),
+              image: AssetImage(backgroundImage),
               fit: BoxFit.fill,
             ),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Back Button
-                GestureDetector(
+          child: Column(
+            children: [
+              // Back Button
+              Align(
+                alignment: Alignment.topLeft,
+                child: GestureDetector(
                   onTap: () {
+                    // Navigator.pushAndRemoveUntil(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => HomeScreen(user: myUser),
+                    //   ),
+                    //       (route) => false,
+                    // );
+                    Navigator.pop(context);
                     Navigator.pop(context);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.cancel, size: 32, color: Colors.black,),
-                    )
+                    child: Image.asset(
+                      'assets/images/learning/img_arrow_left.png',
+                      width: Dimensions.width(context, 36),
+                      height: Dimensions.height(context, 36),
+                    ),
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    // English to Vietnamese Image
-                    GestureDetector(
-                      onTap: () {
-                        // Xử lý khi chọn chuyển ngôn ngữ từ Tiếng Anh sang Tiếng Việt
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (e) => ChooseStyleScreen(
-                                myUser: myUser,
-                                userTopic: userTopic,
-                                isEnVi: true,
-                              )
-                          ),
-                        );
-                      },
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Image.asset(
-                            'assets/images/learning/img_language_1.png',
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Text(
+                          headerText,
+                          style: TextStyle(
+                            fontFamily: 'Jua',
+                            fontSize: Dimensions.fontSize(context, 54),
+                            color: Color(0xFF6078F9),
                           ),
                         ),
                       ),
-                    ),
-                    // Vertical space between images
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.16),
-                    // Vietnamese to English Image
-                    GestureDetector(
-                      onTap: () {
-                        // List<Vocabulary> updatedVocabularies = [];
-                        // for (var vocabulary in userTopic.vocabularies) {
-                        //   String tempTerm = vocabulary.term;
-                        //   String tempDefinition = vocabulary.definition;
-                        //
-                        //   // Create a new Vocabulary object with swapped values
-                        //   Vocabulary swappedVocabulary = Vocabulary(
-                        //     term: tempDefinition,
-                        //     definition: tempTerm,
-                        //   );
-                        //
-                        //   updatedVocabularies.add(swappedVocabulary);
-                        // }
-                        //
-                        // // Replace the existing list of vocabularies with the updated list
-                        // userTopic.vocabularies = updatedVocabularies;
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (e) => ChooseStyleScreen(
-                              myUser: myUser,
-                              userTopic: userTopic,
-                              isEnVi: false,
-                            ),
-                          ),
-                        );
-                      },
-
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Image.asset(
-                            'assets/images/learning/img_language_2.png',
+                      SizedBox(width: Dimensions.height(context, 10)),
+                      Center(
+                        child: Text(
+                          "${learningResult.getCorrectAnswers().length.toString()} / ${learningResult.questionAnswers.length.toString()}",
+                          style: TextStyle(
+                              fontFamily: 'Katibeh',
+                              fontSize: Dimensions.fontSize(context, 81),
+                              color: Colors.black
                           ),
                         ),
-                      ),
-                    ),
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 20), vertical: Dimensions.height(context, 20)),
+                child: CustomLoginButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (e) => CheckAnswerScreen(
+                            myUser: myUser,
+                            userTopic: userTopic,
+                            learningResult: learningResult,
+                            isEnVi: isEnVi,
+                          )
+                      ),
+                    );
+                  },
+                  text: "CHECK THE ANSWER",
+                  width: double.infinity,
+                  height: Dimensions.height(context, 54),
+                ),
+              ),
+            ],
           ),
         ),
       ),

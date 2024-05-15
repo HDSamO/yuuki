@@ -569,7 +569,7 @@ class TopicController {
         final DocumentSnapshot userTopicSnapshot = await userTopicRef.get();
 
         if (userTopicSnapshot.exists) {
-          final UserTopic userTopic = userTopicSnapshot.data()! as UserTopic;
+          final UserTopic userTopic = UserTopic.fromMap(userTopicSnapshot.data() as Map<String, dynamic>);
           return userTopic;
         } else {
           return null; // User topic not found
@@ -643,28 +643,49 @@ class TopicController {
     }
   }
 
-  Future<StartStudyResult> startStudyUserTopic(
-      MyUser user, String topicId) async {
+  // Future<StartStudyResult> startStudyUserTopic(
+  //     MyUser user, String topicId) async {
+  //   try {
+  //     final userId = user.id;
+  //
+  //     // Reference to the user's topic document
+  //     final userTopicRef =
+  //         usersCollection.doc(userId).collection("userTopics").doc(topicId);
+  //
+  //     // Update the "startTime" field with current timestamp
+  //     await userTopicRef.update({"startTime": FieldValue.serverTimestamp()});
+  //
+  //     return StartStudyResult(success: true); // Return success result
+  //   } on FirebaseException catch (e) {
+  //     return StartStudyResult(
+  //         success: false,
+  //         errorMessage: e.message!); // Return failure result with error message
+  //   } catch (e) {
+  //     // Handle other exceptions (optional)
+  //     return StartStudyResult(
+  //         success: false,
+  //         errorMessage: e.toString()); // Return generic failure result
+  //   }
+  // }
+
+  Future<StartStudyResult> startStudyUserTopic(MyUser user, String topicId) async {
     try {
       final userId = user.id;
 
       // Reference to the user's topic document
-      final userTopicRef =
-          usersCollection.doc(userId).collection("userTopics").doc(topicId);
+      final userTopicRef = usersCollection.doc(userId).collection("userTopics").doc(topicId);
+
+      final int currentTimeMillis = DateTime.now().millisecondsSinceEpoch;
 
       // Update the "startTime" field with current timestamp
-      await userTopicRef.update({"startTime": FieldValue.serverTimestamp()});
+      await userTopicRef.update({"startTime": currentTimeMillis});
 
       return StartStudyResult(success: true); // Return success result
     } on FirebaseException catch (e) {
-      return StartStudyResult(
-          success: false,
-          errorMessage: e.message!); // Return failure result with error message
+      return StartStudyResult(success: false, errorMessage: e.message!); // Return failure result with error message
     } catch (e) {
       // Handle other exceptions (optional)
-      return StartStudyResult(
-          success: false,
-          errorMessage: e.toString()); // Return generic failure result
+      return StartStudyResult(success: false, errorMessage: e.toString()); // Return generic failure result
     }
   }
 
