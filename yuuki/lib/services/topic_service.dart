@@ -446,7 +446,7 @@ class TopicController {
         final DocumentSnapshot userTopicSnapshot = await userTopicRef.get();
 
         if (userTopicSnapshot.exists) {
-          UserTopic userTopic = userTopicSnapshot.data()! as UserTopic;
+          UserTopic userTopic = UserTopic.fromMap(userTopicSnapshot.data()! as Map<String, dynamic>);
 
           // Fetch the latest topic document
           final DocumentSnapshot topicSnapshot = await FirebaseFirestore
@@ -456,7 +456,7 @@ class TopicController {
               .get();
 
           if (topicSnapshot.exists) {
-            final Topic updatedTopic = topicSnapshot.data()! as Topic;
+            final Topic updatedTopic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
 
             // Check if userTopic data needs to be updated based on Topic changes
             bool updateRequired = false;
@@ -506,12 +506,12 @@ class TopicController {
               .get();
 
           if (topicSnapshot.exists) {
-            final Topic topic = topicSnapshot.data()! as Topic;
+            final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
             final UserTopic newUserTopic = UserTopic.fromTopic(topic);
             newUserTopic.setView(1);
             newUserTopic.setLastOpen(DateTime.now().millisecondsSinceEpoch);
 
-            await userTopicsCollection.doc(topicId).set(newUserTopic);
+            await userTopicsCollection.doc(topicId).set(newUserTopic.toFirestore());
 
             // Update view count in the topic document (same as before)
             await FirebaseFirestore.instance
@@ -777,7 +777,7 @@ class TopicController {
       final double bestScore = userTopic.bestScore;
 
       // Update best time if needed
-      final updates = {};
+      final updates = <String, dynamic>{};
       if (longLastTime < longBestTime || longBestTime == 0) {
         updates["bestTime"] = longLastTime;
       }
@@ -792,7 +792,7 @@ class TopicController {
 
       // Update the user topic document (if any updates)
       if (updates.isNotEmpty) {
-        await userTopicRef.update(updates as Map<Object, Object?>);
+        await userTopicRef.update(updates);
       }
     } catch (e) {
       // Handle errors (optional, you can log the error)

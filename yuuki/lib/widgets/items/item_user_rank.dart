@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/top_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/utils/demension.dart';
 
 import '../../models/vocabulary.dart';
 
@@ -45,25 +46,19 @@ class ItemUserRank extends StatelessWidget {
                     Expanded(
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.person,
-                            size: 24,
+                            size: Dimensions.iconSize(context, 24),
                           ),
+                          SizedBox(width: Dimensions.width(context, 16),),
                           Expanded(
                             child: Text(
                               topUser.name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: Dimensions.fontSize(context, 18),
                                 fontFamily: "QuicksandRegular",
                               ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.menu,
-                              size: 20,
                             ),
                           ),
                         ],
@@ -71,17 +66,17 @@ class ItemUserRank extends StatelessWidget {
                     ),
                     Expanded(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _buildItemInfo(
                             context,
-                            "Time: ${topUser.formattedTime}",
+                            "Time: ${topUser.convertRawTimeToFormattedTime()}",
                           ),
                           const SizedBox(width: 12),
                           _buildItemInfo(
                               context,
-                            "Score: ${topUser.score}",
+                            "Score: ${(topUser.score * 10).round() / 10}",
                           ),
                           const SizedBox(width: 12),
                           _buildItemInfo(
@@ -101,41 +96,10 @@ class ItemUserRank extends StatelessWidget {
     );
   }
 
-  UserTopic _getDefaultUserTopic() {
-    // Tạo danh sách từ vựng cho chủ đề
-    List<Vocabulary> vocabularies = [
-      Vocabulary(term: "apple", definition: "a fruit"),
-      Vocabulary(term: "book", definition: "a written or printed work"),
-      Vocabulary(
-          term: "cat", definition: "a small domesticated carnivorous mammal"),
-      Vocabulary(term: "dog", definition: "a domesticated carnivorous mammal"),
-      Vocabulary(
-          term: "elephant", definition: "a very large herbivorous mammal"),
-      Vocabulary(
-          term: "flower", definition: "the seed-bearing part of a plant"),
-      Vocabulary(term: "guitar", definition: "a stringed musical instrument"),
-      Vocabulary(term: "house", definition: "a building for human habitation"),
-      Vocabulary(term: "ice cream", definition: "a sweet frozen food"),
-      Vocabulary(term: "jacket", definition: "a short coat"),
-    ];
-
-    // Tạo một chủ đề mới
-    Topic myTopic = Topic(
-      id: "1",
-      title: "My Vocabulary List",
-      description: "A collection of various words and their meanings.",
-      vocabularies: vocabularies,
-      private: false,
-      authorName: "John Doe",
-    );
-
-    return UserTopic.fromTopic(myTopic);
-  }
-
   Widget _buildItemInfo(BuildContext context, String text) {
     return Container(
       alignment: Alignment.center,
-      height: 20,
+      height: Dimensions.height(context, 22),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(217, 240, 255, 1),
@@ -143,9 +107,9 @@ class ItemUserRank extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.black,
-          fontSize: 14,
+          fontSize: Dimensions.fontSize(context, 12),
           fontFamily: "QuicksandRegular",
         ),
       ),

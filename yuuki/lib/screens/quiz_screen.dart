@@ -346,7 +346,7 @@ class _QuizScreenState extends State<QuizScreen> {
     await _topicController.finishStudyUserTopic(
       myUser,
       userTopic.id,
-      learningResult.avgScore ?? 0.0,
+      learningResult.avgScore ?? 0,
     );
 
     // Fetch the updated user topic
@@ -359,12 +359,20 @@ class _QuizScreenState extends State<QuizScreen> {
       print('Error: Unable to fetch updated UserTopic.');
     }
 
+    _topicController.saveUserIfTopScorer(userTopic.id, myUser, learningResult.avgScore ?? 0.0, learningResult.rawTime ?? 0, userTopic.view);
+    _topicController.saveUserIfTopViewer(userTopic.id, myUser, learningResult.avgScore ?? 0.0, learningResult.rawTime ?? 0, userTopic.view);
+
     return learningResult;
   }
 
   void saveRawTime(LearningResult learningResult, UserTopic userTopic) {
     int rawTime = userTopic.endTime - userTopic.startTime;
     learningResult.rawTime = rawTime;
+    learningResult.convertRawTimeToFormattedTime();
+    print("Start time: ${userTopic.startTime}");
+    print("End time: ${userTopic.endTime}");
+    print("Raw time: ${learningResult.rawTime}");
+    print("Formatted time: ${learningResult.formattedTime}");
   }
 
   void _navigate(int direction) {

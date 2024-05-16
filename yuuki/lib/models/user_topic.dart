@@ -50,9 +50,9 @@ class UserTopic {
       endTime: 0, // Assuming default end time (modify if needed)
       lastTime: 0, // Assuming default last time (modify if needed)
       bestTime: 0, // Assuming default best time (modify if needed)
-      lastScore: 0.0, // Assuming default last score (modify if needed)
-      bestScore: 0.0, // Assuming default best score (modify if needed)
-      view: 0, // Assuming default view count (modify if needed)
+      lastScore: 0, // Assuming default last score (modify if needed)
+      bestScore: 0, // Assuming default best score (modify if needed)
+      view: topic.views, // Assuming default view count (modify if needed)
     );
   }
 
@@ -70,8 +70,8 @@ class UserTopic {
       endTime: 0, // Assuming default end time (modify if needed)
       lastTime: 0, // Assuming default last time (modify if needed)
       bestTime: 0, // Assuming default best time (modify if needed)
-      lastScore: 0.0, // Assuming default last score (modify if needed)
-      bestScore: 0.0, // Assuming default best score (modify if needed)
+      lastScore: 0, // Assuming default last score (modify if needed)
+      bestScore: 0, // Assuming default best score (modify if needed)
       view: 0, // Assuming default view count (modify if needed)
     );
   }
@@ -167,8 +167,8 @@ class UserTopic {
       endTime: map['endTime'] != null ? map['endTime'] as int : 0,
       lastTime: map['lastTime'] != null ? map['lastTime'] as int : 0,
       bestTime: map['bestTime'] != null ? map['bestTime'] as int : 0,
-      lastScore: 0.5,
-      bestScore: 5.2,
+      lastScore: map['lastScore'] != null ? map['lastScore'].toDouble() as double : 0.0,
+      bestScore: map['bestScore'] != null ? map['bestScore'].toDouble() as double : 0.0,
       view: map['view'] != null ? map['view'] as int : 0,
     );
   }
@@ -191,8 +191,8 @@ class UserTopic {
       endTime: map['endTime'] != null ? map['endTime'] as int : 0,
       lastTime: map['lastTime'] != null ? map['lastTime'] as int : 0,
       bestTime: map['bestTime'] != null ? map['bestTime'] as int : 0,
-      lastScore: 0.5,
-      bestScore: 5.2,
+      lastScore: map['lastScore'] != null ? map['lastScore'].toDouble() as double : 0.0,
+      bestScore: map['bestScore'] != null ? map['bestScore'].toDouble() as double : 0.0,
       view: map['view'] != null ? map['view'] as int : 0,
     );
   }

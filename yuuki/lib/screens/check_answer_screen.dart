@@ -134,4 +134,52 @@ class CheckAnswerScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Leaderboards are only available on public topic",
+            style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold
+            ),
+          ),
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
+                "Topic name: ${userTopic.title}",
+                style: TextStyle(
+                  fontSize: Dimensions.fontSize(context, 24),
+                ),
+              ),
+              Text(
+                "Your score: ${(learningResult.avgScore! * 10).round() / 10} / 100",
+                style: TextStyle(
+                  fontSize: Dimensions.fontSize(context, 24),
+                ),
+              ),
+              Text(
+                "Your time: ${learningResult.formattedTime}",
+                style: TextStyle(
+                  fontSize: Dimensions.fontSize(context, 24),
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Close"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

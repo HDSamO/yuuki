@@ -315,7 +315,7 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
     await _topicController.finishStudyUserTopic(
       myUser,
       userTopic.id,
-      learningResult.avgScore ?? 0.0,
+      learningResult.avgScore ?? 0,
     );
 
     // Fetch the updated user topic
@@ -334,6 +334,7 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
   void saveRawTime(LearningResult learningResult, UserTopic userTopic) {
     int rawTime = userTopic.endTime - userTopic.startTime;
     learningResult.rawTime = rawTime;
+    learningResult.convertRawTimeToFormattedTime();
   }
 
   void _navigate(int direction) {

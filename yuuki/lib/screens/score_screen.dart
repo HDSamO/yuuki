@@ -48,24 +48,23 @@ class ScoreScreen extends StatelessWidget {
               // Back Button
               Align(
                 alignment: Alignment.topLeft,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HomeScreen(user: myUser),
+                child: Padding(
+                    padding: EdgeInsets.all(Dimensions.iconSize(context, 20)),
+                    child: IconButton(
+                      onPressed: (){
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(user: myUser),
+                          ),
+                              (route) => false,
+                        );
+                      },
+                      icon: Icon(
+                          Icons.cancel,
+                        size: Dimensions.iconSize(context, 40),
                       ),
-                          (route) => false,
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Image.asset(
-                      'assets/images/learning/img_arrow_left.png',
-                      width: Dimensions.width(context, 36),
-                      height: Dimensions.height(context, 36),
-                    ),
-                  ),
+                    )
                 ),
               ),
               Expanded(
