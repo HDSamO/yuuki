@@ -21,6 +21,8 @@ class ItemAddVocabulary extends StatefulWidget {
 class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
   TextEditingController termController = TextEditingController();
   TextEditingController definitionController = TextEditingController();
+  bool isTermEmpty = false;
+  bool isDefinitionEmpty = false;
 
   @override
   void initState() {
@@ -83,6 +85,11 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                 ),
                 TextField(
                   controller: termController,
+                  onChanged: (_) {
+                    setState(() {
+                      isTermEmpty = false;
+                    });
+                  },
                   cursorColor: Colors.blue,
                   maxLines: null,
                   cursorErrorColor: Colors.red,
@@ -95,11 +102,16 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: BorderSide(
-                        color: Colors.blue,
+                        color: isTermEmpty && termController.text.isEmpty
+                            ? Colors.red
+                            : Colors.blue,
                         width: 2.0,
                       ),
                     ),
                     hintText: 'Enter a term',
+                    errorText: isTermEmpty && termController.text.isEmpty
+                        ? 'Term cannot be empty'
+                        : null,
                   ),
                 ),
                 SizedBox(height: 20),
@@ -117,6 +129,11 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                 ),
                 TextField(
                   controller: definitionController,
+                  onChanged: (_) {
+                    setState(() {
+                      isDefinitionEmpty = false;
+                    });
+                  },
                   maxLines: null,
                   cursorColor: Colors.blue,
                   cursorErrorColor: Colors.red,
@@ -129,11 +146,16 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                       borderSide: BorderSide(
-                        color: Colors.blue,
+                        color: isDefinitionEmpty && definitionController.text.isEmpty
+                            ? Colors.red
+                            : Colors.blue,
                         width: 2.0,
                       ),
                     ),
                     hintText: 'Enter a definition',
+                    errorText: isTermEmpty && termController.text.isEmpty
+                        ? 'Definition cannot be empty'
+                        : null,
                   ),
                 ),
               ],

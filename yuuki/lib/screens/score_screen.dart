@@ -62,6 +62,7 @@ class ScoreScreen extends StatelessWidget {
                       },
                       icon: Icon(
                           Icons.cancel,
+                        color: Colors.blue,
                         size: Dimensions.iconSize(context, 40),
                       ),
                     )

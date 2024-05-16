@@ -58,6 +58,18 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
         isEnVi = widget.isEnVi;
       });
     }
+
+    if (widget.vocabulary.term != vocabulary.term){
+      setState(() {
+        vocabulary = widget.vocabulary;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
   }
 
   @override
@@ -110,7 +122,7 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
                       IconButton(
                         onPressed: () {
                           setState(() {
-                            // Code here
+                            vocabulary.stared = !vocabulary.stared;
                           });
                         },
                         icon: vocabulary.stared

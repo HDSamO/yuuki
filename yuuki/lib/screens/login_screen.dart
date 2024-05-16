@@ -6,8 +6,11 @@ import 'package:yuuki/pages/library_page.dart';
 import 'package:yuuki/screens/home_screen.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yuuki/utils/demension.dart';
 
+import '../results/password_result.dart';
 import '../screens/signup_screen.dart';
+import '../utils/const.dart';
 import '../widgets/customs/custom_input_text.dart';
 import '../widgets/customs/custom_login_button.dart';
 import '../widgets/customs/custom_login_scaffold.dart';
@@ -111,11 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
 
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   const SnackBar(
-        //     content: Text('Processing Data'),
-        //   ),
-        // );
       } else {
         String message = userResult.errorMessage ?? "";
         ScaffoldMessenger.of(context).showSnackBar(
@@ -233,6 +231,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ],
                           ),
                           GestureDetector(
+                            onTap: () {
+                              _showForgotPasswordDialog(context);
+                            },
                             child: Text(
                               'Forgot password?',
                               style: TextStyle(
@@ -300,6 +301,202 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
         ],
       ),
+    );
+  }
+
+  bool _validateEmail(String email) {
+    String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+    RegExp regExp = RegExp(pattern);
+    return regExp.hasMatch(email);
+  }
+
+  Widget showDialogMessage(Color color, String title, String message){
+    return AlertDialog(
+      title: Text(
+        title,
+        style: TextStyle(
+          color: color,
+        ),
+      ),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () {
+            if (title == "Error"){
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            }
+          },
+          child: Text('OK'),
+        ),
+      ],
+    );
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    TextEditingController emailController = TextEditingController();
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.only(bottom: Dimensions.height(context, 16)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  height: Dimensions.height(context, 50),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF397CFF),
+                        Color(0x803DB7FC), // 0x80 for 50% opacity
+                      ],
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Forgot Password",
+                    style: TextStyle(
+                      fontSize: Dimensions.fontSize(context, 20),
+                      fontFamily: "Quicksand",
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10.0),
+                Padding(
+                    padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+                  child: TextField(
+                    controller: emailController,
+                    autofocus: true,
+                    keyboardType: TextInputType.text,
+                    cursorColor: Colors.blue,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 2.0,
+                        ),
+                      ),
+                      labelText: 'Email',
+                      hintText: 'Enter your email',
+                      hintStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                      labelStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: Dimensions.height(context, 16)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: Dimensions.fontSize(context, 16),
+                          fontFamily: "QuicksandRegular",
+                          color: Color(0xffec5b5b),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 40,
+                        ),
+                        foregroundColor: Color(0xffec5b5b),
+                        side: BorderSide(
+                          color: Color(0xffec5b5b),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        String email = emailController.text;
+
+                        if (email.isEmpty){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return showDialogMessage(Colors.red, "Error", "Please enter your email");
+                            },
+                          );
+                        }
+                        else if (!_validateEmail(email)) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return showDialogMessage(Colors.red, "Error", "This is a not a valid email");
+                            },
+                          );
+                        } else {
+                          PasswordResult passwordResult = await UserService().sendPasswordResetEmail(email);
+
+                          if (passwordResult.success) {
+                            emailController.clear();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return showDialogMessage(Colors.green, "Success", "Please check your email!");
+                              },
+                            );
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return showDialogMessage(Colors.red, "Error", passwordResult.errorMessage ?? "An error occurred. Please check your entered email");
+                              },
+                            );
+                          }
+                        }
+                      },
+                      child: Text(
+                        "Send",
+                        style: TextStyle(
+                          fontSize: Dimensions.fontSize(context, 16),
+                          fontFamily: "QuicksandRegular",
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 40,
+                        ),
+                        backgroundColor: AppColors.mainColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
