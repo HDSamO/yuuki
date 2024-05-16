@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Vocabulary {
-  final String term;
-  final String definition;
-  final bool stared;
-  final String? category;
+  String term;
+  String definition;
+  bool stared;
+  String? category;
 
   Vocabulary({
     required this.term,
