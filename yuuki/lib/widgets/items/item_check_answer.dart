@@ -17,7 +17,7 @@ class ItemCheckAnswer extends StatelessWidget {
   Widget build(BuildContext context) {
     Color backgroundColor = (questionAnswer.check
         ? const Color(0xFF397CFF)
-        : const Color(0x80FA6900));
+        : const Color(0xFFFA6900));
 
     Color itemColor = (questionAnswer.check
         ? Colors.white
@@ -26,48 +26,51 @@ class ItemCheckAnswer extends StatelessWidget {
     FlutterTts flutterTts = FlutterTts();
 
     return GestureDetector(
-      onTap: () {
-        _showDialog(context);
-      },
-      child: Container(
-        width: double.infinity,
-        height: 54,
-        margin: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(27),
+        onTap: () {
+          _showDialog(context);
+        },
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           color: backgroundColor,
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 26, right: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    "${questionAnswer.vocabulary.term} : ${questionAnswer.vocabulary.definition}",
-                    style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 18),
-                      fontWeight: FontWeight.bold,
-                      color: itemColor,
-                    ),
+          child: Container(
+            width: double.infinity,
+            height: 54,
+            margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
+            child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 26, right: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "${questionAnswer.vocabulary.term} : ${questionAnswer.vocabulary.definition}",
+                          style: TextStyle(
+                            fontSize: Dimensions.fontSize(context, 18),
+                            fontWeight: FontWeight.bold,
+                            color: itemColor,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        alignment: Alignment.topRight,
+                        onPressed: () {
+                          speak(flutterTts, questionAnswer.vocabulary.term, isEnVi);
+                        },
+                        icon: Icon(
+                          Icons.volume_up,
+                          size: Dimensions.iconSize(context, 36),
+                          color: itemColor,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                IconButton(
-                  alignment: Alignment.topRight,
-                  onPressed: () {
-                    speak(flutterTts, questionAnswer.vocabulary.term, isEnVi);
-                  },
-                  icon: Icon(
-                    Icons.volume_up,
-                    size: Dimensions.iconSize(context, 36),
-                    color: itemColor,
-                  ),
-                ),
-              ],
+                )
             ),
-          )
-        ),
-      ),
+          ),
+        )
     );
   }
 
@@ -79,7 +82,7 @@ class ItemCheckAnswer extends StatelessWidget {
           title: Text(
               "Your answer",
             style: TextStyle(
-              color: Colors.red,
+              color: questionAnswer.check ? Colors.green : Colors.red,
               fontWeight: FontWeight.bold
             ),
           ),

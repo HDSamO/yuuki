@@ -334,7 +334,6 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
   void saveRawTime(LearningResult learningResult, UserTopic userTopic) {
     int rawTime = userTopic.endTime - userTopic.startTime;
     learningResult.rawTime = rawTime;
-    print("Raw time real: ${learningResult.convertRawTimeToFormattedTime()}");
   }
 
   void _navigate(int direction) {

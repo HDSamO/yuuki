@@ -1,18 +1,19 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/screens/score_screen.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_primary_button.dart';
-import 'package:yuuki/widgets/items/item_flash_card.dart';
 
+import '../models/learning_result.dart';
+import '../models/question_answer.dart';
 import '../models/vocabulary.dart';
+import '../services/topic_service.dart';
 import '../widgets/items/item_quiz.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -36,10 +37,14 @@ class _QuizScreenState extends State<QuizScreen> {
   int _currentVocabulary = 1;
   Timer? _timer;
   int _milliseconds = 59000;
+  List<QuestionAnswer> _questionAnswers = [];
+  final TopicController _topicController = TopicController();
+  String _selectedOption = '';
 
   late int _totalVocabulary;
   late double _progress;
   late List<Vocabulary> _updatedVocabularies = [];
+  late List<Vocabulary> _randomVocabularies = [];
   late bool _isEnVi;
   late FlutterTts flutterTts = FlutterTts();
 
@@ -62,15 +67,37 @@ class _QuizScreenState extends State<QuizScreen> {
     return newVocabularies;
   }
 
+  List<Vocabulary> _getRandomVocabularies(List<Vocabulary> vocabularies, Vocabulary currentVocabulary) {
+    List<Vocabulary> randomVocabularies;
+
+    if (vocabularies.length < 4) {
+      randomVocabularies = [
+        currentVocabulary,
+        Vocabulary(term: "none", definition: "none"),
+        Vocabulary(term: "none", definition: "none"),
+        Vocabulary(term: "none", definition: "none"),
+      ];
+    } else {
+      List<Vocabulary> temp = List.from(vocabularies);
+      temp.shuffle();
+
+      randomVocabularies =  temp.where((vocabulary) => vocabulary.term != currentVocabulary.term).take(3).toList();
+      randomVocabularies.add(currentVocabulary);
+    }
+
+    randomVocabularies.shuffle();
+    return randomVocabularies;
+  }
+
   void startCountDownTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_milliseconds < 1000) {
-          _handleTimerFinish();
-        } else {
+      if (_milliseconds < 1000) {
+        _handleTimerFinish();
+      } else {
+        setState(() {
           _milliseconds -= 1000; // Giảm đi một giây
-        }
-      });
+        });
+      }
     });
   }
 
@@ -86,12 +113,12 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _handleTimerFinish() {
-    if (_index + 1 >= _totalVocabulary) {
-      // Nếu đang ở cuối danh sách từ vựng, điều hướng tới màn hình kết thúc hoặc màn hình khác
-      // Ví dụ: Navigator.pushReplacementNamed(context, '/end_screen');
-    } else {
-      // Nếu chưa đạt cuối danh sách từ vựng, điều hướng tới câu hỏi tiếp theo
-      _navigate(1);
+    if (_milliseconds <= 0) {
+      if (_index + 1 >= _totalVocabulary) {
+        // code here
+      } else {
+        _navigate(1);
+      }
     }
   }
 
@@ -104,15 +131,36 @@ class _QuizScreenState extends State<QuizScreen> {
 
     if (!widget.isEnVi){
       _updatedVocabularies = _swappedVocabularies(widget.userTopic.vocabularies);
+      _randomVocabularies = _getRandomVocabularies(_updatedVocabularies, _updatedVocabularies[0]);
     } else {
       _updatedVocabularies = widget.userTopic.vocabularies;
+      _randomVocabularies = _getRandomVocabularies(_updatedVocabularies, _updatedVocabularies[0]);
     }
 
     startCountDownTimer();
+    _topicController.startStudyUserTopic(widget.myUser, widget.userTopic.id);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // Hàm callback để xử lý sự kiện khi lựa chọn được thay đổi
+  void handleOptionSelected(String option) {
+    setState(() {
+      if (option.isEmpty){
+        _selectedOption = "";
+      }
+      _selectedOption = option;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    LearningResult learningResult;
+
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -123,136 +171,164 @@ class _QuizScreenState extends State<QuizScreen> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 20), vertical: Dimensions.height(context, 30)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Progress Bar
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _currentVocabulary.toString(),
-                              style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: Dimensions.width(context, 8),),
-                            Text(
-                              "/",
-                              style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(width: Dimensions.width(context, 8),),
-                            Text(
-                              _totalVocabulary.toString(),
-                              style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text("Xác nhận"),
-                                      content: Text("Bạn có muốn thoát không?"),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context); // Close the dialog
-                                            Navigator.pop(context); // Close the screen
-                                          },
-                                          child: Text("Có"),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context); // Close the dialog
-                                          },
-                                          child: Text("Không"),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              icon: Icon(Icons.arrow_back, size: Dimensions.iconSize(context, 36),),
-                            ),
-                            SizedBox(width: Dimensions.width(context, 8)),
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(Dimensions.radius(context, 12)),
-                                child: LinearProgressIndicator(
-                                  minHeight: _totalVocabulary.toDouble(),
-                                  value: _progress,
-                                  backgroundColor: Colors.grey[400],
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.yellowAccent),
-                                ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 20), vertical: Dimensions.height(context, 30)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Progress Bar
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _currentVocabulary.toString(),
+                            style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(width: Dimensions.width(context, 8),),
+                          Text(
+                            "/",
+                            style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(width: Dimensions.width(context, 8),),
+                          Text(
+                            _totalVocabulary.toString(),
+                            style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Xác nhận"),
+                                    content: Text("Bạn có muốn thoát không?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+
+                                          Navigator.pop(context); // Close the dialog
+                                          Navigator.pop(context); // Close the screen
+                                        },
+                                        child: Text("Có"),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context); // Close the dialog
+                                        },
+                                        child: Text("Không"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            icon: Icon(Icons.arrow_back, size: Dimensions.iconSize(context, 36),),
+                          ),
+                          SizedBox(width: Dimensions.width(context, 8)),
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(Dimensions.radius(context, 12)),
+                              child: LinearProgressIndicator(
+                                minHeight: _totalVocabulary.toDouble(),
+                                value: _progress,
+                                backgroundColor: Colors.grey[400],
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.yellowAccent),
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: Dimensions.height(context, 10)),
-                    // Functional Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: (){
-                                speak(_updatedVocabularies[_index].term, _isEnVi);
-                              },
-                              icon: Icon(Icons.volume_up, size: Dimensions.iconSize(context, 36), color: Colors.black,),
-                            ),
-                            SizedBox(width: Dimensions.width(context, 10)),
-                            Text(
-                                "Listen",
-                                style: TextStyle(
-                                    fontSize: Dimensions.fontSize(context, 24),
-                                )
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Icon(Icons.timer_outlined, size: Dimensions.iconSize(context, 36),),
-                            SizedBox(width: Dimensions.width(context, 10),),
-                            Text(
-                              "00:${_milliseconds ~/ 1000}",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: Dimensions.height(context, 10)),
+                  // Functional Buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: (){
+                              speak(_updatedVocabularies[_index].term, _isEnVi);
+                            },
+                            icon: Icon(Icons.volume_up, size: Dimensions.iconSize(context, 36), color: Colors.black,),
+                          ),
+                          SizedBox(width: Dimensions.width(context, 10)),
+                          Text(
+                              "Listen",
                               style: TextStyle(
                                 fontSize: Dimensions.fontSize(context, 24),
-                              ),
+                              )
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.timer_outlined, size: Dimensions.iconSize(context, 36),),
+                          SizedBox(width: Dimensions.width(context, 10),),
+                          Text(
+                            "00:${_milliseconds ~/ 1000}",
+                            style: TextStyle(
+                              fontSize: Dimensions.fontSize(context, 24),
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: Dimensions.height(context, 16),),
+                  // CustomViewPager
+                  Flexible(
+                    child: ItemQuiz(
+                      vocabulary: _updatedVocabularies[_index],
+                      vocabularies: _randomVocabularies,
+                      onOptionSelected: handleOptionSelected,
+                    ),
+                  ),
+                  SizedBox(height: Dimensions.height(context, 24)),
+                  // Back and Next Buttons
+                  CustomPrimaryButton(
+                    onPressed: () async => {
+                      _questionAnswers.add(QuestionAnswer(
+                        vocabulary: _updatedVocabularies[_index],
+                        answer: _selectedOption,
+                        check: _updatedVocabularies[_index].definition == _selectedOption)),
+
+                      // Kết thúc học và chuyển trang
+                      if (_index == _totalVocabulary - 1) {
+                        learningResult = await getLearningResult(widget.myUser, widget.userTopic, _questionAnswers),
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (e) => ScoreScreen(
+                                myUser: widget.myUser,
+                                userTopic: widget.userTopic,
+                                learningResult: learningResult,
+                                isEnVi: widget.isEnVi,
+                              )
+                          ),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: Dimensions.height(context, 16),),
-                    // CustomViewPager
-                    Expanded(
-                        child: ItemQuiz()
-                    ),
-                    SizedBox(height: Dimensions.height(context, 24)),
-                    // Back and Next Buttons
-                    CustomPrimaryButton(
-                      onPressed: () => _navigate(1),
-                      text: 'CHECK',
-                      width: double.infinity,
-                      height: Dimensions.height(context, 54),
-                      color: Color(0xFF0947E8),
-                    ),
-                  ],
-                ),
+                      } else {
+                        _navigate(1),
+                      }
+                    },
+                    text: 'CHECK',
+                    width: double.infinity,
+                    height: Dimensions.height(context, 54),
+                    color: Color(0xFF0947E8),
+                  ),
+                ],
               ),
             ),
           ],
@@ -261,15 +337,46 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
+  Future<LearningResult> getLearningResult(MyUser myUser, UserTopic userTopic, List<QuestionAnswer> questionAnswers) async {
+    // Calculate the learning result
+    LearningResult learningResult = LearningResult(questionAnswers: questionAnswers);
+    learningResult.calculateAvgScore();
+
+    // Finish the study session for the user topic
+    await _topicController.finishStudyUserTopic(
+      myUser,
+      userTopic.id,
+      learningResult.avgScore ?? 0.0,
+    );
+
+    // Fetch the updated user topic
+    UserTopic? updatedUserTopic = await _topicController.getUserTopicforUser(myUser, userTopic.id);
+
+    // Process the raw time if the updated user topic is available
+    if (updatedUserTopic != null) {
+      saveRawTime(learningResult, updatedUserTopic);
+    } else {
+      print('Error: Unable to fetch updated UserTopic.');
+    }
+
+    return learningResult;
+  }
+
+  void saveRawTime(LearningResult learningResult, UserTopic userTopic) {
+    int rawTime = userTopic.endTime - userTopic.startTime;
+    learningResult.rawTime = rawTime;
+  }
+
   void _navigate(int direction) {
-    setState(() {
-      if (_index + direction >= 0 && _index + direction < _totalVocabulary) {
+    if (_index + direction >= 0 && _index + direction < _totalVocabulary) {
+      setState(() {
         _index += direction;
         _currentVocabulary += direction;
         _progress = _currentVocabulary / _totalVocabulary;
-        resetTimer();
-      }
-    });
+        _randomVocabularies = _getRandomVocabularies(_updatedVocabularies, _updatedVocabularies[_index]);
+      });
+      resetTimer();
+    }
   }
 
   void speak(String text, bool isEnVi) async {

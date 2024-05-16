@@ -2,11 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/screens/leaderboard_screen.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_login_button.dart';
 import 'package:yuuki/widgets/items/item_check_answer.dart';
 
 import '../models/my_user.dart';
+import 'home_screen.dart';
 
 class CheckAnswerScreen extends StatelessWidget {
   final MyUser myUser;
@@ -49,10 +51,9 @@ class CheckAnswerScreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
-                          Navigator.pop(context);
                         },
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(32, 32, 32, 24),
+                          padding: const EdgeInsets.fromLTRB(20, 32, 32, 24),
                           child: Image.asset(
                             'assets/images/learning/img_arrow_left.png',
                             width: Dimensions.width(context, 36),
@@ -60,20 +61,28 @@ class CheckAnswerScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(32, 32, 32, 24),
+                      Padding(
+                          padding: const EdgeInsets.fromLTRB(32, 32, 20, 24),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (e) => LeaderBoardScreen(
+                                      myUser: myUser,
+                                      userTopic: userTopic,
+                                      learningResult: learningResult,
+                                      isEnVi: isEnVi,
+                                    )
+                                ),
+                              );
+                            },
                             icon: Icon(
-                                Icons.leaderboard,
+                              Icons.leaderboard,
                               size: Dimensions.iconSize(context, 36),
+                              color: Colors.yellow,
                             ),
                           )
-                        ),
                       ),
                     ],
                   )
@@ -106,7 +115,13 @@ class CheckAnswerScreen extends StatelessWidget {
                   child: CustomLoginButton(
                     text: "Exit",
                     onPressed: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(user: myUser),
+                        ),
+                            (route) => false,
+                      );
                     },
                     width: double.infinity,
                     height: 54,

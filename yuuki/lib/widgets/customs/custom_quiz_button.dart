@@ -4,11 +4,13 @@ import 'package:yuuki/utils/demension.dart';
 class CustomQuizButton extends StatefulWidget {
   final VoidCallback? onTap;
   final String text;
+  final bool isSelected;
 
   const CustomQuizButton({
     super.key,
     required this.onTap,
-    required this.text
+    required this.text,
+    required this.isSelected,
   });
 
   @override
@@ -16,15 +18,21 @@ class CustomQuizButton extends StatefulWidget {
 }
 
 class _CustomQuizButtonState extends State<CustomQuizButton> {
-  bool _isSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(CustomQuizButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _isSelected = !_isSelected;
-        });
         widget.onTap?.call();
       },
       child: Container(
@@ -40,7 +48,7 @@ class _CustomQuizButtonState extends State<CustomQuizButton> {
               offset: Offset(0, 1),
             ),
           ],
-          gradient: _isSelected
+          gradient: widget.isSelected
               ? LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,

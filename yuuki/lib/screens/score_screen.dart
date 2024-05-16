@@ -6,6 +6,7 @@ import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_login_button.dart';
 
 import '../models/my_user.dart';
+import 'home_screen.dart';
 
 class ScoreScreen extends StatelessWidget {
   final MyUser myUser;
@@ -49,15 +50,13 @@ class ScoreScreen extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
                   onTap: () {
-                    // Navigator.pushAndRemoveUntil(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => HomeScreen(user: myUser),
-                    //   ),
-                    //       (route) => false,
-                    // );
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(user: myUser),
+                      ),
+                          (route) => false,
+                    );
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),
