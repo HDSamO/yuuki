@@ -8,6 +8,7 @@ import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/top_user.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/results/finish_study_result.dart';
 import 'package:yuuki/results/save_top_user_result.dart';
 import 'package:yuuki/results/start_study_result.dart';
@@ -15,6 +16,7 @@ import 'package:yuuki/results/top_user_result.dart';
 import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/results/topic_result.dart';
 import 'package:yuuki/results/user_topic_result.dart';
+import 'package:yuuki/results/vocabulary_list_result.dart';
 
 class TopicController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -997,4 +999,147 @@ class TopicController {
       return SaveTopUserResult(success: false, errorMessage: e.toString());
     }
   }
+
+  Future<VocabularyListResult> starVocabularyInUserTopic(MyUser user, String topicId, Vocabulary vocabulary, bool isStarred) async {
+  try {
+    
+    final userId = user.id;
+
+    final userTopicsRef = usersCollection.doc(userId).collection('userTopics');
+    final topicRef = userTopicsRef.doc(topicId);
+
+    final topicSnapshot = await topicRef.get();
+
+    if (!topicSnapshot.exists) {
+      // UserTopic document not found
+      return VocabularyListResult(success: false, errorMessage: "UserTopic not found");
+    }
+
+    final userTopic = UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+
+    final vocabList = userTopic.vocabularies;
+    if (vocabList == null) {
+      // Vocabulary list is null (unlikely scenario)
+      return VocabularyListResult(success: false, errorMessage: "Vocabulary list is null");
+    }
+
+    // final existingVocab = vocabList.firstWhere((vocab) => vocab.term == vocabulary.term, orElse: () => null);
+    final existingVocab = vocabList.firstWhere((vocab) => vocab.term == vocabulary.term);
+
+    if (existingVocab != null) {
+      existingVocab.stared = isStarred;
+    } else {
+      // Vocabulary not found in userTopic
+      return VocabularyListResult(success: false, errorMessage: "Vocabulary not found in the userTopic");
+    }
+
+    userTopic.vocabularies = vocabList; // Update the vocabulary list in userTopic
+
+    await topicRef.set(userTopic.toFirestore()); // Update the userTopic document
+
+    if (isStarred) {
+      // Update starredTopic in user object
+      user.starredTopic?.vocabularies?.add(vocabulary); // Assuming starredTopic is nullable
+    } else {
+      user.starredTopic?.vocabularies?.removeWhere((vocab) => vocab.term == vocabulary.term);
+    }
+
+    await usersCollection.doc(userId).set(user.toFirestore()); // Update the user document
+
+    return VocabularyListResult(success: true);
+  } catch (e) {
+    return VocabularyListResult(success: false, errorMessage: e.toString());
+  }
+}
+
+
+Future<VocabularyListResult> getStarredVocabulariesInUserTopic(MyUser user, String topicId) async {
+  try {
+    
+    final userId = user.id;
+
+    final userTopicsRef = usersCollection.doc(userId).collection('userTopics');
+    final topicRef = userTopicsRef.doc(topicId);
+
+    final topicSnapshot = await topicRef.get();
+
+    if (!topicSnapshot.exists) {
+      // UserTopic document not found
+      return VocabularyListResult(success: false, errorMessage: "UserTopic not found");
+    }
+
+    final userTopic = UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+    final vocabList = userTopic.vocabularies;
+
+    if (vocabList == null) {
+      // Vocabulary list is null (unlikely scenario)
+      return VocabularyListResult(success: false, errorMessage: "Vocabulary list is null");
+    }
+
+    final starredVocabularies = vocabList.where((vocab) => vocab.stared).toList();
+
+    return VocabularyListResult(success: true, vocabularies: starredVocabularies);
+  } catch (e) {
+    return VocabularyListResult(success: false, errorMessage: e.toString());
+  }
+}
+
+// Future<VocabularyListResult> starVocabularyInUserTopic(MyUser user, String topicId, Vocabulary vocabulary) async {
+//   try {
+//     final userCollection = FirebaseFirestore.instance.collection('users');
+//     final userEmail = user.email;
+
+//     final userSnapshot = await userCollection.where('email', isEqualTo:  userEmail).get();
+
+//     if (userSnapshot.docs.isEmpty) {
+//       // User not found
+//       return VocabularyListResult(success: false, errorMessage: "User not found");
+//     }
+
+//     final userDoc = userSnapshot.docs.first;
+//     final userId = userDoc.id;
+
+//     final userTopicsRef = userCollection.doc(userId).collection('userTopics');
+//     final topicRef = userTopicsRef.doc(topicId);
+
+//     final topicSnapshot = await topicRef.get();
+
+//     if (!topicSnapshot.exists) {
+//       // UserTopic document not found
+//       return VocabularyListResult(success: false, errorMessage: "UserTopic not found");
+//     }
+
+//     final userTopic = UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+
+//     final vocabList = userTopic.vocabularies;
+//     if (vocabList == null) {
+//       // Vocabulary list is null (unlikely scenario)
+//       return VocabularyListResult(success: false, errorMessage: "Vocabulary list is null");
+//     }
+
+//     final existingVocab = vocabList.firstWhere((vocab) => vocab.term == vocabulary.term, orElse: () => null);
+
+//     if (existingVocab != null) {
+//       existingVocab.stared = !existingVocab.stared; // Invert the starred value
+//     } else {
+//       // Vocabulary not found in userTopic
+//       return VocabularyListResult(success: false, errorMessage: "Vocabulary not found in the userTopic");
+//     }
+
+//     userTopic.vocabularies = vocabList; // Update the vocabulary list in userTopic
+
+//     await topicRef.set(userTopic.toFirestore()); // Update the userTopic document
+
+//     // Update starredTopic in user object (if applicable)
+//     if (user.starredTopic?.term == vocabulary.term) {
+//       user.starredTopic?.starred = !user.starredTopic?.starred;
+//     }
+
+//     await userCollection.doc(userId).set(user.toMap()); // Update the user document
+
+//     return VocabularyListResult(success: true);
+//   } catch (e) {
+//     return VocabularyListResult(success: false, errorMessage: e.toString());
+//   }
+// }
 }
