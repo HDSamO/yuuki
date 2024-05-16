@@ -2,6 +2,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/utils/demension.dart';
 
 class ItemCommunityPeople extends StatelessWidget {
@@ -79,7 +80,7 @@ class ItemCommunityPeople extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "15 topics",
+                        "${user.userTopics!.length} topics",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: Dimensions.fontSize(context, 12),

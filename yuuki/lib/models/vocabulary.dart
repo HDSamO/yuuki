@@ -17,8 +17,10 @@ class Vocabulary {
     return Vocabulary(
       term: map['term'] as String,
       definition: map['definition'] as String,
-      stared: map['stared'] as bool ?? false, // Handle null value
-      category: map['category'] as String?, 
+      stared: map['stared'] != null
+          ? map['stared'] as bool
+          : false, // Handle null value
+      category: map['category'] as String?,
     );
   }
 

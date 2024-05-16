@@ -29,7 +29,8 @@ class LearningResult {
     final minutes = Duration(milliseconds: rawTime!).inMinutes % 60;
     final seconds = Duration(milliseconds: rawTime!).inSeconds % 60;
 
-    formattedTime = "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
+    formattedTime =
+        "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}";
     return formattedTime;
   }
 

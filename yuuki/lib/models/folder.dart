@@ -8,7 +8,7 @@ class Folder {
 
   Folder({
     required this.folderName,
-    this.id, 
+    this.id,
     required this.topics,
     required this.lastOpen,
   });
@@ -20,7 +20,7 @@ class Folder {
       topics: (map['topics'] as List)
           .map((topicMap) => UserTopic.fromMap(topicMap))
           .toList(),
-      lastOpen: map['lastOpen'] as int,
+      lastOpen: map['lastOpen'] != null ? map['lastOpen'] as int : 0,
     );
   }
 
@@ -33,15 +33,14 @@ class Folder {
     };
   }
 
-  String get getFolderName => folderName; // Getter for folderName (already final)
+  String get getFolderName =>
+      folderName; // Getter for folderName (already final)
   String? get getId => id; // Getter for id with null safety
   get getLastOpen => lastOpen; // Getter for lastOpen (already final)
-
 
   void setFolderName(String value) {
     folderName = value;
   }
-
 
   void setId(String? value) {
     id = value;
@@ -52,7 +51,6 @@ class Folder {
   void setTopics(List<UserTopic> value) {
     topics = value;
   }
-
 
   void setLastOpen(int value) {
     lastOpen = value;

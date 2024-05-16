@@ -10,5 +10,4 @@ class QuestionAnswer {
     required this.answer,
     required this.check,
   });
-
 }

@@ -3,7 +3,6 @@ import "package:yuuki/models/top_user.dart";
 import "package:yuuki/models/user_topic.dart";
 import "package:yuuki/models/vocabulary.dart";
 
-
 class Topic {
   String id;
   String title;
@@ -31,16 +30,16 @@ class Topic {
     this.bestViewers = const [], // Empty list by default
   });
 
-  factory Topic.fromUserCreated(MyUser user, String title, String description, List<Vocabulary> vocabularies, bool private) {
+  factory Topic.fromUserCreated(MyUser user, String title, String description,
+      List<Vocabulary> vocabularies, bool private) {
     return Topic(
-      id: "", // Assuming ID is generated elsewhere
-      title: title,
-      description: description,
-      vocabularies: vocabularies,
-      private: private,
-      author: user.id,
-      authorName: user.name
-    );
+        id: "", // Assuming ID is generated elsewhere
+        title: title,
+        description: description,
+        vocabularies: vocabularies,
+        private: private,
+        author: user.id,
+        authorName: user.name);
   }
 
   Map<String, dynamic> toFirestore() {
@@ -69,19 +68,19 @@ class Topic {
       vocabularies: (map['vocabularies'] as List)
           .map((vocabMap) => Vocabulary.fromMap(vocabMap))
           .toList(),
-      private: map['private'] as bool,
-      lastModify: map['lastModify'] as int,
-      views: map['views'] as int,
+      private: map['private'] != null ? map['private'] as bool : false,
+      lastModify: map['lastModify'] != null ? map['lastModify'] as int : 0,
+      views: map['views'] != null ? map['views'] as int : 0,
       bestScorers: map['bestScorers'] != null
-        ? (map['bestScorers'] as List)
-            .map((userMap) => TopUser.fromMap(userMap))
-            .toList()
-        : null,
+          ? (map['bestScorers'] as List)
+              .map((userMap) => TopUser.fromMap(userMap))
+              .toList()
+          : null,
       bestViewers: map['bestViewers'] != null
-        ? (map['bestViewers'] as List)
-            .map((userMap) => TopUser.fromMap(userMap))
-            .toList()
-        : null,
+          ? (map['bestViewers'] as List)
+              .map((userMap) => TopUser.fromMap(userMap))
+              .toList()
+          : null,
     );
   }
 
@@ -110,6 +109,4 @@ class Topic {
   void setViews(int value) => views = value;
   void setBestScorers(List<TopUser>? value) => bestScorers = value;
   void setBestViewers(List<TopUser>? value) => bestViewers = value;
-
-
 }
