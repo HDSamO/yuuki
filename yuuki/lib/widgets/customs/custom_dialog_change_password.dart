@@ -1,22 +1,28 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/results/password_result.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
 class CustomDialog extends StatelessWidget {
+  final MyUser user;
+  final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
+  CustomDialog(this.user);
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       // barrierDismissible: false,
       child: Container(
-        height: 320,
+        height: 380,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -56,6 +62,30 @@ class CustomDialog extends StatelessWidget {
               ),
               child: Column(
                 children: [
+                  TextField(
+                    controller: _oldPasswordController,
+                    obscureText: true,
+                    cursorColor: Colors.blue,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                          color: Colors.blue,
+                          width: 2.0,
+                        ),
+                      ),
+                      labelText: 'Old password',
+                      labelStyle: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   TextField(
                     controller: _newPasswordController,
                     obscureText: true,
@@ -136,10 +166,31 @@ class CustomDialog extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () async {
+                    String oldPassword = _oldPasswordController.text;
                     String newPassword = _newPasswordController.text;
                     String confirmPassword = _confirmPasswordController.text;
 
-                    if (newPassword != confirmPassword) {
+                    bool isUserValid =
+                        await checkUserLogin(user.email, oldPassword);
+                    if (!isUserValid) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error'),
+                            content: Text('Old password incorrect'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else if (newPassword != confirmPassword) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -162,6 +213,22 @@ class CustomDialog extends StatelessWidget {
                       PasswordResult result =
                           await UserService().changePassword(newPassword);
                       if (result.success) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Changed password successfully'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                         Navigator.pop(context);
                       } else {
                         showDialog(
@@ -206,5 +273,20 @@ class CustomDialog extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+//check change password
+Future<bool> checkUserLogin(String email, String password) async {
+  try {
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+    return userCredential.user != null;
+  } on FirebaseAuthException catch (e) {
+    print("Authentication error: ${e.message}");
+    return false;
+  } catch (e) {
+    print("Error occurred: $e");
+    return false;
   }
 }

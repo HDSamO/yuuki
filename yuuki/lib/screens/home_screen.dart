@@ -109,11 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: PageView(
           controller: controller,
           children: [
+            ProfilePage(user: widget.user),
             HomePage(user: widget.user),
             LibraryPage(myUser: widget.user),
             AddPage(user: widget.user),
             CommunityPage(myUser: widget.user),
-            ProfilePage(user: widget.user),
           ],
         ),
       ),
