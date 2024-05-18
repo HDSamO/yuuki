@@ -88,7 +88,7 @@ class MyUser {
       'email': email,
       'phone': phone,
       'starredTopic': starredTopic?.toFirestore(),
-      'folders': folders!.map((folder) => folder.toFirestore()).toList(),
+      'folders': folders?.map((folder) => folder.toFirestore()).toList(),
       'userTopics': userTopics!.map((topic) => topic.toFirestore()).toList(),
     };
   }

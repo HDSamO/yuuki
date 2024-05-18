@@ -59,8 +59,7 @@ class TopicController {
       final DocumentSnapshot topicSnapshot = await topicRef.get();
 
       if (topicSnapshot.exists) {
-        final Topic topic =
-            topicSnapshot.data()! as Topic; // Safe cast after existence check
+        final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>); // Safe cast after existence check
 
         final UserTopic userTopic = UserTopic.fromTopic(topic);
         userTopic.setView(1);
@@ -74,7 +73,7 @@ class TopicController {
         final CollectionReference createdTopicsCollection =
             userRef.collection("userTopics");
 
-        await createdTopicsCollection.doc(topicId).set(userTopic);
+        await createdTopicsCollection.doc(topicId).set(userTopic.toFirestore());
 
         return UserTopicResult(success: true, userTopic: userTopic);
       } else {
@@ -92,8 +91,7 @@ class TopicController {
       final DocumentSnapshot topicSnapshot = await topicRef.get();
 
       if (topicSnapshot.exists) {
-        final Topic topic =
-            topicSnapshot.data()! as Topic; // Safe cast after existence check
+        final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>); // Safe cast after existence check
 
         final UserTopic userTopic = UserTopic.fromTopic(topic);
         userTopic.setView(1);
@@ -107,7 +105,7 @@ class TopicController {
         final CollectionReference createdTopicsCollection =
             userRef.collection("userTopics");
 
-        await createdTopicsCollection.doc(topicId).set(userTopic);
+        await createdTopicsCollection.doc(topicId).set(userTopic.toFirestore());
 
         return UserTopicResult(success: true, userTopic: userTopic);
       } else {
@@ -606,7 +604,7 @@ class TopicController {
         throw Exception("Folder document not found");
       }
 
-      final Folder folder = folderSnapshot.data()! as Folder;
+      final Folder folder = Folder.fromMap(folderSnapshot.data()! as Map<String, dynamic>);
       final List<String> topicIdsInFolder =
           folder.topics?.map((userTopic) => userTopic.id).toList() ?? [];
 
@@ -637,7 +635,7 @@ class TopicController {
       final List<Topic> topics = [];
       for (final QuerySnapshot snapshot in snapshots) {
         final List<DocumentSnapshot> documents = snapshot.docs;
-        topics.addAll(documents.map((doc) => doc.data()! as Topic).toList());
+        topics.addAll(documents.map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>)).toList());
       }
 
       return topics;
@@ -1038,13 +1036,37 @@ class TopicController {
     await topicRef.set(userTopic.toFirestore()); // Update the userTopic document
 
     if (isStarred) {
-      // Update starredTopic in user object
-      user.starredTopic?.vocabularies?.add(vocabulary); // Assuming starredTopic is nullable
+      if (user.starredTopic == null) {
+        user.starredTopic = UserTopic(
+          id: 'starredTopic',
+          title: 'Starred Topic',
+          author: user.id,
+          authorName: user.name,
+          description: 'Starred Topic',
+          private: true,
+          vocabularies: [],
+          lastOpen: 0,
+          startTime: 0,
+          endTime: 0,
+          lastTime: 0,
+          bestTime: 0,
+          lastScore: 0.0,
+          bestScore: 0.0,
+          view: 0,
+        ); // Initialize with an empty list
+      }
+
+      user.starredTopic!.vocabularies!.add(vocabulary);
     } else {
       user.starredTopic?.vocabularies?.removeWhere((vocab) => vocab.term == vocabulary.term);
     }
 
-    await usersCollection.doc(userId).set(user.toFirestore()); // Update the user document
+    final userUpdate = {
+      'starredTopic': user.starredTopic?.toFirestore(),
+    };
+    await usersCollection.doc(userId).update(userUpdate);
+
+    // await usersCollection.doc(userId).set(user.toFirestore()); // Update the user document
 
     return VocabularyListResult(success: true);
   } catch (e) {

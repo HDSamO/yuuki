@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/services/topic_service.dart';
+import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/items/item_library_progress.dart';
 
 import '../models/my_user.dart';
@@ -41,6 +42,20 @@ class _LibraryTopicsState extends State<LibraryTopics> {
             );
           } else if (snapshot.hasError){
             return Text('Error: ${snapshot.error}');
+          } else if (snapshot.data!.isEmpty){
+            return Padding(
+                padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+              child: Center(
+                child: Text(
+                  textAlign: TextAlign.center,
+                  "Please create topic or learn any topic at the community page!",
+                  style: TextStyle(
+                      fontSize: Dimensions.fontSize(context, 24),
+                      color: Colors.red
+                  ),
+                ),
+              ),
+            );
           } else {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

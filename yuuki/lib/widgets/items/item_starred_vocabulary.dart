@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/utils/demension.dart';
 
 import '../../screens/choose_language_screen.dart';
 
-class ItemLibraryProgress extends StatelessWidget {
+class ItemStarredVocabulary extends StatefulWidget {
   final MyUser myUser;
-  final UserTopic userTopic;
+  final Vocabulary vocabulary;
 
-  const ItemLibraryProgress({
+  const ItemStarredVocabulary({
     super.key,
     required this.myUser,
-    required this.userTopic,
+    required this.vocabulary,
   });
 
   @override
+  State<ItemStarredVocabulary> createState() => _ItemStarredVocabularyState();
+}
+
+class _ItemStarredVocabularyState extends State<ItemStarredVocabulary> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Container(
         width: double.infinity,
         height: 80,
@@ -36,43 +42,30 @@ class ItemLibraryProgress extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          userTopic.title,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontFamily: "QuicksandRegular",
-                          ),
-                        ),
-                      ),
+          child: Center(
+              child: Row(
+                children: [
+                  _buildItemInfo(
+                    context,
+                    widget.vocabulary.term,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    ":",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: Dimensions.fontSize(context, 24),
+                      fontFamily: "QuicksandRegular",
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _buildItemInfo(
-                          context,
-                          "${userTopic.vocabularies.length} Items",
-                        ),
-                        const SizedBox(width: 12),
-                        _buildItemInfo(
-                          context,
-                          "Studying",
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              _buildStudyButton(context, userTopic),
-            ],
+                  ),
+                  const SizedBox(width: 12),
+                  _buildItemInfo(
+                    context,
+                    widget.vocabulary.definition,
+                  ),
+                ],
+              )
           ),
         ),
       ),
@@ -82,17 +75,17 @@ class ItemLibraryProgress extends StatelessWidget {
   Widget _buildItemInfo(BuildContext context, String text) {
     return Container(
       alignment: Alignment.center,
-      height: 20,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      height: Dimensions.height(context, 50),
+      padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 16), vertical: Dimensions.height(context, 8)),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(217, 240, 255, 1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.black,
-          fontSize: 12,
+          fontSize: Dimensions.fontSize(context, 18),
           fontFamily: "QuicksandRegular",
         ),
       ),
@@ -117,7 +110,7 @@ class ItemLibraryProgress extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (e) => ChooseLanguageScreen(
-                  myUser: myUser,
+                  myUser: widget.myUser,
                   userTopic: userTopic,
                 ),
               ),

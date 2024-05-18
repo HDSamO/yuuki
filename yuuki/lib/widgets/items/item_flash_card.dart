@@ -5,6 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/models/vocabulary.dart';
+import 'package:yuuki/services/topic_service.dart';
 
 import '../../models/my_user.dart';
 
@@ -15,16 +16,18 @@ class ItemFlashCard extends StatefulWidget {
   final Vocabulary vocabulary;
   final String text;
   final bool isEnVi;
+  final void Function(bool) onStaredChanged;
 
   const ItemFlashCard({
-    Key? key,
+    super.key,
     required this.myUser,
     this.userTopic,
     this.topic,
     required this.text,
     required this.isEnVi,
     required this.vocabulary,
-  }) : super(key: key);
+    required this.onStaredChanged,
+  });
 
   @override
   State<ItemFlashCard> createState() => _ItemFlashCardState();
@@ -35,6 +38,7 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
   late String text;
   late bool isEnVi;
   late FlutterTts flutterTts = FlutterTts();
+  TopicController topicController = TopicController();
 
   @override
   void initState() {
@@ -67,9 +71,8 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     super.dispose();
-
   }
 
   @override
@@ -122,7 +125,7 @@ class _ItemFlashCardState extends State<ItemFlashCard> {
                       IconButton(
                         onPressed: () {
                           setState(() {
-                            vocabulary.stared = !vocabulary.stared;
+                            widget.onStaredChanged(!vocabulary.stared);
                           });
                         },
                         icon: vocabulary.stared
