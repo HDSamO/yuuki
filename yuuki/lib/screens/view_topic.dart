@@ -357,7 +357,14 @@ class _ViewTopicState extends State<ViewTopic> {
                 ],
               ),
             )
-          : null,
+          : FloatingActionButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            heroTag: 'Exit',
+            backgroundColor: AppColors.mainColor,
+            child: Icon(Icons.arrow_back, color: Colors.white),
+          ),
     );
   }
 
