@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/my_sign_up_page.dart';
+import 'package:yuuki/pages/profile_page.dart';
 import 'package:yuuki/screens/home_screen.dart';
 import 'package:yuuki/pages/library_page.dart';
 import 'package:yuuki/screens/login_screen.dart';

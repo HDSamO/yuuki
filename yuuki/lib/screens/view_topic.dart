@@ -30,7 +30,7 @@ class _ViewTopicState extends State<ViewTopic> {
   late String authorName = '';
   bool isEditing = false;
   final TopicController topicController = TopicController();
-  List<ItemAddVocabulary> listVocabularyItems = [];
+  List<ItemAddVocabulary> vocabularyItems = [];
   List<TextEditingController> termControllers = [];
   List<TextEditingController> definitionControllers = [];
 
@@ -43,13 +43,49 @@ class _ViewTopicState extends State<ViewTopic> {
     userName = widget.user.name ?? '';
     authorName = widget.userTopic.authorName ?? '';
     topicController.viewTopic(widget.user, widget.userTopic.id);
+    _updateControllers();
+    for (int i = 0; i < termControllers.length; i++) {
+      vocabularyItems.add(
+        ItemAddVocabulary(
+          key: UniqueKey(),
+          termController: termControllers[i],
+          definitionController: definitionControllers[i],
+          onRemove: () {
+            removeItem(termControllers[i], definitionControllers[i]);
+          },
+        ),
+      );
+    }
   }
 
-  List<ItemAddVocabulary> vocabularyItems = [];
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
   bool isTitleEmpty = false;
   bool isDescriptionEmpty = false;
+
+  List<Vocabulary> _getVocabularies() {
+    return List.generate(vocabularyItems.length, (index) {
+      return Vocabulary(
+        term: termControllers[index].text,
+        definition: definitionControllers[index].text,
+      );
+    });
+  }
+
+  void _updateControllers() {
+    termControllers.clear();
+    definitionControllers.clear();
+
+    for (int i = 0; i < widget.userTopic.vocabularies.length; i++) {
+      final termController =
+          TextEditingController(text: widget.userTopic.vocabularies[i].term);
+      final definitionController = TextEditingController(
+          text: widget.userTopic.vocabularies[i].definition);
+      termControllers.add(termController);
+      definitionControllers.add(definitionController);
+    }
+  }
 
   Widget buildEditButton() {
     bool canEdit = userName ==
@@ -118,7 +154,7 @@ class _ViewTopicState extends State<ViewTopic> {
                     ),
                   ),
                   TextField(
-                    enabled: isEditing,
+                    readOnly: !isEditing,
                     controller: titleController,
                     onChanged: (_) {
                       setState(() {
@@ -163,7 +199,7 @@ class _ViewTopicState extends State<ViewTopic> {
                     ),
                   ),
                   TextField(
-                    enabled: isEditing,
+                    readOnly: !isEditing,
                     controller: descriptionController,
                     onChanged: (_) {
                       setState(() {
@@ -202,7 +238,13 @@ class _ViewTopicState extends State<ViewTopic> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () {
-                          setState(() {});
+                          setState(() {
+                            addVocabulariesToItems();
+                            print(vocabularyItems.length);
+                            print(vocabularyItems[19].termController.text);
+                            print(
+                                vocabularyItems[19].definitionController.text);
+                          });
                         },
                         icon:
                             isPublic ? Icon(Icons.lock_open) : Icon(Icons.lock),
@@ -241,28 +283,22 @@ class _ViewTopicState extends State<ViewTopic> {
                       IconButton(
                         onPressed: () {
                           if (isEditing) {
+                            TextEditingController termController =
+                                TextEditingController();
+                            TextEditingController definitionController =
+                                TextEditingController();
                             setState(() {
-                              Vocabulary newVocabulary =
-                                  Vocabulary(term: '', definition: '');
-
-                              widget.userTopic.vocabularies.add(newVocabulary);
-
-                              TextEditingController newTermController =
-                                  TextEditingController();
-                              TextEditingController newDefinitionController =
-                                  TextEditingController();
-
+                              termControllers.add(termController);
+                              definitionControllers.add(definitionController);
                               vocabularyItems.add(
                                 ItemAddVocabulary(
+                                  key: UniqueKey(),
+                                  termController: termController,
+                                  definitionController: definitionController,
                                   onRemove: () {
-                                    setState(() {
-                                      widget.userTopic.vocabularies
-                                          .removeLast();
-                                      vocabularyItems.removeLast();
-                                    });
+                                    removeItem(
+                                        termController, definitionController);
                                   },
-                                  termController: newTermController,
-                                  definitionController: newDefinitionController,
                                 ),
                               );
                             });
@@ -280,16 +316,23 @@ class _ViewTopicState extends State<ViewTopic> {
                     itemCount: widget.userTopic.vocabularies.length,
                     itemBuilder: (context, index) {
                       var vocabulary = widget.userTopic.vocabularies[index];
+
+                      // Lấy các controller đã khởi tạo trước đó
+                      TextEditingController termController =
+                          termControllers[index];
+                      TextEditingController definitionController =
+                          definitionControllers[index];
+
                       return ItemViewTopic(
                         onRemove: () {
                           setState(() {
                             widget.userTopic.vocabularies.removeAt(index);
+                            termControllers.removeAt(index);
+                            definitionControllers.removeAt(index);
                           });
                         },
-                        termController:
-                            TextEditingController(text: vocabulary.term),
-                        definitionController:
-                            TextEditingController(text: vocabulary.definition),
+                        termController: termController,
+                        definitionController: definitionController,
                         isEditing: isEditing,
                       );
                     },
@@ -302,63 +345,104 @@ class _ViewTopicState extends State<ViewTopic> {
         ),
       ),
       floatingActionButton: isEditing
-          ? FloatingActionButton.extended(
-              onPressed: () async {
-                if (titleController.text.isEmpty ||
-                    descriptionController.text.isEmpty) {
-                  setState(() {
-                    isTitleEmpty = titleController.text.isEmpty;
-                    isDescriptionEmpty = descriptionController.text.isEmpty;
-                  });
-                } else if (vocabularyItems.any((item) =>
-                    item.termController.text.isEmpty ||
-                    item.definitionController.text.isEmpty)) {
-                } else {
-                  Topic updatedTopic = Topic(
-                    id: widget.userTopic.id,
-                    title: titleController.text,
-                    description: descriptionController.text,
-                    private: isPublic,
-                    authorName: authorName,
-                    vocabularies: widget.userTopic.vocabularies,
-                    author: widget.userTopic.author,
-                  );
-                  // Call updateTopic function
-                  TopicResult result = await TopicController()
-                      .updateTopic(updatedTopic, widget.user);
-                  _showSuccessDialog();
+    ? FloatingActionButton.extended(
+        onPressed: () async {
+          if (titleController.text.isEmpty ||
+              descriptionController.text.isEmpty) {
+            setState(() {
+              isTitleEmpty = titleController.text.isEmpty;
+              isDescriptionEmpty = descriptionController.text.isEmpty;
+            });
+          } else if (vocabularyItems.any((item) =>
+              item.termController.text.isEmpty ||
+              item.definitionController.text.isEmpty)) {
+            // handle empty vocabulary fields
+          } else {
+            Topic updatedTopic = Topic(
+              id: widget.userTopic.id,
+              title: titleController.text,
+              description: descriptionController.text,
+              private: isPublic,
+              authorName: authorName,
+              vocabularies: _getVocabularies(),
+              author: widget.userTopic.author,
+            );
 
-                  if (result.success) {
-                    setState(() {
-                      isEditing = false;
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(result.errorMessage!)),
-                    );
-                  }
-                }
-              },
-              heroTag: 'uniqueTag',
-              backgroundColor: AppColors.mainColor,
-              label: Row(
-                children: [
-                  Icon(Icons.update, color: Colors.white),
-                  SizedBox(width: 12),
-                  Text(
-                    'Update',
-                    style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
-                      fontFamily: "QuicksandRegular",
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
+            // Call updateTopic function
+            TopicResult result = await TopicController()
+                .updateTopic(updatedTopic, widget.user);
+
+            if (result.success) {
+              setState(() {
+                isEditing = false;
+                _showSuccessDialog();
+              });
+            } else {
+              _showErrorDialog(result.errorMessage!);
+            }
+          }
+        },
+        heroTag: 'uniqueTag',
+        backgroundColor: AppColors.mainColor,
+        label: Row(
+          children: [
+            Icon(Icons.update, color: Colors.white),
+            SizedBox(width: 12),
+            Text(
+              'Update',
+              style: TextStyle(
+                fontSize: Dimensions.fontSize(context, 16),
+                fontFamily: "QuicksandRegular",
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
-            )
-          : null,
+            ),
+          ],
+        ),
+      )
+    : FloatingActionButton(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        heroTag: 'backTag',
+        backgroundColor: AppColors.mainColor,
+        child: Icon(Icons.arrow_back, color: Colors.white),
+      ),
+
     );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text("Error: $message"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void removeItem(TextEditingController termController,
+      TextEditingController definitionController) {
+    int index = termControllers.indexOf(termController);
+    print("Index: ${index}");
+    if (index != -1) {
+      setState(() {
+        vocabularyItems.removeAt(index);
+        termControllers.removeAt(index);
+        definitionControllers.removeAt(index);
+      });
+    }
   }
 
   void _showSuccessDialog() {
@@ -453,5 +537,29 @@ class _ViewTopicState extends State<ViewTopic> {
         );
       },
     );
+  }
+
+  void addVocabulariesToItems() {
+    vocabularyItems.clear();
+    for (var vocabulary in widget.userTopic.vocabularies) {
+      TextEditingController termController =
+          TextEditingController(text: vocabulary.term);
+      TextEditingController definitionController =
+          TextEditingController(text: vocabulary.definition);
+      setState(() {
+        termControllers.add(termController);
+        definitionControllers.add(definitionController);
+        vocabularyItems.add(
+          ItemAddVocabulary(
+            key: UniqueKey(),
+            termController: termController,
+            definitionController: definitionController,
+            onRemove: () {
+              removeItem(termController, definitionController);
+            },
+          ),
+        );
+      });
+    }
   }
 }

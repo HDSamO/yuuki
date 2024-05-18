@@ -62,6 +62,20 @@ class UserService {
     }
   }
 
+  Future<void> updateUser(MyUser user) async {
+    try {
+      DocumentReference userRef = usersCollection.doc(user.id);
+      await userRef.update({
+        'name': user.name,
+        'birthday': user.birthday,
+        'phone': user.phone,
+      });
+    } catch (e) {
+      print("Error updating user: $e");
+      throw e;
+    }
+  }
+
   Future<UserResult> addUser(MyUser user, String password) async {
     try {
       // Create a new user with email and password

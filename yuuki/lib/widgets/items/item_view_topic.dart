@@ -101,7 +101,7 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                   ],
                 ),
                 TextField(
-                  enabled: isEdit,
+                  readOnly: !isEdit,
                   controller: termController,
                   cursorColor: Colors.blue,
                   maxLines: null,
@@ -136,7 +136,7 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                   ),
                 ),
                 TextField(
-                  enabled: isEdit,
+                  readOnly: !isEdit,
                   controller: definitionController,
                   maxLines: null,
                   cursorColor: Colors.blue,

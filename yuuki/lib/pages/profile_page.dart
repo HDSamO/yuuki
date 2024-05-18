@@ -9,6 +9,7 @@ import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_change_password.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_conform.dart';
+import 'package:yuuki/widgets/customs/custom_dialog_edit_profile.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/customs/custom_item_profile.dart';
 
@@ -85,7 +86,14 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ),
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomDialogEditProfile(user!);
+                              },
+                            );
+                          },
                           child: Text(
                             'Edit profile',
                             style: TextStyle(
