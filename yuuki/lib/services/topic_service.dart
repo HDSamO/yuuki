@@ -275,7 +275,7 @@ class TopicController {
       final DocumentSnapshot topicSnapshot = await topicRef.get();
 
       if (topicSnapshot.exists) {
-        final Topic topic = topicSnapshot.data()! as Topic;
+        final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
 
         final String userId = topic.getAuthor!;
         final DocumentReference userRef =
@@ -289,10 +289,9 @@ class TopicController {
 
         final DocumentReference userTopicRef =
             createdTopicsCollection.doc(topicId);
-        await userTopicRef.set(userTopic);
+        await userTopicRef.set(userTopic.toFirestore());
 
-        return TopicResult(
-            success: true, topic: topic); // Topic updated successfully
+        return TopicResult(success: true, topic: topic); // Topic updated successfully
       } else {
         return TopicResult(success: false, errorMessage: "Topic not found");
       }

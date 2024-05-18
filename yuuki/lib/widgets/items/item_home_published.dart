@@ -16,10 +16,12 @@ enum SampleItem { view, edit }
 class ItemHomePublished extends StatefulWidget {
   final Topic topic;
   final MyUser user;
+  final VoidCallback onRefresh;
 
   ItemHomePublished({
     required this.topic,
     required this.user,
+    required this.onRefresh,
   });
 
   @override
@@ -27,21 +29,56 @@ class ItemHomePublished extends StatefulWidget {
 }
 
 class _ItemHomePublishedState extends State<ItemHomePublished> {
+
+  onTapFunctionToViewTopic(BuildContext context, UserTopic userTopic) async {
+    final reLoadPage = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewTopic(
+          userTopic: userTopic,
+          user: widget.user,
+        ),
+      ),
+    );
+
+    if (reLoadPage) {
+      widget.onRefresh();
+    }
+  }
+
+  onTapFunctionToLearning(BuildContext context, UserTopic userTopic) async {
+    final reLoadPage = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChooseLanguageScreen(
+          myUser: widget.user,
+          userTopic: userTopic,
+        ),
+      ),
+    );
+
+    if (reLoadPage) {
+      widget.onRefresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SampleItem? selectedItem;
     UserTopic userTopic = UserTopic.fromTopic(widget.topic);
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (e) => ChooseLanguageScreen(
-              myUser: widget.user,
-              userTopic: userTopic,
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (e) => ChooseLanguageScreen(
+        //       myUser: widget.user,
+        //       userTopic: userTopic,
+        //     ),
+        //   ),
+        // );
+
+        onTapFunctionToLearning(context, userTopic);
       },
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -158,15 +195,17 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                           selectedItem = item;
                         });
                         if (item == SampleItem.view) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewTopic(
-                                userTopic: userTopic,
-                                user: widget.user,
-                              ),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => ViewTopic(
+                          //       userTopic: userTopic,
+                          //       user: widget.user,
+                          //     ),
+                          //   ),
+                          // );
+
+                          onTapFunctionToViewTopic(context, userTopic);
                         }
                       },
                       itemBuilder: (BuildContext context) =>

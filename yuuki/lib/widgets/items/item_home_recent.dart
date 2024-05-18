@@ -15,11 +15,13 @@ class ItemHomeResent extends StatefulWidget {
   final UserTopic userTopic;
   final Topic? topic;
   final MyUser user;
+  final VoidCallback onRefresh;
 
   ItemHomeResent({
     required this.userTopic,
     this.topic,
     required this.user,
+    required this.onRefresh,
   });
 
   @override
@@ -27,20 +29,55 @@ class ItemHomeResent extends StatefulWidget {
 }
 
 class _ItemHomeResentState extends State<ItemHomeResent> {
+
+  onTapFunctionToViewTopic(BuildContext context) async {
+    final reLoadPage = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ViewTopic(
+          userTopic: widget.userTopic,
+          user: widget.user,
+        ),
+      ),
+    );
+
+    if (reLoadPage) {
+      widget.onRefresh();
+    }
+  }
+
+  onTapFunctionToLearning(BuildContext context) async {
+    final reLoadPage = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChooseLanguageScreen(
+          myUser: widget.user,
+          userTopic: widget.userTopic,
+        ),
+      ),
+    );
+
+    if (reLoadPage) {
+      widget.onRefresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SampleItem? selectedItem;
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (e) => ChooseLanguageScreen(
-              myUser: widget.user,
-              userTopic: widget.userTopic,
-            ),
-          ),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (e) => ChooseLanguageScreen(
+        //       myUser: widget.user,
+        //       userTopic: widget.userTopic,
+        //     ),
+        //   ),
+        // );
+
+        onTapFunctionToLearning(context);
       },
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -157,15 +194,27 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                           selectedItem = item;
                         });
                         if (item == SampleItem.view) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ViewTopic(
-                                userTopic: widget.userTopic,
-                                user: widget.user,
-                              ),
-                            ),
-                          );
+                          // Navigator.pushReplacement(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (BuildContext context) => ViewTopic(
+                          //       userTopic: widget.userTopic,
+                          //       user: widget.user,
+                          //     ),
+                          //   ),
+                          // );
+
+                          onTapFunctionToViewTopic(context);
+
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => ViewTopic(
+                          //       userTopic: widget.userTopic,
+                          //       user: widget.user,
+                          //     ),
+                          //   ),
+                          // );
                         }
                       },
                       itemBuilder: (BuildContext context) =>
