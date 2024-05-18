@@ -1,15 +1,17 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_primary_button.dart';
 import 'package:yuuki/widgets/items/item_flash_card.dart';
 
 import '../models/vocabulary.dart';
+import '../results/vocabulary_list_result.dart';
+import '../services/topic_service.dart';
 
 class FlashCardScreen extends StatefulWidget {
   final MyUser myUser;
@@ -47,16 +49,13 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
     List<Vocabulary> newVocabularies = [];
 
     for (var vocabulary in vocabularies) {
-      String tempTerm = vocabulary.term;
-      String tempDefinition = vocabulary.definition;
-
-      // Create a new Vocabulary object with swapped values
-      Vocabulary swappedVocabulary = Vocabulary(
-        term: tempDefinition,
-        definition: tempTerm,
+      newVocabularies.add(
+        Vocabulary(
+          term: vocabulary.definition,
+          definition: vocabulary.term,
+          stared: vocabulary.stared,
+        ),
       );
-
-      newVocabularies.add(swappedVocabulary);
     }
 
     return newVocabularies;
@@ -71,11 +70,75 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
 
     if (!widget.isEnVi){
       _updatedVocabularies = _swappedVocabularies(widget.userTopic.vocabularies);
-      _originalVocabularies = _swappedVocabularies(widget.userTopic.vocabularies);
+      _originalVocabularies = List.from(_updatedVocabularies);
     } else {
       _updatedVocabularies = widget.userTopic.vocabularies;
-      _originalVocabularies = widget.userTopic.vocabularies;
+      _originalVocabularies = List.from(_updatedVocabularies);
     }
+  }
+
+  Future<void> _toggleStarred(Vocabulary vocabulary, bool stared) async {
+    setState(() {
+      vocabulary.stared = stared;
+    });
+
+    VocabularyListResult result = await TopicController().starVocabularyInUserTopic(
+      widget.myUser,
+      widget.userTopic.id,
+      vocabulary,
+      stared,
+    );
+
+    if (!result.success){
+      print("Error: ${result.errorMessage}");
+    }
+  }
+
+  void _updateFilterVocabularies(List<Vocabulary> vocabularies) {
+    setState(() {
+      _index = 0;
+      _currentVocabulary = _index + 1;
+      _isFilterSelected = !_isFilterSelected;
+      _updatedVocabularies = List.from(vocabularies);
+      _totalVocabulary = _updatedVocabularies.length;
+      _progress = _currentVocabulary / _totalVocabulary;
+    });
+  }
+
+  void _showEmptyDialog(BuildContext context, String message) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+              'No Stared Vocabularies',
+            style: TextStyle(
+              fontSize: Dimensions.fontSize(context, 20)
+            ),
+          ),
+          content: Text(
+              message,
+            style: TextStyle(
+              fontSize: Dimensions.fontSize(context, 16)
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                  'OK',
+                style: TextStyle(
+                    fontSize: Dimensions.fontSize(context, 16)
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -149,7 +212,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: LinearProgressIndicator(
-                                minHeight: _totalVocabulary.toDouble(),
+                                minHeight: 20,
                                 value: _progress,
                                 backgroundColor: Colors.grey[400],
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.yellowAccent),
@@ -195,6 +258,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                             setState(() {
                               _isShuffleSelected = !_isShuffleSelected;
                               if (_isShuffleSelected) {
+                                _originalVocabularies = List.from(_updatedVocabularies);
                                 _updatedVocabularies.shuffle();
                               } else {
                                 _updatedVocabularies = List.from(_originalVocabularies);
@@ -210,10 +274,10 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _isLanguageSelected = !_isLanguageSelected;
-                              _updatedVocabularies = _swappedVocabularies(_updatedVocabularies);
-                              _originalVocabularies = _swappedVocabularies(_originalVocabularies);
                               _isEnVi = !_isEnVi;
+                              _isLanguageSelected = !_isLanguageSelected;
+                              _originalVocabularies = _swappedVocabularies(_originalVocabularies);
+                              _updatedVocabularies = _swappedVocabularies(_updatedVocabularies);
                             });
                           },
                           icon: Icon(
@@ -223,13 +287,24 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                           ),
                         ),
                         IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _isFilterSelected = !_isFilterSelected;
-                            });
+                          onPressed: () async {
+                            if (_isFilterSelected) {
+                              _updateFilterVocabularies(_originalVocabularies);
+                            } else {
+                              VocabularyListResult result = await TopicController().getStarredVocabulariesInUserTopic(widget.myUser, widget.userTopic.id);
+                              if (result.success){
+                                if (result.vocabularies!.isEmpty) {
+                                  _showEmptyDialog(context, 'The list of vocabularies is empty!');
+                                } else {
+                                  _updateFilterVocabularies(result.vocabularies!);
+                                }
+                              } else {
+                                _showEmptyDialog(context, result.errorMessage!);
+                              }
+                            }
                           },
                           icon: Icon(
-                              Icons.filter_alt,
+                            Icons.filter_alt,
                             size: 30,
                             color: _isFilterSelected ? Colors.blue : Colors.black,
                           ),
@@ -239,11 +314,35 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                   ),
                   SizedBox(height: 10),
                   // CustomViewPager
+                  // Expanded(
+                  //   child: FlipCard(
+                  //     front: ItemFlashCard(myUser: widget.myUser, userTopic: widget.userTopic, text: _updatedVocabularies[_index].term, isEnVi: _isEnVi, vocabulary: _updatedVocabularies[_index],),
+                  //     back: ItemFlashCard(myUser: widget.myUser, userTopic: widget.userTopic, text: _updatedVocabularies[_index].definition, isEnVi: _isEnVi, vocabulary: _updatedVocabularies[_index],)
+                  //   )
+                  // ),
                   Expanded(
                     child: FlipCard(
-                      front: ItemFlashCard(myUser: widget.myUser, userTopic: widget.userTopic, text: _updatedVocabularies[_index].term, isEnVi: _isEnVi, vocabulary: _updatedVocabularies[_index],),
-                      back: ItemFlashCard(myUser: widget.myUser, userTopic: widget.userTopic, text: _updatedVocabularies[_index].definition, isEnVi: _isEnVi, vocabulary: _updatedVocabularies[_index],)
-                    )
+                      front: ItemFlashCard(
+                        myUser: widget.myUser,
+                        userTopic: widget.userTopic,
+                        text: _updatedVocabularies[_index].term,
+                        isEnVi: _isEnVi,
+                        vocabulary: _updatedVocabularies[_index],
+                        onStaredChanged: (bool stared) async {
+                          _toggleStarred(_updatedVocabularies[_index], stared);
+                        },
+                      ),
+                      back: ItemFlashCard(
+                        myUser: widget.myUser,
+                        userTopic: widget.userTopic,
+                        text: _updatedVocabularies[_index].definition,
+                        isEnVi: _isEnVi,
+                        vocabulary: _updatedVocabularies[_index],
+                        onStaredChanged: (bool stared) async {
+                          _toggleStarred(_updatedVocabularies[_index], stared);
+                        },
+                      ),
+                    ),
                   ),
                   SizedBox(height: 20),
                   // Back and Next Buttons
@@ -278,9 +377,9 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
     setState(() {
       if (_index + direction >= 0 && _index + direction < _totalVocabulary) {
         _index += direction;
-        _currentVocabulary += direction;
+        // _currentVocabulary += direction;
+        _currentVocabulary = _index + 1;
         _progress = _currentVocabulary / _totalVocabulary;
-        print("Current Index: $_index");
       }
     });
   }

@@ -7,6 +7,7 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_language_screen.dart';
 import 'package:yuuki/screens/view_topic.dart';
+import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 

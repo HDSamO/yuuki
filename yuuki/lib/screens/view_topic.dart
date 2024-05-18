@@ -12,6 +12,8 @@ import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/items/item_add_vocabulary.dart';
 import 'package:yuuki/widgets/items/item_view_topic.dart';
 
+import '../services/topic_service.dart';
+
 class ViewTopic extends StatefulWidget {
   final MyUser user;
   ViewTopic({Key? key, required this.user, required this.userTopic})
@@ -27,6 +29,10 @@ class _ViewTopicState extends State<ViewTopic> {
   late String userName = '';
   late String authorName = '';
   bool isEditing = false;
+  final TopicController topicController = TopicController();
+  List<ItemAddVocabulary> listVocabularyItems = [];
+  List<TextEditingController> termControllers = [];
+  List<TextEditingController> definitionControllers = [];
 
   @override
   void initState() {
@@ -36,6 +42,7 @@ class _ViewTopicState extends State<ViewTopic> {
     isPublic = widget.userTopic.private;
     userName = widget.user.name ?? '';
     authorName = widget.userTopic.authorName ?? '';
+    topicController.viewTopic(widget.user, widget.userTopic.id);
   }
 
   List<ItemAddVocabulary> vocabularyItems = [];
@@ -325,7 +332,6 @@ class _ViewTopicState extends State<ViewTopic> {
                     setState(() {
                       isEditing = false;
                     });
-                    // _showSuccessDialog();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(result.errorMessage!)),
@@ -361,7 +367,7 @@ class _ViewTopicState extends State<ViewTopic> {
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            height: 200,
+            height: Dimensions.height(context, 180),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -404,7 +410,7 @@ class _ViewTopicState extends State<ViewTopic> {
                     style: TextStyle(
                       fontSize: Dimensions.fontSize(context, 16),
                       fontFamily: "QuicksandRegular",
-                      color: Color(0xffec5b5b),
+                      color: Colors.green,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

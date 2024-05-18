@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yuuki/screens/starred_vocabularies_screen.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/library_folders.dart';
 import 'package:yuuki/widgets/library_topics.dart';
@@ -52,22 +53,11 @@ class _LibraryPageState extends State<LibraryPage> with SingleTickerProviderStat
                 SizedBox(width: 16,),
                 InkWell(
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text("Hello"),
-                          content: Text("This is a dialog"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("Close"),
-                            ),
-                          ],
-                        );
-                      },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (e) => StarredVocabulariesScreen(myUser: widget.myUser),
+                      ),
                     );
                   },
                   child: Container(

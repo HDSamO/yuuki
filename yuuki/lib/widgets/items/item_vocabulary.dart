@@ -3,39 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
-class ItemAddVocabulary extends StatefulWidget {
+class ItemVocabulary extends StatefulWidget {
   final VoidCallback onRemove;
   final TextEditingController termController;
   final TextEditingController definitionController;
 
-  const ItemAddVocabulary({
-    super.key,
+  ItemVocabulary({
     required this.onRemove,
     required this.termController,
     required this.definitionController,
   });
 
   @override
-  State<ItemAddVocabulary> createState() => _ItemAddVocabularyState();
+  State<ItemVocabulary> createState() => _ItemVocabularyState();
 }
 
-class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
-  late TextEditingController termController;
-  late TextEditingController definitionController;
-  bool isTermEmpty = true;
-  bool isDefinitionEmpty = true;
+class _ItemVocabularyState extends State<ItemVocabulary> {
+  TextEditingController termController = TextEditingController();
+  TextEditingController definitionController = TextEditingController();
+  bool isTermEmpty = false;
+  bool isDefinitionEmpty = false;
 
   @override
   void initState() {
     super.initState();
-    termController = widget.termController;
-    definitionController = widget.definitionController;
     termController.text = widget.termController.text;
     definitionController.text = widget.definitionController.text;
   }
 
   bool hasContent() {
-    return termController.text.isNotEmpty || definitionController.text.isNotEmpty;
+    return termController.text.isNotEmpty ||
+        definitionController.text.isNotEmpty;
   }
 
   @override
@@ -45,7 +43,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Container(
           width: double.infinity,
-          height: Dimensions.height(context, 320),
+          height: 260,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Colors.white,
@@ -89,7 +87,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                   controller: termController,
                   onChanged: (_) {
                     setState(() {
-                      isTermEmpty = termController.text.isEmpty;
+                      isTermEmpty = false;
                     });
                   },
                   keyboardType: TextInputType.text,
@@ -134,7 +132,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                   controller: definitionController,
                   onChanged: (_) {
                     setState(() {
-                      isDefinitionEmpty = definitionController.text.isEmpty;
+                      isDefinitionEmpty = false;
                     });
                   },
                   keyboardType: TextInputType.text,
@@ -157,7 +155,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                       ),
                     ),
                     hintText: 'Enter a definition',
-                    errorText: isDefinitionEmpty && definitionController.text.isEmpty
+                    errorText: isTermEmpty && termController.text.isEmpty
                         ? 'Definition cannot be empty'
                         : null,
                   ),
@@ -187,7 +185,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(20)),
+                    BorderRadius.vertical(top: Radius.circular(20)),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -285,5 +283,4 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
       },
     );
   }
-
 }
