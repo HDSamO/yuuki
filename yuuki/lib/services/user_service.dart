@@ -18,32 +18,23 @@ class UserService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   Future<List<MyUser>> getUserList() async {
-    final userSnapshots = await usersCollection.get();
-    print('abc');
-    // Convert snapshots to MyUser objects (without subcollections)
+    final userSnapshots = await usersCollection.limit(6).get();
     final users = userSnapshots.docs
         .map((doc) => MyUser.fromMap(doc.data()! as Map<String, dynamic>))
         .toList();
-    print(users);
-    // Loop through users and fetch subcollections if needed
     for (var user in users) {
       await _fetchSubcollections(user);
     }
-    print(users);
 
     return users;
   }
 
   Future<void> _fetchSubcollections(MyUser user) async {
-    // Reference the subcollections for this user
-    final foldersRef = usersCollection.doc(user.id).collection('folders');
+    // final foldersRef = usersCollection.doc(user.id).collection('folders');
     final userTopicsRef = usersCollection.doc(user.id).collection('userTopics');
-
-    // Retrieve folders
-    final folderSnapshots = await foldersRef.get();
-    user.folders =
-        folderSnapshots.docs.map((doc) => Folder.fromMap(doc.data()!)).toList();
-    // Retrieve user topics
+    // // final folderSnapshots = await foldersRef.get();
+    // user.folders =
+    //     folderSnapshots.docs.map((doc) => Folder.fromMap(doc.data()!)).toList();
     final userTopicSnapshots = await userTopicsRef.get();
     user.userTopics = userTopicSnapshots.docs
         .map((doc) => UserTopic.fromMap(doc.data()!))

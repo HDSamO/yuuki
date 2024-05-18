@@ -11,7 +11,7 @@ import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
-enum SampleItem { view, edit }
+enum SampleItem { view }
 
 class ItemHomePublished extends StatefulWidget {
   final Topic topic;
@@ -29,7 +29,6 @@ class ItemHomePublished extends StatefulWidget {
 }
 
 class _ItemHomePublishedState extends State<ItemHomePublished> {
-
   onTapFunctionToViewTopic(BuildContext context, UserTopic userTopic) async {
     final reLoadPage = await Navigator.push(
       context,
@@ -223,27 +222,6 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                               ),
                               Text(
                                 'View',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Quicksand",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem<SampleItem>(
-                          value: SampleItem.edit,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.edit,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Edit',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: "Quicksand",
