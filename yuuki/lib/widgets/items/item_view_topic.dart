@@ -5,25 +5,29 @@ import 'package:yuuki/utils/demension.dart';
 
 class ItemViewTopic extends StatefulWidget {
   final VoidCallback onRemove;
+  final void Function(String) onTermChanged;
+  final void Function(String) onDefinitionChanged;
   final TextEditingController termController;
   final TextEditingController definitionController;
   final bool isEditing;
 
-  ItemViewTopic({
+  const ItemViewTopic({
+    super.key,
     required this.onRemove,
     required this.termController,
     required this.definitionController,
     required this.isEditing,
+    required this.onTermChanged,
+    required this.onDefinitionChanged,
   });
 
   @override
-  _ItemViewTopicState createState() => _ItemViewTopicState();
+  State<ItemViewTopic> createState() => _ItemViewTopicState();
 }
 
 class _ItemViewTopicState extends State<ItemViewTopic> {
   TextEditingController termController = TextEditingController();
   TextEditingController definitionController = TextEditingController();
-  bool isEdit = false;
 
   @override
   void initState() {
@@ -32,24 +36,11 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
     definitionController.text = widget.definitionController.text;
   }
 
-  @override
-  void didUpdateWidget(covariant ItemViewTopic oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isEditing != oldWidget.isEditing) {
-      updateEditState(widget.isEditing);
-    }
-  }
-
   bool hasContent() {
     return termController.text.isNotEmpty ||
         definitionController.text.isNotEmpty;
   }
 
-  void updateEditState(bool isEditing) {
-    setState(() {
-      isEdit = isEditing;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,20 +79,20 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                     ),
                     IconButton(
                       onPressed: () {
-                        if (hasContent() && isEdit) {
+                        if (hasContent() && widget.isEditing) {
                           _showDeleteConfirmationDialog();
                         } else {
                           widget.onRemove();
                         }
                       },
-                      icon: isEdit
+                      icon: widget.isEditing
                           ? Icon(Icons.cancel, color: Colors.black)
                           : SizedBox(),
                     )
                   ],
                 ),
                 TextField(
-                  readOnly: !isEdit,
+                  readOnly: !widget.isEditing,
                   controller: termController,
                   cursorColor: Colors.blue,
                   maxLines: null,
@@ -121,6 +112,9 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                     ),
                     hintText: 'Enter a term',
                   ),
+                  onChanged: (value) {
+                    widget.onTermChanged(value);
+                  },
                 ),
                 SizedBox(height: 20),
                 Container(
@@ -136,7 +130,7 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                   ),
                 ),
                 TextField(
-                  readOnly: !isEdit,
+                  readOnly: !widget.isEditing,
                   controller: definitionController,
                   maxLines: null,
                   cursorColor: Colors.blue,
@@ -156,6 +150,9 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                     ),
                     hintText: 'Enter a definition',
                   ),
+                  onChanged: (value) {
+                    widget.onDefinitionChanged(value);
+                  },
                 ),
               ],
             ),

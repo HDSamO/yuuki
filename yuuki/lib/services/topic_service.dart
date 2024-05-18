@@ -275,7 +275,8 @@ class TopicController {
       final DocumentSnapshot topicSnapshot = await topicRef.get();
 
       if (topicSnapshot.exists) {
-        final Topic topic = topicSnapshot.data()! as Topic;
+        final Topic topic =
+            Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
 
         final String userId = topic.getAuthor!;
         final DocumentReference userRef =
@@ -289,7 +290,7 @@ class TopicController {
 
         final DocumentReference userTopicRef =
             createdTopicsCollection.doc(topicId);
-        await userTopicRef.set(userTopic);
+        await userTopicRef.set(userTopic.toFirestore());
 
         return TopicResult(
             success: true, topic: topic); // Topic updated successfully
@@ -561,6 +562,27 @@ class TopicController {
       return TopicListResult(success: true, topics: topics);
     } catch (e) {
       return TopicListResult(success: false, errorMessage: e.toString());
+    }
+  }
+
+  Future<void> updateAuthorName(MyUser user) async {
+    try {
+      final String? userId = user.id;
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection("topics")
+          .where("author", isEqualTo: userId)
+          .get();
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (final queryDocSnapshot in querySnapshot.docs) {
+        final topicRef = queryDocSnapshot.reference;
+        batch.update(topicRef, {"authorName": user.name});
+      }
+
+      await batch.commit();
+      print("Author name updated for all topics by ${user.name}");
+    } on FirebaseException catch (e) {
+      print("Error updating author name: ${e.message}");
     }
   }
 

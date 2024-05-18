@@ -29,7 +29,7 @@ class FolderDetailScreen extends StatefulWidget {
 
 class _FolderDetailScreenState extends State<FolderDetailScreen> {
   late MyUser _myUser;
-  late String _folerId;
+  late String _folderId = "";
   final FolderService _folderService = FolderService();
   final TopicController _topicController = TopicController();
   late Future<List<Topic>> _futureTopicNotInFolder;
@@ -39,7 +39,7 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
   void initState() {
     super.initState();
     _myUser = widget.myUser;
-    _folerId = widget.folder.id!;
+    _folderId = widget.folder.id!;
     _futureTopicNotInFolder = _topicController.fetchTopicsNotInFolder(_myUser, widget.folder.id!);
     _userTopicInFolder = List.from(widget.folder.topics);
   }
@@ -177,6 +177,32 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
     );
   }
 
+  void _addTopicToFolder(Topic topic) async{
+    _showLoadingDialog();
+
+    UserTopicResult userTopicResult = await _folderService.addTopicToFolder(widget.myUser, _folderId, topic.id);
+    Navigator.pop(context); // Close the loading dialog
+
+    if (userTopicResult.success){
+      setState(() {
+        _futureTopicNotInFolder = _topicController.fetchTopicsNotInFolder(_myUser, _folderId);
+      });
+
+      FolderResult folderResult = await _folderService.getFolderById(_myUser, _folderId);
+      if (folderResult.success){
+        setState(() {
+          _userTopicInFolder = folderResult.folder!.topics;
+        });
+      } else {
+        _showErrorDialog(folderResult.errorMessage!);
+      }
+
+      _showSuccessDialog("Topic added successfully!");
+    } else {
+      _showErrorDialog(userTopicResult.errorMessage!);
+    }
+  }
+
   Widget _buildTopicNotInFolders() {
     return FutureBuilder<List<Topic>>(
       future: _futureTopicNotInFolder,
@@ -213,29 +239,7 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
                     myUser: _myUser,
                     topic: topics[index],
                     onAdd: () async {
-                      _showLoadingDialog();
-
-                      UserTopicResult userTopicResult = await _folderService.addTopicToFolder(widget.myUser, _folerId, topics[index].id);
-                      Navigator.pop(context); // Close the loading dialog
-
-                      if (userTopicResult.success){
-                        setState(() {
-                          _futureTopicNotInFolder = _topicController.fetchTopicsNotInFolder(_myUser, _folerId);
-                        });
-
-                        FolderResult folderResult = await _folderService.getFolderById(_myUser, _folerId);
-                        if (folderResult.success){
-                          setState(() {
-                            _userTopicInFolder = folderResult.folder!.topics;
-                          });
-                        } else {
-                          _showErrorDialog(folderResult.errorMessage!);
-                        }
-
-                        _showSuccessDialog("Topic added successfully!");
-                      } else {
-                        _showErrorDialog(userTopicResult.errorMessage!);
-                      }
+                      _addTopicToFolder(topics[index]);
                     },
                   );
                 },
@@ -261,6 +265,48 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
     );
   }
 
+  void _removeTopicFromFolder(UserTopic userTopic) async {
+    try {
+      // Show loading dialog
+      _showLoadingDialog();
+
+      // Attempt to delete the topic from the folder
+      UserTopicResult userTopicResult = await _folderService.deleteUserTopicFromFolder(widget.myUser, _folderId, userTopic.id);
+
+      // Close the loading dialog
+      Navigator.pop(context);
+
+      if (userTopicResult.success) {
+        // Update the state with topics not in the folder
+        setState(() {
+          _futureTopicNotInFolder = _topicController.fetchTopicsNotInFolder(_myUser, _folderId);
+        });
+
+        // Fetch the updated folder details
+        FolderResult folderResult = await _folderService.getFolderById(_myUser, _folderId);
+
+        if (folderResult.success) {
+          setState(() {
+            _userTopicInFolder = folderResult.folder!.topics;
+          });
+
+          // Show success dialog
+          _showSuccessDialog("Topic has been deleted!");
+        } else {
+          // Show error dialog if fetching folder details failed
+          _showErrorDialog(folderResult.errorMessage!);
+        }
+      } else {
+        // Show error dialog if deleting the topic failed
+        _showErrorDialog(userTopicResult.errorMessage!);
+      }
+    } catch (e) {
+      // Handle any unexpected errors
+      Navigator.pop(context); // Ensure the loading dialog is closed
+      _showErrorDialog(e.toString());
+    }
+  }
+
   Widget _buildTopicInFolder(){
     if (_userTopicInFolder.isNotEmpty){
       return Container(
@@ -273,7 +319,7 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
               myUser: _myUser,
               userTopic: _userTopicInFolder[index],
               onRemove: () {
-                // Implement remove functionality
+                _removeTopicFromFolder(_userTopicInFolder[index]);
               },
             );
           },

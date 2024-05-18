@@ -22,14 +22,28 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
+
+  late Future<TopicListResult> _trendingTopicsFuture;
+  late Future<TopicListResult> _exploreTopicsFuture;
+
   @override
   void initState() {
     super.initState();
+    _trendingTopicsFuture = _getTrendingTopics();
+    _exploreTopicsFuture = _getExploreTopics();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<TopicListResult> _getTrendingTopics() async{
+    return await TopicController().getTopTopicsByViews();
+  }
+
+  Future<TopicListResult> _getExploreTopics() async{
+    return await TopicController().getRandomTopics();
   }
 
   @override
@@ -93,7 +107,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 ),
               ),
               FutureBuilder<TopicListResult>(
-                future: TopicController().getTopTopicsByViews(),
+                future: _trendingTopicsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -111,6 +125,12 @@ class _CommunityPageState extends State<CommunityPage> {
                             userTopic: userTopic,
                             topic: topic,
                             user: widget.myUser!,
+                            onRefresh: () {
+                              setState(() {
+                                _trendingTopicsFuture = _getTrendingTopics();
+                                _exploreTopicsFuture = _getExploreTopics();
+                              });
+                            },
                           );
                         }).toList(),
                       ),
@@ -132,7 +152,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 ),
               ),
               FutureBuilder<TopicListResult>(
-                future: TopicController().getRandomTopics(),
+                future: _exploreTopicsFuture,
                 builder: (context, AsyncSnapshot<TopicListResult> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -150,6 +170,12 @@ class _CommunityPageState extends State<CommunityPage> {
                             topic: topic,
                             userTopic: userTopic,
                             user: widget.myUser!,
+                            onRefresh: () {
+                              setState(() {
+                                _trendingTopicsFuture = _getTrendingTopics();
+                                _exploreTopicsFuture = _getExploreTopics();
+                              });
+                            },
                           );
                         }).toList(),
                       ),

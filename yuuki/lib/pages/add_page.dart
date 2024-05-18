@@ -439,7 +439,6 @@ class _AddPageState extends State<AddPage> {
 
   void removeItem(TextEditingController termController, TextEditingController definitionController) {
     int index = termControllers.indexOf(termController);
-    print("Index: ${index}");
     if (index != -1) {
       setState(() {
         vocabularyItems.removeAt(index);

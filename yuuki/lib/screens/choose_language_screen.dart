@@ -44,7 +44,7 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                 // Back Button
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
+                    Navigator.pop(context, true);
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(32.0),

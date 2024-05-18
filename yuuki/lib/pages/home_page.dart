@@ -31,10 +31,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _greeting = '';
   final controller = PageController(viewportFraction: 0.8, keepPage: true);
+
+  late Future<List<UserTopic>> _recentTopicsFuture;
+  late Future<TopicListResult> _publishedTopicsFuture;
+
   @override
   void initState() {
     super.initState();
     _updateGreeting();
+    _recentTopicsFuture = _getRecentTopics();
+    _publishedTopicsFuture = _getPublishedTopics();
+  }
+
+  Future<List<UserTopic>> _getRecentTopics() async{
+    return await TopicController().getRecentTopics(widget.user!);
+  }
+
+  Future<TopicListResult> _getPublishedTopics() async{
+    return await TopicController().getPublishedTopics(widget.user!);
   }
 
   void _updateGreeting() {
@@ -177,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               FutureBuilder<List<UserTopic>>(
-                future: TopicController().getRecentTopics(widget.user!),
+                future: _recentTopicsFuture,
                 builder: (context, AsyncSnapshot<List<UserTopic>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -193,6 +207,12 @@ class _HomePageState extends State<HomePage> {
                           return ItemHomeResent(
                             userTopic: userTopic,
                             user: widget.user!,
+                            onRefresh: () {
+                              setState(() {
+                                _recentTopicsFuture = _getRecentTopics();
+                                _publishedTopicsFuture = _getPublishedTopics();
+                              });
+                            },
                           );
                         }).toList(),
                       ),
@@ -215,7 +235,7 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 8),
               FutureBuilder<TopicListResult>(
-                future: TopicController().getPublishedTopics(widget.user!),
+                future: _publishedTopicsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
@@ -232,6 +252,12 @@ class _HomePageState extends State<HomePage> {
                         return ItemHomePublished(
                           topic: topic,
                           user: widget.user!,
+                          onRefresh: () {
+                            setState(() {
+                              _recentTopicsFuture = _getRecentTopics();
+                              _publishedTopicsFuture = _getPublishedTopics();
+                            });
+                          },
                         );
                       },
                       itemCount: recentTopics.length,

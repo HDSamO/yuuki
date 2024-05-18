@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/results/password_result.dart';
 import 'package:yuuki/screens/home_screen.dart';
+import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
@@ -267,32 +268,10 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                               starredTopic: widget.user.starredTopic,
                               userTopics: widget.user.userTopics,
                             );
-
+                            TopicController().updateAuthorName(updatedUser);
                             await UserService().updateUser(updatedUser);
 
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Success'),
-                                  content: Text(
-                                      'User information updated successfully'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => HomeScreen(
-                                                  user: updatedUser)),
-                                        );
-                                      },
-                                      child: Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                            _showSuccessDialog(updatedUser);
                           },
                           child: Text(
                             "Save",
@@ -323,7 +302,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
     );
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog(MyUser updatedUser) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -352,7 +331,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "Confirm Delete",
+                    "Confirm Update",
                     style: TextStyle(
                       fontSize: Dimensions.fontSize(context, 20),
                       fontFamily: "Quicksand",
@@ -368,7 +347,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   child: Text(
-                    "topic has been updated",
+                    "User information has been updated",
                     style: TextStyle(
                       fontSize: Dimensions.fontSize(context, 16),
                       fontFamily: "QuicksandRegular",
@@ -385,7 +364,12 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                   children: [
                     OutlinedButton(
                       onPressed: () {
-                        Navigator.pop(context); // Close the dialog
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  HomeScreen(user: updatedUser)),
+                        );
                       },
                       child: Text(
                         "oke",

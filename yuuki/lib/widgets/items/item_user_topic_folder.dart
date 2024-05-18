@@ -5,6 +5,7 @@ import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/utils/demension.dart';
 
 import '../../models/user_topic.dart';
+import '../customs/custom_delete_dialog.dart';
 
 class ItemUserTopicFolder extends StatelessWidget {
   final MyUser myUser;
@@ -58,7 +59,9 @@ class ItemUserTopicFolder extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            onPressed: onRemove,
+                            onPressed: () {
+                              _showDeleteConfirmationDialog(context);
+                            },
                             icon: Icon(
                               Icons.delete_outline,
                               size: Dimensions.iconSize(context, 26),
@@ -122,6 +125,21 @@ class ItemUserTopicFolder extends StatelessWidget {
           fontFamily: "QuicksandRegular",
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context){
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return CustomDeleteDialog(
+              title: "Confirm Delete",
+              message: "Are you sure you want to delete it?",
+              onFunction: () {
+                onRemove();
+              }
+          );
+        }
     );
   }
 

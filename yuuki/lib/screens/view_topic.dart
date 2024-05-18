@@ -4,7 +4,6 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/results/topic_result.dart';
-import 'package:yuuki/results/user_topic_result.dart';
 import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
@@ -12,57 +11,95 @@ import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/items/item_add_vocabulary.dart';
 import 'package:yuuki/widgets/items/item_view_topic.dart';
 
-import '../services/topic_service.dart';
-
 class ViewTopic extends StatefulWidget {
   final MyUser user;
-  ViewTopic({Key? key, required this.user, required this.userTopic})
-      : super(key: key);
   final UserTopic userTopic;
+
+  const ViewTopic({
+    super.key,
+    required this.user,
+    required this.userTopic,
+  });
 
   @override
   State<ViewTopic> createState() => _ViewTopicState();
 }
 
 class _ViewTopicState extends State<ViewTopic> {
-  late bool isPublic = false;
-  late String userName = '';
-  late String authorName = '';
-  bool isEditing = false;
+  late bool isPrivate;
+  late String userName;
+  late String authorName;
   final TopicController topicController = TopicController();
-  List<ItemAddVocabulary> vocabularyItems = [];
+
+  late List<ItemViewTopic> vocabularyItems = [];
   List<TextEditingController> termControllers = [];
   List<TextEditingController> definitionControllers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    titleController.text = widget.userTopic.title;
-    descriptionController.text = widget.userTopic.description;
-    isPublic = widget.userTopic.private;
-    userName = widget.user.name ?? '';
-    authorName = widget.userTopic.authorName ?? '';
-    topicController.viewTopic(widget.user, widget.userTopic.id);
-    _updateControllers();
-    for (int i = 0; i < termControllers.length; i++) {
-      vocabularyItems.add(
-        ItemAddVocabulary(
-          key: UniqueKey(),
-          termController: termControllers[i],
-          definitionController: definitionControllers[i],
-          onRemove: () {
-            removeItem(termControllers[i], definitionControllers[i]);
-          },
-        ),
-      );
-    }
-  }
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
   bool isTitleEmpty = false;
   bool isDescriptionEmpty = false;
+  bool isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    titleController.text = widget.userTopic.title;
+    descriptionController.text = widget.userTopic.description;
+    isPrivate = widget.userTopic.private;
+    userName = widget.user.name ?? '';
+    authorName = widget.userTopic.authorName ?? '';
+    topicController.viewTopic(widget.user, widget.userTopic.id);
+    _fetchVocabularyItems(widget.userTopic.vocabularies);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    vocabularyItems.clear();
+    termControllers.clear();
+    definitionControllers.clear();
+  }
+
+  void _fetchVocabularyItems(List<Vocabulary> vocabularies) {
+    vocabularyItems.clear();
+    termControllers.clear();
+    definitionControllers.clear();
+
+    for (Vocabulary vocabulary in vocabularies) {
+      TextEditingController termController = TextEditingController();
+      TextEditingController definitionController = TextEditingController();
+
+      termController.text = vocabulary.term;
+      definitionController.text = vocabulary.definition;
+
+      termControllers.add(termController);
+      definitionControllers.add(definitionController);
+
+      vocabularyItems.add(
+        ItemViewTopic(
+          key: UniqueKey(),
+          termController: termController,
+          definitionController: definitionController,
+          onRemove: () {
+            removeItem(termController, definitionController);
+          },
+          isEditing: isEditing,
+          onTermChanged: (String term) {
+            setState(() {
+              termController.text = term;
+            });
+          },
+          onDefinitionChanged: (String definition) {
+            setState(() {
+              definitionController.text = definition;
+            });
+          },
+        ),
+      );
+    }
+  }
 
   List<Vocabulary> _getVocabularies() {
     return List.generate(vocabularyItems.length, (index) {
@@ -73,59 +110,55 @@ class _ViewTopicState extends State<ViewTopic> {
     });
   }
 
-  void _updateControllers() {
-    termControllers.clear();
-    definitionControllers.clear();
-
-    for (int i = 0; i < widget.userTopic.vocabularies.length; i++) {
-      final termController =
-          TextEditingController(text: widget.userTopic.vocabularies[i].term);
-      final definitionController = TextEditingController(
-          text: widget.userTopic.vocabularies[i].definition);
-      termControllers.add(termController);
-      definitionControllers.add(definitionController);
-    }
-  }
-
-  Widget buildEditButton() {
-    bool canEdit = userName ==
-        authorName; // Kiểm tra xem userName và authorName có giống nhau không
-
-    if (canEdit) {
-      return ElevatedButton.icon(
-        onPressed: () {
-          setState(() {
-            isEditing = !isEditing;
-          });
-        },
-        icon: isEditing
-            ? Icon(
-                Icons.cancel,
-                color: AppColors.mainColor,
-              )
-            : Icon(
-                Icons.edit,
-                color: Colors.white,
-              ),
-        label: Text(
-          isEditing ? "Cancel" : "Edit",
-          style: TextStyle(
-            fontSize: Dimensions.fontSize(context, 16),
-            fontFamily: "QuicksandRegular",
-            color: isEditing ? AppColors.mainColor : Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isEditing ? Colors.white : AppColors.mainColor,
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 44),
-          side: isEditing
-              ? BorderSide(color: AppColors.mainColor)
-              : BorderSide.none,
-        ),
-      );
+  Future<void> _updateTopic() async {
+    if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
+      setState(() {
+        isTitleEmpty = titleController.text.isEmpty;
+        isDescriptionEmpty = descriptionController.text.isEmpty;
+      });
+    } else if (termControllers.any((controller) => controller.text.isEmpty) ||
+        definitionControllers.any((controller) => controller.text.isEmpty)) {
+      _showNotificationDialog("Error",
+          "Please enter terms or definitions of all vocabulary!", false);
     } else {
-      return SizedBox(); // Trả về widget trống nếu không thể chỉnh sửa
+      _showLoadingDialog();
+      try {
+        Topic updatedTopic = Topic(
+          id: widget.userTopic.id,
+          title: titleController.text,
+          description: descriptionController.text,
+          private: isPrivate,
+          authorName: authorName,
+          vocabularies: _getVocabularies(),
+          author: widget.userTopic.author,
+        );
+
+        TopicResult updateTopicResult =
+            await topicController.updateTopic(updatedTopic, widget.user);
+
+        if (!updateTopicResult.success) {
+          _showNotificationDialog(
+              "Error", updateTopicResult.errorMessage!, false);
+        } else {
+          TopicResult topicResult = await topicController
+              .updateTopicOfUser(updateTopicResult.topic!.id);
+
+          if (!topicResult.success) {
+            Navigator.of(context).pop(); // Close the loading dialog
+            _showNotificationDialog("Error", topicResult.errorMessage!, false);
+          } else {
+            setState(() {
+              isEditing = false;
+              _fetchVocabularyItems(_getVocabularies());
+            });
+            Navigator.of(context).pop(); // Close the loading dialog
+            _showNotificationDialog("Success", "Topic has been updated!", true);
+          }
+        }
+      } catch (error) {
+        Navigator.of(context).pop(); // Close the loading dialog
+        _showNotificationDialog("Error", error.toString(), false);
+      }
     }
   }
 
@@ -135,307 +168,195 @@ class _ViewTopicState extends State<ViewTopic> {
       body: CustomFragmentScaffold(
         pageName: 'View Topic',
         child: SingleChildScrollView(
-          child: Container(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      "Title",
-                      style: TextStyle(
-                        fontSize: Dimensions.fontSize(context, 16),
-                        fontFamily: "Quicksand",
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    readOnly: !isEditing,
-                    controller: titleController,
-                    onChanged: (_) {
-                      setState(() {
-                        isTitleEmpty = false;
-                      });
-                    },
-                    cursorColor: Colors.blue,
-                    maxLines: null,
-                    cursorErrorColor: Colors.red,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(
-                          color: isTitleEmpty && titleController.text.isEmpty
-                              ? Colors.red
-                              : Colors.blue,
-                          width: 2.0,
-                        ),
-                      ),
-                      hintText: 'Enter a title',
-                      errorText: isTitleEmpty && titleController.text.isEmpty
-                          ? 'Title cannot be empty'
-                          : null,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      "Description",
-                      style: TextStyle(
-                        fontSize: Dimensions.fontSize(context, 16),
-                        fontFamily: "Quicksand",
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  TextField(
-                    readOnly: !isEditing,
-                    controller: descriptionController,
-                    onChanged: (_) {
-                      setState(() {
-                        isDescriptionEmpty = false;
-                      });
-                    },
-                    maxLines: null,
-                    cursorColor: Colors.blue,
-                    cursorErrorColor: Colors.red,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(
-                          color: isDescriptionEmpty &&
-                                  descriptionController.text.isEmpty
-                              ? Colors.red
-                              : Colors.blue,
-                          width: 2.0,
-                        ),
-                      ),
-                      hintText: 'Enter a description',
-                      errorText: isDescriptionEmpty &&
-                              descriptionController.text.isEmpty
-                          ? 'Description cannot be empty'
-                          : null,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                SizedBox(height: 20),
+                _buildTextField(
+                  controller: titleController,
+                  label: 'Title',
+                  isEmpty: isTitleEmpty,
+                  onChanged: (_) {
+                    setState(() {
+                      isTitleEmpty = false;
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
+                _buildTextField(
+                  controller: descriptionController,
+                  label: 'Description',
+                  isEmpty: isDescriptionEmpty,
+                  onChanged: (_) {
+                    setState(() {
+                      isDescriptionEmpty = false;
+                    });
+                  },
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        if (isEditing) {
                           setState(() {
-                            addVocabulariesToItems();
-                            print(vocabularyItems.length);
-                            print(vocabularyItems[19].termController.text);
-                            print(
-                                vocabularyItems[19].definitionController.text);
+                            isPrivate = !isPrivate;
                           });
-                        },
-                        icon:
-                            isPublic ? Icon(Icons.lock_open) : Icon(Icons.lock),
-                        label: Text(
-                          isPublic ? "Private" : "Public",
-                          style: TextStyle(
-                            fontSize: Dimensions.fontSize(context, 16),
-                            fontFamily: "QuicksandRegular",
-                            color: AppColors.mainColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 44),
-                          foregroundColor: AppColors.mainColor,
-                          side: BorderSide(color: AppColors.mainColor),
-                        ),
-                      ),
-                      buildEditButton(),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Vocabulary",
+                        }
+                      },
+                      icon: Icon(isPrivate ? Icons.lock : Icons.lock_open),
+                      label: Text(
+                        isPrivate ? "Private" : "Public",
                         style: TextStyle(
                           fontSize: Dimensions.fontSize(context, 16),
-                          fontFamily: "Quicksand",
-                          color: Colors.black,
+                          fontFamily: "QuicksandRegular",
+                          color: AppColors.mainColor,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          if (isEditing) {
-                            TextEditingController termController =
-                                TextEditingController();
-                            TextEditingController definitionController =
-                                TextEditingController();
-                            setState(() {
-                              termControllers.add(termController);
-                              definitionControllers.add(definitionController);
-                              vocabularyItems.add(
-                                ItemAddVocabulary(
-                                  key: UniqueKey(),
-                                  termController: termController,
-                                  definitionController: definitionController,
-                                  onRemove: () {
-                                    removeItem(
-                                        termController, definitionController);
-                                  },
-                                ),
-                              );
-                            });
-                          }
-                        },
-                        icon: isEditing
-                            ? Icon(Icons.post_add, color: Colors.black)
-                            : SizedBox(),
-                      )
-                    ],
-                  ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: widget.userTopic.vocabularies.length,
-                    itemBuilder: (context, index) {
-                      var vocabulary = widget.userTopic.vocabularies[index];
-
-                      // Lấy các controller đã khởi tạo trước đó
-                      TextEditingController termController =
-                          termControllers[index];
-                      TextEditingController definitionController =
-                          definitionControllers[index];
-
-                      return ItemViewTopic(
-                        onRemove: () {
-                          setState(() {
-                            widget.userTopic.vocabularies.removeAt(index);
-                            termControllers.removeAt(index);
-                            definitionControllers.removeAt(index);
-                          });
-                        },
-                        termController: termController,
-                        definitionController: definitionController,
-                        isEditing: isEditing,
-                      );
-                    },
-                    reverse: true,
-                  ),
-                ],
-              ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 44),
+                        foregroundColor: AppColors.mainColor,
+                        side: BorderSide(color: AppColors.mainColor),
+                      ),
+                    ),
+                    _buildEditButton(),
+                  ],
+                ),
+                SizedBox(height: 20),
+                _buildVocabularySection(),
+              ],
             ),
           ),
         ),
       ),
       floatingActionButton: isEditing
-    ? FloatingActionButton.extended(
-        onPressed: () async {
-          if (titleController.text.isEmpty ||
-              descriptionController.text.isEmpty) {
-            setState(() {
-              isTitleEmpty = titleController.text.isEmpty;
-              isDescriptionEmpty = descriptionController.text.isEmpty;
-            });
-          } else if (vocabularyItems.any((item) =>
-              item.termController.text.isEmpty ||
-              item.definitionController.text.isEmpty)) {
-            // handle empty vocabulary fields
-          } else {
-            Topic updatedTopic = Topic(
-              id: widget.userTopic.id,
-              title: titleController.text,
-              description: descriptionController.text,
-              private: isPublic,
-              authorName: authorName,
-              vocabularies: _getVocabularies(),
-              author: widget.userTopic.author,
-            );
-
-            // Call updateTopic function
-            TopicResult result = await TopicController()
-                .updateTopic(updatedTopic, widget.user);
-
-            if (result.success) {
-              setState(() {
-                isEditing = false;
-                _showSuccessDialog();
-              });
-            } else {
-              _showErrorDialog(result.errorMessage!);
-            }
-          }
-        },
-        heroTag: 'uniqueTag',
-        backgroundColor: AppColors.mainColor,
-        label: Row(
-          children: [
-            Icon(Icons.update, color: Colors.white),
-            SizedBox(width: 12),
-            Text(
-              'Update',
-              style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
-                fontFamily: "QuicksandRegular",
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          ? FloatingActionButton.extended(
+              onPressed: _updateTopic,
+              heroTag: 'Edit',
+              backgroundColor: AppColors.mainColor,
+              label: Row(
+                children: [
+                  Icon(Icons.update, color: Colors.white),
+                  SizedBox(width: 12),
+                  Text(
+                    'Update',
+                    style: TextStyle(
+                      fontSize: Dimensions.fontSize(context, 16),
+                      fontFamily: "QuicksandRegular",
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
+            )
+          : FloatingActionButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              heroTag: 'Exit',
+              backgroundColor: AppColors.mainColor,
+              child: Icon(Icons.arrow_back, color: Colors.white),
             ),
-          ],
-        ),
-      )
-    : FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        heroTag: 'backTag',
-        backgroundColor: AppColors.mainColor,
-        child: Icon(Icons.arrow_back, color: Colors.white),
-      ),
-
     );
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Error"),
-          content: Text("Error: $message"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
+  Widget _buildEditButton() {
+    bool canEdit = userName == authorName;
+
+    return canEdit
+        ? ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                isEditing = !isEditing;
+                _fetchVocabularyItems(_getVocabularies());
+              });
+            },
+            icon: Icon(
+              isEditing ? Icons.cancel : Icons.edit,
+              color: isEditing ? AppColors.mainColor : Colors.white,
             ),
-          ],
-        );
-      },
+            label: Text(
+              isEditing ? "Cancel" : "Edit",
+              style: TextStyle(
+                fontSize: Dimensions.fontSize(context, 16),
+                fontFamily: "QuicksandRegular",
+                color: isEditing ? AppColors.mainColor : Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isEditing ? Colors.white : AppColors.mainColor,
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 44),
+              side: isEditing
+                  ? BorderSide(color: AppColors.mainColor)
+                  : BorderSide.none,
+            ),
+          )
+        : SizedBox();
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool isEmpty,
+    required ValueChanged<String> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.only(bottom: 8),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: Dimensions.fontSize(context, 16),
+              fontFamily: "Quicksand",
+              color: Colors.black,
+            ),
+          ),
+        ),
+        TextField(
+          readOnly: !isEditing,
+          controller: controller,
+          onChanged: onChanged,
+          maxLines: null,
+          cursorColor: Colors.blue,
+          cursorErrorColor: Colors.red,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                color: isEmpty && controller.text.isEmpty
+                    ? Colors.red
+                    : Colors.blue,
+                width: 2.0,
+              ),
+            ),
+            hintText: 'Enter a $label',
+            errorText: isEmpty && controller.text.isEmpty
+                ? '$label cannot be empty'
+                : null,
+          ),
+        ),
+      ],
     );
   }
 
   void removeItem(TextEditingController termController,
       TextEditingController definitionController) {
     int index = termControllers.indexOf(termController);
-    print("Index: ${index}");
     if (index != -1) {
       setState(() {
         vocabularyItems.removeAt(index);
@@ -445,13 +366,93 @@ class _ViewTopicState extends State<ViewTopic> {
     }
   }
 
-  void _showSuccessDialog() {
+  Widget _buildVocabularySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Vocabulary",
+              style: TextStyle(
+                fontSize: Dimensions.fontSize(context, 16),
+                fontFamily: "Quicksand",
+                color: Colors.black,
+              ),
+            ),
+            if (isEditing)
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    TextEditingController termController =
+                        TextEditingController();
+                    TextEditingController definitionController =
+                        TextEditingController();
+
+                    termControllers.add(termController);
+                    definitionControllers.add(definitionController);
+
+                    vocabularyItems.add(
+                      ItemViewTopic(
+                        key: UniqueKey(),
+                        termController: termController,
+                        definitionController: definitionController,
+                        onRemove: () {
+                          removeItem(termController, definitionController);
+                        },
+                        isEditing: isEditing,
+                        onTermChanged: (String term) {
+                          setState(() {
+                            termController.text = term;
+                          });
+                        },
+                        onDefinitionChanged: (String definition) {
+                          setState(() {
+                            definitionController.text = definition;
+                          });
+                        },
+                      ),
+                    );
+                  });
+                },
+                icon: Icon(Icons.post_add, color: Colors.black),
+              ),
+          ],
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: vocabularyItems.length,
+          itemBuilder: (context, index) {
+            return vocabularyItems[index];
+          },
+          reverse: true,
+        ),
+      ],
+    );
+  }
+
+  void _showLoadingDialog() {
     showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  void _showNotificationDialog(String title, String message, bool isSuccess) {
+    showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            height: Dimensions.height(context, 180),
+            height: Dimensions.height(context, 220),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -474,7 +475,7 @@ class _ViewTopicState extends State<ViewTopic> {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "Confirm Delete",
+                    title,
                     style: TextStyle(
                       fontSize: Dimensions.fontSize(context, 20),
                       fontFamily: "Quicksand",
@@ -483,25 +484,21 @@ class _ViewTopicState extends State<ViewTopic> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   alignment: Alignment.center,
                   child: Text(
-                    "topic has been updated",
+                    message,
                     style: TextStyle(
                       fontSize: Dimensions.fontSize(context, 16),
                       fontFamily: "QuicksandRegular",
-                      color: Colors.green,
+                      color: isSuccess ? Colors.green : Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -510,7 +507,7 @@ class _ViewTopicState extends State<ViewTopic> {
                         Navigator.pop(context); // Close the dialog
                       },
                       child: Text(
-                        "oke",
+                        "Ok",
                         style: TextStyle(
                           fontSize: Dimensions.fontSize(context, 16),
                           fontFamily: "QuicksandRegular",
@@ -537,29 +534,5 @@ class _ViewTopicState extends State<ViewTopic> {
         );
       },
     );
-  }
-
-  void addVocabulariesToItems() {
-    vocabularyItems.clear();
-    for (var vocabulary in widget.userTopic.vocabularies) {
-      TextEditingController termController =
-          TextEditingController(text: vocabulary.term);
-      TextEditingController definitionController =
-          TextEditingController(text: vocabulary.definition);
-      setState(() {
-        termControllers.add(termController);
-        definitionControllers.add(definitionController);
-        vocabularyItems.add(
-          ItemAddVocabulary(
-            key: UniqueKey(),
-            termController: termController,
-            definitionController: definitionController,
-            onRemove: () {
-              removeItem(termController, definitionController);
-            },
-          ),
-        );
-      });
-    }
   }
 }
