@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
+import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/items/item_add_vocabulary.dart';
+import 'package:yuuki/widgets/items/item_view_topic.dart';
 
 class ViewTopic extends StatefulWidget {
-  final MyUser? user;
+  final MyUser user;
   ViewTopic({Key? key, required this.user, required this.userTopic})
       : super(key: key);
   final UserTopic userTopic;
@@ -18,6 +20,9 @@ class ViewTopic extends StatefulWidget {
 
 class _ViewTopicState extends State<ViewTopic> {
   late bool isPublic = false;
+  late String userName = '';
+  late String authorName = '';
+  bool isEditing = false;
 
   @override
   void initState() {
@@ -25,6 +30,8 @@ class _ViewTopicState extends State<ViewTopic> {
     titleController.text = widget.userTopic.title;
     descriptionController.text = widget.userTopic.description;
     isPublic = widget.userTopic.private;
+    userName = widget.user.name ?? '';
+    authorName = widget.userTopic.authorName ?? '';
   }
 
   List<ItemAddVocabulary> vocabularyItems = [];
@@ -32,6 +39,48 @@ class _ViewTopicState extends State<ViewTopic> {
   TextEditingController descriptionController = TextEditingController();
   bool isTitleEmpty = false;
   bool isDescriptionEmpty = false;
+
+  Widget buildEditButton() {
+    bool canEdit = userName ==
+        authorName; // Kiểm tra xem userName và authorName có giống nhau không
+
+    if (canEdit) {
+      return ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            isEditing = !isEditing;
+          });
+        },
+        icon: isEditing
+            ? Icon(
+                Icons.cancel,
+                color: AppColors.mainColor,
+              )
+            : Icon(
+                Icons.edit,
+                color: Colors.white,
+              ),
+        label: Text(
+          isEditing ? "Cancel" : "Edit",
+          style: TextStyle(
+            fontSize: Dimensions.fontSize(context, 16),
+            fontFamily: "QuicksandRegular",
+            color: isEditing ? AppColors.mainColor : Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isEditing ? Colors.white : AppColors.mainColor,
+          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 44),
+          side: isEditing
+              ? BorderSide(color: AppColors.mainColor)
+              : BorderSide.none,
+        ),
+      );
+    } else {
+      return SizedBox(); // Trả về widget trống nếu không thể chỉnh sửa
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +107,7 @@ class _ViewTopicState extends State<ViewTopic> {
                     ),
                   ),
                   TextField(
-                    enabled: false,
+                    enabled: isEditing,
                     controller: titleController,
                     onChanged: (_) {
                       setState(() {
@@ -103,7 +152,7 @@ class _ViewTopicState extends State<ViewTopic> {
                     ),
                   ),
                   TextField(
-                    enabled: false,
+                    enabled: isEditing,
                     controller: descriptionController,
                     onChanged: (_) {
                       setState(() {
@@ -163,24 +212,7 @@ class _ViewTopicState extends State<ViewTopic> {
                           side: BorderSide(color: AppColors.mainColor),
                         ),
                       ),
-                      // ElevatedButton.icon(
-                      //   onPressed: () {},
-                      //   icon: Icon(Icons.import_export, color: Colors.white),
-                      //   label: Text(
-                      //     "Import",
-                      //     style: TextStyle(
-                      //       fontSize: Dimensions.fontSize(context, 16),
-                      //       fontFamily: "QuicksandRegular",
-                      //       color: Colors.white,
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: AppColors.mainColor,
-                      //     padding:
-                      //         EdgeInsets.symmetric(vertical: 8, horizontal: 48),
-                      //   ),
-                      // ),
+                      buildEditButton(),
                     ],
                   ),
                   SizedBox(height: 20),
@@ -197,19 +229,41 @@ class _ViewTopicState extends State<ViewTopic> {
                       ),
                       IconButton(
                         onPressed: () {
-                          setState(() {
-                            vocabularyItems.add(ItemAddVocabulary(
-                              onRemove: () {
-                                setState(() {
-                                  vocabularyItems.removeLast();
-                                });
-                              },
-                              termController: TextEditingController(),
-                              definitionController: TextEditingController(),
-                            ));
-                          });
+                          if (isEditing) {
+                            setState(() {
+                              // Create a new Vocabulary with default values
+                              Vocabulary newVocabulary =
+                                  Vocabulary(term: '', definition: '');
+
+                              // Add the new Vocabulary at the end of the list
+                              widget.userTopic.vocabularies.add(newVocabulary);
+
+                              // Create new TextEditingControllers
+                              TextEditingController newTermController =
+                                  TextEditingController();
+                              TextEditingController newDefinitionController =
+                                  TextEditingController();
+
+                              // Add the new TextEditingControllers to ItemAddVocabulary
+                              vocabularyItems.add(
+                                ItemAddVocabulary(
+                                  onRemove: () {
+                                    setState(() {
+                                      widget.userTopic.vocabularies
+                                          .removeLast();
+                                      vocabularyItems.removeLast();
+                                    });
+                                  },
+                                  termController: newTermController,
+                                  definitionController: newDefinitionController,
+                                ),
+                              );
+                            });
+                          }
                         },
-                        icon: Icon(Icons.post_add, color: Colors.black),
+                        icon: isEditing
+                            ? Icon(Icons.post_add, color: Colors.black)
+                            : SizedBox(), // Chỉ hiển thị icon khi ở trạng thái chỉnh sửa
                       )
                     ],
                   ),
@@ -219,7 +273,7 @@ class _ViewTopicState extends State<ViewTopic> {
                     itemCount: widget.userTopic.vocabularies.length,
                     itemBuilder: (context, index) {
                       var vocabulary = widget.userTopic.vocabularies[index];
-                      return ItemAddVocabulary(
+                      return ItemViewTopic(
                         onRemove: () {
                           setState(() {
                             widget.userTopic.vocabularies.removeAt(index);
@@ -229,8 +283,10 @@ class _ViewTopicState extends State<ViewTopic> {
                             TextEditingController(text: vocabulary.term),
                         definitionController:
                             TextEditingController(text: vocabulary.definition),
+                        isEditing: isEditing,
                       );
                     },
+                    reverse: true,
                   ),
                 ],
               ),
@@ -238,37 +294,38 @@ class _ViewTopicState extends State<ViewTopic> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (titleController.text.isEmpty ||
-              descriptionController.text.isEmpty) {
-            setState(() {
-              isTitleEmpty = titleController.text.isEmpty;
-              isDescriptionEmpty = descriptionController.text.isEmpty;
-            });
-          } else if (vocabularyItems.any((item) =>
-              item.termController.text.isEmpty ||
-              item.definitionController.text.isEmpty)) {
-          } else {}
-        },
-        heroTag: 'uniqueTag',
-        backgroundColor: AppColors.mainColor,
-        label: Row(
-          children: [
-            Icon(Icons.create_rounded, color: Colors.white),
-            SizedBox(width: 12),
-            Text(
-              'Create',
-              style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
-                fontFamily: "QuicksandRegular",
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+      floatingActionButton: isEditing
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                if (titleController.text.isEmpty ||
+                    descriptionController.text.isEmpty) {
+                  setState(() {
+                    isTitleEmpty = titleController.text.isEmpty;
+                    isDescriptionEmpty = descriptionController.text.isEmpty;
+                  });
+                } else if (vocabularyItems.any((item) =>
+                    item.termController.text.isEmpty ||
+                    item.definitionController.text.isEmpty)) {}
+              },
+              heroTag: 'uniqueTag',
+              backgroundColor: AppColors.mainColor,
+              label: Row(
+                children: [
+                  Icon(Icons.create_rounded, color: Colors.white),
+                  SizedBox(width: 12),
+                  Text(
+                    'Create',
+                    style: TextStyle(
+                      fontSize: Dimensions.fontSize(context, 16),
+                      fontFamily: "QuicksandRegular",
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
               ),
             )
-          ],
-        ),
-      ),
+          : null,
     );
   }
 }
