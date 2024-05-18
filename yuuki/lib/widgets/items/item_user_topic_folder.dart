@@ -58,11 +58,9 @@ class ItemUserTopicFolder extends StatelessWidget {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {
-                              onRemove;
-                            },
+                            onPressed: onRemove,
                             icon: Icon(
-                              Icons.add_card_outlined,
+                              Icons.delete_outline,
                               size: Dimensions.iconSize(context, 26),
                             ),
                           ),

@@ -8,6 +8,8 @@ import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/items/item_add_vocabulary.dart';
 import 'package:yuuki/widgets/items/item_view_topic.dart';
 
+import '../services/topic_service.dart';
+
 class ViewTopic extends StatefulWidget {
   final MyUser user;
   ViewTopic({Key? key, required this.user, required this.userTopic})
@@ -23,6 +25,7 @@ class _ViewTopicState extends State<ViewTopic> {
   late String userName = '';
   late String authorName = '';
   bool isEditing = false;
+  final TopicController topicController = TopicController();
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _ViewTopicState extends State<ViewTopic> {
     isPublic = widget.userTopic.private;
     userName = widget.user.name ?? '';
     authorName = widget.userTopic.authorName ?? '';
+    topicController.viewTopic(widget.user, widget.userTopic.id);
   }
 
   List<ItemAddVocabulary> vocabularyItems = [];

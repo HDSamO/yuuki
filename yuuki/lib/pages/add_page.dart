@@ -122,7 +122,7 @@ class _AddPageState extends State<AddPage> {
           titleController.text,
           descriptionController.text,
           _getVocabularies(),
-          isPublic,
+          !isPublic,
         );
 
         TopicResult topicResult = await _addTopic(topic);

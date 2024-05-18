@@ -64,6 +64,8 @@ class FolderService {
         topic = Topic.fromMap(documentSnapshot.data()! as Map<String, dynamic>) ;
       }
 
+      print("Topic Folder: ${topic}");
+
       final userId = user.id;
 
       final folderRef = FirebaseFirestore.instance
@@ -79,14 +81,17 @@ class FolderService {
       }
 
       final folder = Folder.fromMap(folderDocSnapshot.data()!);
+      print("Folder ${folder}");
 
-      final existingUserTopic = folder.topics?.firstWhere((ut) => ut.id == topicId);
-
-      if (existingUserTopic != null) {
-        folder.topics!.remove(existingUserTopic);
-      }
+      // final existingUserTopic = folder.topics!.firstWhere((ut) => ut.id == topicId);
+      // print("ExistingUserTopic: ${existingUserTopic}");
+      //
+      // if (existingUserTopic != null) {
+      //   folder.topics.remove(existingUserTopic);
+      // }
 
       final newUserTopic = UserTopic.fromTopic(topic!);
+      print("New UserTopic Folder: ${newUserTopic}");
       newUserTopic.id = topicId;
       folder.topics!.add(newUserTopic);
 
