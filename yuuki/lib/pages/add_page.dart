@@ -437,8 +437,19 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
+  void removeItem(TextEditingController termController, TextEditingController definitionController) {
+    int index = termControllers.indexOf(termController);
+    print("Index: ${index}");
+    if (index != -1) {
+      setState(() {
+        vocabularyItems.removeAt(index);
+        termControllers.removeAt(index);
+        definitionControllers.removeAt(index);
+      });
+    }
+  }
+
   Widget _buildVocabularySection() {
-    int count = 0;
     return Container(
       alignment: Alignment.centerLeft,
       margin: EdgeInsets.only(bottom: 8),
@@ -469,15 +480,10 @@ class _AddPageState extends State<AddPage> {
                     termController: termController,
                     definitionController: definitionController,
                     onRemove: () {
-                      setState(() {
-                        vocabularyItems.removeAt(count);
-                        termControllers.removeAt(count);
-                        definitionControllers.removeAt(count);
-                      });
+                      removeItem(termController, definitionController);
                     },
                   ),
                 );
-                count++;
               });
             },
             icon: Icon(
