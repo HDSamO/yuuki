@@ -8,6 +8,7 @@ import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_change_password.dart';
+import 'package:yuuki/widgets/customs/custom_dialog_conform.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/customs/custom_item_profile.dart';
 
@@ -137,19 +138,30 @@ class ProfilePage extends StatelessWidget {
                     text: "Logout",
                     more: false,
                     onTap: () {
-                      Future<void> saveUserToSharedPreferences() async {
-                        final SharedPreferences prefs =
-                            await SharedPreferences.getInstance();
-                        prefs.setString('id', '');
-                        prefs.setString('email', '');
-                      }
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CustomDialogConfirm(
+                            title: "Confirm Logout",
+                            content:
+                                "you definitely want to sign out of this account?",
+                            okeText: "Logout",
+                            onPressed: () async {
+                              final SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setString('id', '');
+                              await prefs.setString('email', '');
 
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginScreen(),
-                        ),
-                        (route) => false,
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginScreen(),
+                                ),
+                                (route) => false,
+                              );
+                            },
+                          );
+                        },
                       );
                     },
                   ),

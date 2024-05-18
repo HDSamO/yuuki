@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
+import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/models/vocabulary.dart';
+import 'package:yuuki/results/topic_result.dart';
+import 'package:yuuki/results/user_topic_result.dart';
+import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
@@ -26,6 +30,9 @@ class _ViewTopicState extends State<ViewTopic> {
   late String authorName = '';
   bool isEditing = false;
   final TopicController topicController = TopicController();
+  List<ItemAddVocabulary> listVocabularyItems = [];
+  List<TextEditingController> termControllers = [];
+  List<TextEditingController> definitionControllers = [];
 
   @override
   void initState() {
@@ -235,20 +242,16 @@ class _ViewTopicState extends State<ViewTopic> {
                         onPressed: () {
                           if (isEditing) {
                             setState(() {
-                              // Create a new Vocabulary with default values
                               Vocabulary newVocabulary =
                                   Vocabulary(term: '', definition: '');
 
-                              // Add the new Vocabulary at the end of the list
                               widget.userTopic.vocabularies.add(newVocabulary);
 
-                              // Create new TextEditingControllers
                               TextEditingController newTermController =
                                   TextEditingController();
                               TextEditingController newDefinitionController =
                                   TextEditingController();
 
-                              // Add the new TextEditingControllers to ItemAddVocabulary
                               vocabularyItems.add(
                                 ItemAddVocabulary(
                                   onRemove: () {
@@ -267,7 +270,7 @@ class _ViewTopicState extends State<ViewTopic> {
                         },
                         icon: isEditing
                             ? Icon(Icons.post_add, color: Colors.black)
-                            : SizedBox(), // Chỉ hiển thị icon khi ở trạng thái chỉnh sửa
+                            : SizedBox(),
                       )
                     ],
                   ),
@@ -300,7 +303,7 @@ class _ViewTopicState extends State<ViewTopic> {
       ),
       floatingActionButton: isEditing
           ? FloatingActionButton.extended(
-              onPressed: () {
+              onPressed: () async {
                 if (titleController.text.isEmpty ||
                     descriptionController.text.isEmpty) {
                   setState(() {
@@ -309,16 +312,41 @@ class _ViewTopicState extends State<ViewTopic> {
                   });
                 } else if (vocabularyItems.any((item) =>
                     item.termController.text.isEmpty ||
-                    item.definitionController.text.isEmpty)) {}
+                    item.definitionController.text.isEmpty)) {
+                } else {
+                  Topic updatedTopic = Topic(
+                    id: widget.userTopic.id,
+                    title: titleController.text,
+                    description: descriptionController.text,
+                    private: isPublic,
+                    authorName: authorName,
+                    vocabularies: widget.userTopic.vocabularies,
+                    author: widget.userTopic.author,
+                  );
+                  // Call updateTopic function
+                  TopicResult result = await TopicController()
+                      .updateTopic(updatedTopic, widget.user);
+                  _showSuccessDialog();
+
+                  if (result.success) {
+                    setState(() {
+                      isEditing = false;
+                    });
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(result.errorMessage!)),
+                    );
+                  }
+                }
               },
               heroTag: 'uniqueTag',
               backgroundColor: AppColors.mainColor,
               label: Row(
                 children: [
-                  Icon(Icons.create_rounded, color: Colors.white),
+                  Icon(Icons.update, color: Colors.white),
                   SizedBox(width: 12),
                   Text(
-                    'Create',
+                    'Update',
                     style: TextStyle(
                       fontSize: Dimensions.fontSize(context, 16),
                       fontFamily: "QuicksandRegular",
@@ -330,6 +358,100 @@ class _ViewTopicState extends State<ViewTopic> {
               ),
             )
           : null,
+    );
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: Dimensions.height(context, 180),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF397CFF),
+                        Color(0x803DB7FC),
+                      ],
+                    ),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Confirm Delete",
+                    style: TextStyle(
+                      fontSize: Dimensions.fontSize(context, 20),
+                      fontFamily: "Quicksand",
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "topic has been updated",
+                    style: TextStyle(
+                      fontSize: Dimensions.fontSize(context, 16),
+                      fontFamily: "QuicksandRegular",
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close the dialog
+                      },
+                      child: Text(
+                        "oke",
+                        style: TextStyle(
+                          fontSize: Dimensions.fontSize(context, 16),
+                          fontFamily: "QuicksandRegular",
+                          color: AppColors.mainColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 40,
+                        ),
+                        foregroundColor: AppColors.mainColor,
+                        side: BorderSide(
+                          color: AppColors.mainColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

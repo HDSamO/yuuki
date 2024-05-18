@@ -59,7 +59,8 @@ class TopicController {
       final DocumentSnapshot topicSnapshot = await topicRef.get();
 
       if (topicSnapshot.exists) {
-        final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>); // Safe cast after existence check
+        final Topic topic = Topic.fromMap(topicSnapshot.data()!
+            as Map<String, dynamic>); // Safe cast after existence check
 
         final UserTopic userTopic = UserTopic.fromTopic(topic);
         userTopic.setView(1);
@@ -91,7 +92,8 @@ class TopicController {
       final DocumentSnapshot topicSnapshot = await topicRef.get();
 
       if (topicSnapshot.exists) {
-        final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>); // Safe cast after existence check
+        final Topic topic = Topic.fromMap(topicSnapshot.data()!
+            as Map<String, dynamic>); // Safe cast after existence check
 
         final UserTopic userTopic = UserTopic.fromTopic(topic);
         userTopic.setView(1);
@@ -236,7 +238,7 @@ class TopicController {
 
   Future<TopicResult> updateTopic(Topic topic, MyUser user) async {
     try {
-      final String topicId = topic.getId!; // Ensure topic ID is not null
+      final String topicId = topic.id; // Ensure topic ID is not null
 
       final DocumentReference userRef =
           FirebaseFirestore.instance.collection("users").doc(user.id);
@@ -251,7 +253,7 @@ class TopicController {
 
         final DocumentReference topicRef =
             FirebaseFirestore.instance.collection("topics").doc(topicId);
-        await topicRef.set(topic);
+        await topicRef.update(topic.toFirestore());
 
         return TopicResult(
             success: true, topic: topic); // Topic updated successfully
@@ -446,7 +448,8 @@ class TopicController {
         final DocumentSnapshot userTopicSnapshot = await userTopicRef.get();
 
         if (userTopicSnapshot.exists) {
-          UserTopic userTopic = UserTopic.fromMap(userTopicSnapshot.data()! as Map<String, dynamic>);
+          UserTopic userTopic = UserTopic.fromMap(
+              userTopicSnapshot.data()! as Map<String, dynamic>);
 
           // Fetch the latest topic document
           final DocumentSnapshot topicSnapshot = await FirebaseFirestore
@@ -456,7 +459,8 @@ class TopicController {
               .get();
 
           if (topicSnapshot.exists) {
-            final Topic updatedTopic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+            final Topic updatedTopic =
+                Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
 
             // Check if userTopic data needs to be updated based on Topic changes
             bool updateRequired = false;
@@ -506,12 +510,15 @@ class TopicController {
               .get();
 
           if (topicSnapshot.exists) {
-            final Topic topic = Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+            final Topic topic =
+                Topic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
             final UserTopic newUserTopic = UserTopic.fromTopic(topic);
             newUserTopic.setView(1);
             newUserTopic.setLastOpen(DateTime.now().millisecondsSinceEpoch);
 
-            await userTopicsCollection.doc(topicId).set(newUserTopic.toFirestore());
+            await userTopicsCollection
+                .doc(topicId)
+                .set(newUserTopic.toFirestore());
 
             // Update view count in the topic document (same as before)
             await FirebaseFirestore.instance
@@ -604,7 +611,8 @@ class TopicController {
         throw Exception("Folder document not found");
       }
 
-      final Folder folder = Folder.fromMap(folderSnapshot.data()! as Map<String, dynamic>);
+      final Folder folder =
+          Folder.fromMap(folderSnapshot.data()! as Map<String, dynamic>);
       final List<String> topicIdsInFolder =
           folder.topics?.map((userTopic) => userTopic.id).toList() ?? [];
 
@@ -635,7 +643,9 @@ class TopicController {
       final List<Topic> topics = [];
       for (final QuerySnapshot snapshot in snapshots) {
         final List<DocumentSnapshot> documents = snapshot.docs;
-        topics.addAll(documents.map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>)).toList());
+        topics.addAll(documents
+            .map((doc) => Topic.fromMap(doc.data()! as Map<String, dynamic>))
+            .toList());
       }
 
       return topics;
@@ -998,113 +1008,128 @@ class TopicController {
     }
   }
 
-  Future<VocabularyListResult> starVocabularyInUserTopic(MyUser user, String topicId, Vocabulary vocabulary, bool isStarred) async {
-  try {
-    
-    final userId = user.id;
+  Future<VocabularyListResult> starVocabularyInUserTopic(MyUser user,
+      String topicId, Vocabulary vocabulary, bool isStarred) async {
+    try {
+      final userId = user.id;
 
-    final userTopicsRef = usersCollection.doc(userId).collection('userTopics');
-    final topicRef = userTopicsRef.doc(topicId);
+      final userTopicsRef =
+          usersCollection.doc(userId).collection('userTopics');
+      final topicRef = userTopicsRef.doc(topicId);
 
-    final topicSnapshot = await topicRef.get();
+      final topicSnapshot = await topicRef.get();
 
-    if (!topicSnapshot.exists) {
-      // UserTopic document not found
-      return VocabularyListResult(success: false, errorMessage: "UserTopic not found");
-    }
-
-    final userTopic = UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
-
-    final vocabList = userTopic.vocabularies;
-    if (vocabList == null) {
-      // Vocabulary list is null (unlikely scenario)
-      return VocabularyListResult(success: false, errorMessage: "Vocabulary list is null");
-    }
-
-    // final existingVocab = vocabList.firstWhere((vocab) => vocab.term == vocabulary.term, orElse: () => null);
-    final existingVocab = vocabList.firstWhere((vocab) => vocab.term == vocabulary.term);
-
-    if (existingVocab != null) {
-      existingVocab.stared = isStarred;
-    } else {
-      // Vocabulary not found in userTopic
-      return VocabularyListResult(success: false, errorMessage: "Vocabulary not found in the userTopic");
-    }
-
-    userTopic.vocabularies = vocabList; // Update the vocabulary list in userTopic
-
-    await topicRef.set(userTopic.toFirestore()); // Update the userTopic document
-
-    if (isStarred) {
-      if (user.starredTopic == null) {
-        user.starredTopic = UserTopic(
-          id: 'starredTopic',
-          title: 'Starred Topic',
-          author: user.id,
-          authorName: user.name,
-          description: 'Starred Topic',
-          private: true,
-          vocabularies: [],
-          lastOpen: 0,
-          startTime: 0,
-          endTime: 0,
-          lastTime: 0,
-          bestTime: 0,
-          lastScore: 0.0,
-          bestScore: 0.0,
-          view: 0,
-        ); // Initialize with an empty list
+      if (!topicSnapshot.exists) {
+        // UserTopic document not found
+        return VocabularyListResult(
+            success: false, errorMessage: "UserTopic not found");
       }
 
-      user.starredTopic!.vocabularies!.add(vocabulary);
-    } else {
-      user.starredTopic?.vocabularies?.removeWhere((vocab) => vocab.term == vocabulary.term);
+      final userTopic =
+          UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+
+      final vocabList = userTopic.vocabularies;
+      if (vocabList == null) {
+        // Vocabulary list is null (unlikely scenario)
+        return VocabularyListResult(
+            success: false, errorMessage: "Vocabulary list is null");
+      }
+
+      // final existingVocab = vocabList.firstWhere((vocab) => vocab.term == vocabulary.term, orElse: () => null);
+      final existingVocab =
+          vocabList.firstWhere((vocab) => vocab.term == vocabulary.term);
+
+      if (existingVocab != null) {
+        existingVocab.stared = isStarred;
+      } else {
+        // Vocabulary not found in userTopic
+        return VocabularyListResult(
+            success: false,
+            errorMessage: "Vocabulary not found in the userTopic");
+      }
+
+      userTopic.vocabularies =
+          vocabList; // Update the vocabulary list in userTopic
+
+      await topicRef
+          .set(userTopic.toFirestore()); // Update the userTopic document
+
+      if (isStarred) {
+        if (user.starredTopic == null) {
+          user.starredTopic = UserTopic(
+            id: 'starredTopic',
+            title: 'Starred Topic',
+            author: user.id,
+            authorName: user.name,
+            description: 'Starred Topic',
+            private: true,
+            vocabularies: [],
+            lastOpen: 0,
+            startTime: 0,
+            endTime: 0,
+            lastTime: 0,
+            bestTime: 0,
+            lastScore: 0.0,
+            bestScore: 0.0,
+            view: 0,
+          ); // Initialize with an empty list
+        }
+
+        user.starredTopic!.vocabularies!.add(vocabulary);
+      } else {
+        user.starredTopic?.vocabularies
+            ?.removeWhere((vocab) => vocab.term == vocabulary.term);
+      }
+
+      final userUpdate = {
+        'starredTopic': user.starredTopic?.toFirestore(),
+      };
+      await usersCollection.doc(userId).update(userUpdate);
+
+      // await usersCollection.doc(userId).set(user.toFirestore()); // Update the user document
+
+      return VocabularyListResult(success: true);
+    } catch (e) {
+      return VocabularyListResult(success: false, errorMessage: e.toString());
     }
-
-    final userUpdate = {
-      'starredTopic': user.starredTopic?.toFirestore(),
-    };
-    await usersCollection.doc(userId).update(userUpdate);
-
-    // await usersCollection.doc(userId).set(user.toFirestore()); // Update the user document
-
-    return VocabularyListResult(success: true);
-  } catch (e) {
-    return VocabularyListResult(success: false, errorMessage: e.toString());
   }
-}
 
+  Future<VocabularyListResult> getStarredVocabulariesInUserTopic(
+      MyUser user, String topicId) async {
+    try {
+      final userId = user.id;
 
-Future<VocabularyListResult> getStarredVocabulariesInUserTopic(MyUser user, String topicId) async {
-  try {
-    
-    final userId = user.id;
+      final userTopicsRef =
+          usersCollection.doc(userId).collection('userTopics');
+      final topicRef = userTopicsRef.doc(topicId);
 
-    final userTopicsRef = usersCollection.doc(userId).collection('userTopics');
-    final topicRef = userTopicsRef.doc(topicId);
+      final topicSnapshot = await topicRef.get();
 
-    final topicSnapshot = await topicRef.get();
+      if (!topicSnapshot.exists) {
+        // UserTopic document not found
+        return VocabularyListResult(
+            success: false, errorMessage: "UserTopic not found");
+      }
 
-    if (!topicSnapshot.exists) {
-      // UserTopic document not found
-      return VocabularyListResult(success: false, errorMessage: "UserTopic not found");
+      final userTopic =
+          UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
+      final vocabList = userTopic.vocabularies;
+
+      if (vocabList == null) {
+        // Vocabulary list is null (unlikely scenario)
+        return VocabularyListResult(
+            success: false, errorMessage: "Vocabulary list is null");
+      }
+
+      final starredVocabularies =
+          vocabList.where((vocab) => vocab.stared).toList();
+
+      return VocabularyListResult(
+          success: true, vocabularies: starredVocabularies);
+    } catch (e) {
+      return VocabularyListResult(success: false, errorMessage: e.toString());
     }
-
-    final userTopic = UserTopic.fromMap(topicSnapshot.data()! as Map<String, dynamic>);
-    final vocabList = userTopic.vocabularies;
-
-    if (vocabList == null) {
-      // Vocabulary list is null (unlikely scenario)
-      return VocabularyListResult(success: false, errorMessage: "Vocabulary list is null");
-    }
-
-    final starredVocabularies = vocabList.where((vocab) => vocab.stared).toList();
-
-    return VocabularyListResult(success: true, vocabularies: starredVocabularies);
-  } catch (e) {
-    return VocabularyListResult(success: false, errorMessage: e.toString());
   }
-}
 
 // Future<VocabularyListResult> starVocabularyInUserTopic(MyUser user, String topicId, Vocabulary vocabulary) async {
 //   try {
