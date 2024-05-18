@@ -88,13 +88,15 @@ class _ItemViewTopicState extends State<ItemViewTopic> {
                     ),
                     IconButton(
                       onPressed: () {
-                        if (hasContent()) {
+                        if (hasContent() && isEdit) {
                           _showDeleteConfirmationDialog();
                         } else {
                           widget.onRemove();
                         }
                       },
-                      icon: Icon(Icons.cancel, color: Colors.black),
+                      icon: isEdit
+                          ? Icon(Icons.cancel, color: Colors.black)
+                          : SizedBox(),
                     )
                   ],
                 ),
