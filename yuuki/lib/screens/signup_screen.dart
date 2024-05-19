@@ -29,7 +29,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   DateTime? _dob;
   bool _isSubmit = false;
-  bool _isLoading = false;
   bool _isPasswordVisible = false;
   bool _isRePasswordVisible = false;
 
@@ -103,10 +102,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String phoneNumber = _phoneController.text.trim();
       String password = _passwordController.text.trim();
 
-      setState(() {
-        _isLoading = true;
-      });
-
       // Show snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -128,9 +123,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       UserResult userResult = await _userController.addUser(myUser, password);
 
       // After login process completed
-      setState(() {
-        _isLoading = false;
-      });
 
       ScaffoldMessenger.of(context)
           .hideCurrentSnackBar(); // Hide the loading snackbar
@@ -148,7 +140,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _passwordController.clear();
         _rePasswordController.clear();
 
-        Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ),
+              (route) => false,
+        );
       } else {
         String message = userResult.errorMessage ?? "";
         ScaffoldMessenger.of(context).showSnackBar(
