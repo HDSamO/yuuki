@@ -8,14 +8,28 @@ import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 
-class CustomDialog extends StatelessWidget {
+class CustomDialog extends StatefulWidget {
   final MyUser user;
+
+  CustomDialog(this.user);
+
+  @override
+  State<CustomDialog> createState() => _CustomDialogState();
+}
+
+class _CustomDialogState extends State<CustomDialog> {
   final TextEditingController _oldPasswordController = TextEditingController();
+
   final TextEditingController _newPasswordController = TextEditingController();
+
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  CustomDialog(this.user);
+  bool _isOldPasswordVisible = false;
+
+  bool _isNewPasswordVisible = false;
+
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +78,7 @@ class CustomDialog extends StatelessWidget {
                 children: [
                   TextField(
                     controller: _oldPasswordController,
-                    obscureText: true,
+                    obscureText: !_isOldPasswordVisible,
                     cursorColor: Colors.blue,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -81,6 +95,19 @@ class CustomDialog extends StatelessWidget {
                       labelStyle: TextStyle(
                         color: Colors.blue,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isOldPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isOldPasswordVisible = !_isOldPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -88,7 +115,7 @@ class CustomDialog extends StatelessWidget {
                   ),
                   TextField(
                     controller: _newPasswordController,
-                    obscureText: true,
+                    obscureText: !_isNewPasswordVisible,
                     cursorColor: Colors.blue,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -105,6 +132,19 @@ class CustomDialog extends StatelessWidget {
                       labelStyle: TextStyle(
                         color: Colors.blue,
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isNewPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isNewPasswordVisible = !_isNewPasswordVisible;
+                          });
+                        },
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -112,7 +152,7 @@ class CustomDialog extends StatelessWidget {
                   ),
                   TextField(
                     controller: _confirmPasswordController,
-                    obscureText: true,
+                    obscureText: !_isConfirmPasswordVisible,
                     cursorColor: Colors.blue,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -128,6 +168,20 @@ class CustomDialog extends StatelessWidget {
                       labelText: 'Confirm new password',
                       labelStyle: TextStyle(
                         color: Colors.blue,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -171,7 +225,7 @@ class CustomDialog extends StatelessWidget {
                     String confirmPassword = _confirmPasswordController.text;
 
                     bool isUserValid =
-                        await checkUserLogin(user.email, oldPassword);
+                        await checkUserLogin(widget.user.email, oldPassword);
                     if (!isUserValid) {
                       showDialog(
                         context: context,

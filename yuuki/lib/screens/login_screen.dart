@@ -34,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool _isSubmit = false;
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   // Lưu thông tin người dùng vào SharedPreferences
   Future<void> saveUserToSharedPreferences(String? id, String? email) async {
@@ -192,8 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           CustomInputText(
                             controller: _passwordController,
                             hintText: "Password",
-                            keyboardType: TextInputType.name,
+                            keyboardType: TextInputType.visiblePassword,
                             autoFocus: false,
+                            obscureText: !_isPasswordVisible,
                             onChanged: (_) {
                               if (_isSubmit) {
                                 _formLoginKey.currentState!.validate();
@@ -206,6 +208,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                               return null;
                             },
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
                           ),
                           const SizedBox(
                             height: 25.0,

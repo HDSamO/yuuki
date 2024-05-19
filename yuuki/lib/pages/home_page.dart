@@ -244,8 +244,7 @@ class _HomePageState extends State<HomePage> {
                     final recentTopics = snapshot.data?.topics ?? [];
 
                     if (recentTopics.isEmpty) {
-                      return SizedBox
-                          .shrink();
+                      return SizedBox.shrink();
                     } else {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,7 +381,7 @@ class _HomePageState extends State<HomePage> {
                 child: CircleAvatar(
                   backgroundImage: NetworkImage(
                       "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
-                  radius: 70.0,
+                  radius: 70,
                 ),
               ),
             ),

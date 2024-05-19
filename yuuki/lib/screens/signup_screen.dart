@@ -30,6 +30,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   DateTime? _dob;
   bool _isSubmit = false;
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _isRePasswordVisible = false;
 
   @override
   void dispose() {
@@ -316,6 +318,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     controller: _passwordController,
                                     keyboardType: TextInputType.visiblePassword,
                                     hintText: "Password",
+                                    obscureText: !_isPasswordVisible,
                                     onChanged: (_) {
                                       if (_isSubmit) {
                                         _formSignupKey.currentState!.validate();
@@ -331,6 +334,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       }
                                       return null;
                                     },
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _isPasswordVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isPasswordVisible =
+                                              !_isPasswordVisible;
+                                        });
+                                      },
+                                    ),
                                   ),
                                   const SizedBox(
                                     height: 15.0,
@@ -340,6 +356,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     controller: _rePasswordController,
                                     hintText: "Confirm Password",
                                     keyboardType: TextInputType.visiblePassword,
+                                    obscureText: !_isRePasswordVisible,
                                     onChanged: (_) {
                                       if (_isSubmit) {
                                         _formSignupKey.currentState!.validate();
@@ -356,6 +373,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       }
                                       return null;
                                     },
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _isRePasswordVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isRePasswordVisible =
+                                              !_isRePasswordVisible;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
