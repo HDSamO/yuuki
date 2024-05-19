@@ -113,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (e) => HomeScreen(user: myUser!),
           ),
         );
-
       } else {
         String message = userResult.errorMessage ?? "";
         ScaffoldMessenger.of(context).showSnackBar(
@@ -128,178 +127,183 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomLoginScaffold(
-      child: Column(
-        children: [
-          const Expanded(
-            flex: 1,
-            child: SizedBox(
-              height: 10,
+      child: Center(
+        child: Column(
+          children: [
+            const Expanded(
+              flex: 1,
+              child: SizedBox(
+                height: 10,
+              ),
             ),
-          ),
-          Expanded(
-            flex: 10,
-            child: SingleChildScrollView(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(25.0, 0, 25.0, 0),
-                padding: const EdgeInsets.fromLTRB(25.0, 30.0, 25.0, 25.0),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30.0),
-                      topRight: Radius.circular(30.0),
-                      bottomLeft: Radius.circular(30.0),
-                      bottomRight: Radius.circular(30.0)),
-                ),
-                child: Form(
-                  key: _formLoginKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'LOGIN',
-                        style: TextStyle(
-                            fontSize: 26.0,
-                            fontWeight: FontWeight.w900,
-                            color: Color(0xFF57A4FF),
-                            fontFamily: "Cabin"),
-                      ),
-                      const SizedBox(
-                        height: 30.0,
-                      ),
-                      CustomInputText(
-                        controller: _usernameController,
-                        hintText: "Username",
-                        keyboardType: TextInputType.name,
-                        autoFocus: true,
-                        onChanged: (_) {
-                          if (_isSubmit) {
-                            _formLoginKey.currentState!.validate();
-                          }
-                        },
-                        onSaved: (v) {},
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Username';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 25.0,
-                      ),
-                      CustomInputText(
-                        controller: _passwordController,
-                        hintText: "Password",
-                        keyboardType: TextInputType.name,
-                        autoFocus: false,
-                        onChanged: (_) {
-                          if (_isSubmit) {
-                            _formLoginKey.currentState!.validate();
-                          }
-                        },
-                        onSaved: (v) {},
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Password';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 25.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Expanded(
+              flex: 10,
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(25.0, 0, 25.0, 0),
+                  padding: const EdgeInsets.fromLTRB(25.0, 30.0, 25.0, 25.0),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                        bottomLeft: Radius.circular(30.0),
+                        bottomRight: Radius.circular(30.0)),
+                  ),
+                  child: Form(
+                    key: _formLoginKey,
+                    child: Container(
+                      width: 500,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const Text(
+                            'LOGIN',
+                            style: TextStyle(
+                                fontSize: 26.0,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF57A4FF),
+                                fontFamily: "Cabin"),
+                          ),
+                          const SizedBox(
+                            height: 30.0,
+                          ),
+                          CustomInputText(
+                            controller: _usernameController,
+                            hintText: "Username",
+                            keyboardType: TextInputType.name,
+                            autoFocus: true,
+                            onChanged: (_) {
+                              if (_isSubmit) {
+                                _formLoginKey.currentState!.validate();
+                              }
+                            },
+                            onSaved: (v) {},
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter Username';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 25.0,
+                          ),
+                          CustomInputText(
+                            controller: _passwordController,
+                            hintText: "Password",
+                            keyboardType: TextInputType.name,
+                            autoFocus: false,
+                            onChanged: (_) {
+                              if (_isSubmit) {
+                                _formLoginKey.currentState!.validate();
+                              }
+                            },
+                            onSaved: (v) {},
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter Password';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 25.0,
+                          ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Checkbox(
-                                value: _rememberMe,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    _rememberMe = value!;
-                                  });
-                                },
-                                activeColor: lightColorScheme.primary,
+                              Row(
+                                children: [
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        _rememberMe = value!;
+                                      });
+                                    },
+                                    activeColor: lightColorScheme.primary,
+                                  ),
+                                  const Text(
+                                    'Remember me',
+                                    style: TextStyle(
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Text(
-                                'Remember me',
-                                style: TextStyle(
-                                  color: Colors.black45,
+                              GestureDetector(
+                                onTap: () {
+                                  _showForgotPasswordDialog(context);
+                                },
+                                child: Text(
+                                  'Forgot password?',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: lightColorScheme.primary,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              _showForgotPasswordDialog(context);
+                          const SizedBox(
+                            height: 25.0,
+                          ),
+                          CustomLoginButton(
+                            onPressed: () {
+                              _handleSubmit();
                             },
-                            child: Text(
-                              'Forgot password?',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: lightColorScheme.primary,
-                              ),
-                            ),
+                            text: 'LOGIN',
+                            width: double.infinity,
+                            height: 54,
                           ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 25.0,
-                      ),
-                      CustomLoginButton(
-                        onPressed: () {
-                          _handleSubmit();
-                        },
-                        text: 'LOGIN',
-                        width: double.infinity,
-                        height: 54,
-                      ),
-                      const SizedBox(
-                        height: 15.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Don\'t have an account? ',
-                            style: TextStyle(
-                              color: Colors.black45,
-                            ),
+                          const SizedBox(
+                            height: 15.0,
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (e) => const SignUpScreen(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Don\'t have an account? ',
+                                style: TextStyle(
+                                  color: Colors.black45,
                                 ),
-                              );
-                            },
-                            child: Text(
-                              'Sign up',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: lightColorScheme.primary,
                               ),
-                            ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (e) => const SignUpScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'Sign up',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: lightColorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          if (_isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
+            if (_isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -310,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return regExp.hasMatch(email);
   }
 
-  Widget showDialogMessage(Color color, String title, String message){
+  Widget showDialogMessage(Color color, String title, String message) {
     return AlertDialog(
       title: Text(
         title,
@@ -322,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
       actions: [
         TextButton(
           onPressed: () {
-            if (title == "Error"){
+            if (title == "Error") {
               Navigator.pop(context);
             } else {
               Navigator.pop(context);
@@ -347,6 +351,7 @@ class _LoginScreenState extends State<LoginScreen> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Container(
+            width: 500,
             padding: EdgeInsets.only(bottom: Dimensions.height(context, 16)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -354,7 +359,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 Container(
                   height: Dimensions.height(context, 50),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -377,7 +383,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 10.0),
                 Padding(
-                    padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+                  padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
                   child: TextField(
                     controller: emailController,
                     autofocus: true,
@@ -437,37 +443,44 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         String email = emailController.text;
 
-                        if (email.isEmpty){
+                        if (email.isEmpty) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
-                              return showDialogMessage(Colors.red, "Error", "Please enter your email");
+                              return showDialogMessage(Colors.red, "Error",
+                                  "Please enter your email");
                             },
                           );
-                        }
-                        else if (!_validateEmail(email)) {
+                        } else if (!_validateEmail(email)) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
-                              return showDialogMessage(Colors.red, "Error", "This is a not a valid email");
+                              return showDialogMessage(Colors.red, "Error",
+                                  "This is a not a valid email");
                             },
                           );
                         } else {
-                          PasswordResult passwordResult = await UserService().sendPasswordResetEmail(email);
+                          PasswordResult passwordResult =
+                              await UserService().sendPasswordResetEmail(email);
 
                           if (passwordResult.success) {
                             emailController.clear();
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return showDialogMessage(Colors.green, "Success", "Please check your email!");
+                                return showDialogMessage(Colors.green,
+                                    "Success", "Please check your email!");
                               },
                             );
                           } else {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return showDialogMessage(Colors.red, "Error", passwordResult.errorMessage ?? "An error occurred. Please check your entered email");
+                                return showDialogMessage(
+                                    Colors.red,
+                                    "Error",
+                                    passwordResult.errorMessage ??
+                                        "An error occurred. Please check your entered email");
                               },
                             );
                           }

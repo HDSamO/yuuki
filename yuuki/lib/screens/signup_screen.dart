@@ -49,7 +49,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   bool _validatePhoneNumber(String phoneNumber) {
     // Kiểm tra độ dài của chuỗi và xem nó có phải là số hay không
-    return phoneNumber.length == 10 && RegExp(r'^[0-9]+$').hasMatch(phoneNumber);
+    return phoneNumber.length == 10 &&
+        RegExp(r'^[0-9]+$').hasMatch(phoneNumber);
   }
 
   bool _validatePassword(String password) {
@@ -88,7 +89,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  void _handleSubmit() async{
+  void _handleSubmit() async {
     setState(() {
       _isSubmit = true;
     });
@@ -119,7 +120,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       // Chờ cho đến khi quá trình đăng nhập hoàn thành
-      MyUser? myUser = MyUser(name: fullName, birthday: dob, email: email, phone: phoneNumber);
+      MyUser? myUser = MyUser(
+          name: fullName, birthday: dob, email: email, phone: phoneNumber);
 
       UserResult userResult = await _userController.addUser(myUser, password);
 
@@ -156,255 +158,256 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomLoginScaffold(
-      child: Column(
-        children: [
-          const Expanded(
-            flex: 1,
-            child: SizedBox(
-              height: 10,
+      child: Center(
+        child: Column(
+          children: [
+            const Expanded(
+              flex: 1,
+              child: SizedBox(
+                height: 10,
+              ),
             ),
-          ),
-          Expanded(
-            flex: 10,
-            child: SingleChildScrollView(
-              child: Container(
-                  margin: const EdgeInsets.fromLTRB(25.0, 0, 25.0, 10.0),
-                  padding: const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.0),
-                      topRight: Radius.circular(40.0),
-                      bottomLeft: Radius.circular(40.0),
-                      bottomRight: Radius.circular(40.0),
-                    ),
-                  ),
-                  child: Column (
-                    children: [
-                      Form(
-                        key: _formSignupKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              "Create a new account!",
-                              style: TextStyle(
-                                  fontSize: 30.0,
-                                  fontWeight: FontWeight.w900,
-                                  fontFamily: "Jua"
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            const Text(
-                              "Tell us a bit about yourself",
-                              style: TextStyle(
-                                  fontSize: 20.0,
-                                  fontFamily: "Cabin",
-                                  fontStyle: FontStyle.italic
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 15.0,
-                            ),
-                            // Full Name
-                            CustomInputText(
-                              controller: _nameController,
-                              hintText: "Full name",
-                              keyboardType: TextInputType.name,
-                              autoFocus: true,
-                              onChanged: (_) {
-                                if (_isSubmit) {
-                                  _formSignupKey.currentState!.validate();
-                                }
-                              },
-                              onSaved: (v) {},
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter full name';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 15.0
-                            ),
-                            TextFormField(
-                              controller: _dobController,
-                              readOnly: true,
-                              onTap: () {
-                                _selectDate(context);
-                              },
-                              decoration: const InputDecoration(
-                                hintText: "Select Date",
-                                hintStyle: TextStyle(color: Colors.blue),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.blue, width: 2),
-                                ),
-                              ),
-                              style: const TextStyle(color: Colors.blue),
-                              onChanged: (_) {
-                                if (_isSubmit) {
-                                  _formSignupKey.currentState!.validate();
-                                }
-                              },
-                              onSaved: (v) {},
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please select date of birth';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 15.0,
-                            ),
-                            // Email
-                            CustomInputText(
-                              controller: _emailController,
-                              hintText: "Email",
-                              keyboardType: TextInputType.name,
-                              onChanged: (_) {
-                                if (_isSubmit) {
-                                  _formSignupKey.currentState!.validate();
-                                }
-                              },
-                              onSaved: (v) {},
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter email';
-                                }
-                                if (!_validateEmail(value)){
-                                  return 'This is a not a valid email';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 15.0,
-                            ),
-                            // Phone
-                            CustomInputText(
-                              controller: _phoneController,
-                              hintText: "Phone number",
-                              keyboardType: TextInputType.number,
-                              onChanged: (_) {
-                                if (_isSubmit) {
-                                  _formSignupKey.currentState!.validate();
-                                }
-                              },
-                              onSaved: (v) {},
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter phone number';
-                                }
-                                if (!_validatePhoneNumber(value)){
-                                  return 'This is a not a valid phone number';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 15.0,
-                            ),
-                            // Full Name
-                            CustomInputText(
-                              controller: _passwordController,
-                              keyboardType: TextInputType.visiblePassword,
-                              hintText: "Password",
-                              onChanged: (_) {
-                                if (_isSubmit) {
-                                  _formSignupKey.currentState!.validate();
-                                }
-                              },
-                              onSaved: (v) {},
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter password';
-                                }
-                                if (!_validatePassword(value)){
-                                  return 'The password at least 6 characters long with at least one uppercase letter, one lowercase letter, and one digit';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 15.0,
-                            ),
-                            // Email
-                            CustomInputText(
-                              controller: _rePasswordController,
-                              hintText: "Confirm Password",
-                              keyboardType: TextInputType.visiblePassword,
-                              onChanged: (_) {
-                                if (_isSubmit) {
-                                  _formSignupKey.currentState!.validate();
-                                }
-                              },
-                              onSaved: (v) {},
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter confirm password';
-                                }
-                                if (_passwordController.text.trim() != value){
-                                  return 'The password and confirmation password do not match';
-                                }
-                                return null;
-                              },
-                            ),
-                          ],
+            Expanded(
+                flex: 10,
+                child: SingleChildScrollView(
+                  child: Container(
+                      margin: const EdgeInsets.fromLTRB(25.0, 0, 25.0, 10.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40.0),
+                          topRight: Radius.circular(40.0),
+                          bottomLeft: Radius.circular(40.0),
+                          bottomRight: Radius.circular(40.0),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      // already have an account
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Already have an account? ',
-                            style: TextStyle(
-                              color: Colors.black45,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (e) => const LoginScreen(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Sign in',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: lightColorScheme.primary,
+                      child: Container(
+                        width: 500,
+                        child: Column(
+                          children: [
+                            Form(
+                              key: _formSignupKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "Create a new account!",
+                                    style: TextStyle(
+                                        fontSize: 30.0,
+                                        fontWeight: FontWeight.w900,
+                                        fontFamily: "Jua"),
+                                  ),
+                                  const SizedBox(
+                                    height: 5.0,
+                                  ),
+                                  const Text(
+                                    "Tell us a bit about yourself",
+                                    style: TextStyle(
+                                        fontSize: 20.0,
+                                        fontFamily: "Cabin",
+                                        fontStyle: FontStyle.italic),
+                                  ),
+                                  const SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  // Full Name
+                                  CustomInputText(
+                                    controller: _nameController,
+                                    hintText: "Full name",
+                                    keyboardType: TextInputType.name,
+                                    autoFocus: true,
+                                    onChanged: (_) {
+                                      if (_isSubmit) {
+                                        _formSignupKey.currentState!.validate();
+                                      }
+                                    },
+                                    onSaved: (v) {},
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter full name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 15.0),
+                                  TextFormField(
+                                    controller: _dobController,
+                                    readOnly: true,
+                                    onTap: () {
+                                      _selectDate(context);
+                                    },
+                                    decoration: const InputDecoration(
+                                      hintText: "Select Date",
+                                      hintStyle: TextStyle(color: Colors.blue),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.blue, width: 2),
+                                      ),
+                                    ),
+                                    style: const TextStyle(color: Colors.blue),
+                                    onChanged: (_) {
+                                      if (_isSubmit) {
+                                        _formSignupKey.currentState!.validate();
+                                      }
+                                    },
+                                    onSaved: (v) {},
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please select date of birth';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  // Email
+                                  CustomInputText(
+                                    controller: _emailController,
+                                    hintText: "Email",
+                                    keyboardType: TextInputType.name,
+                                    onChanged: (_) {
+                                      if (_isSubmit) {
+                                        _formSignupKey.currentState!.validate();
+                                      }
+                                    },
+                                    onSaved: (v) {},
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter email';
+                                      }
+                                      if (!_validateEmail(value)) {
+                                        return 'This is a not a valid email';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  // Phone
+                                  CustomInputText(
+                                    controller: _phoneController,
+                                    hintText: "Phone number",
+                                    keyboardType: TextInputType.number,
+                                    onChanged: (_) {
+                                      if (_isSubmit) {
+                                        _formSignupKey.currentState!.validate();
+                                      }
+                                    },
+                                    onSaved: (v) {},
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter phone number';
+                                      }
+                                      if (!_validatePhoneNumber(value)) {
+                                        return 'This is a not a valid phone number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  // Full Name
+                                  CustomInputText(
+                                    controller: _passwordController,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    hintText: "Password",
+                                    onChanged: (_) {
+                                      if (_isSubmit) {
+                                        _formSignupKey.currentState!.validate();
+                                      }
+                                    },
+                                    onSaved: (v) {},
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter password';
+                                      }
+                                      if (!_validatePassword(value)) {
+                                        return 'The password at least 6 characters long with at least one uppercase letter, one lowercase letter, and one digit';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: 15.0,
+                                  ),
+                                  // Email
+                                  CustomInputText(
+                                    controller: _rePasswordController,
+                                    hintText: "Confirm Password",
+                                    keyboardType: TextInputType.visiblePassword,
+                                    onChanged: (_) {
+                                      if (_isSubmit) {
+                                        _formSignupKey.currentState!.validate();
+                                      }
+                                    },
+                                    onSaved: (v) {},
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter confirm password';
+                                      }
+                                      if (_passwordController.text.trim() !=
+                                          value) {
+                                        return 'The password and confirmation password do not match';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 15.0,
-                      ),
-                      CustomLoginButton(
-                          onPressed: () {
-                            _handleSubmit();
-                          },
-                          text: "SIGN UP",
-                          width: double.infinity,
-                          height: 54
-                      )
-                    ],
-                  )
-              ),
-            )
-          ),
-        ],
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            // already have an account
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Already have an account? ',
+                                  style: TextStyle(
+                                    color: Colors.black45,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (e) => const LoginScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'Sign in',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: lightColorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 15.0,
+                            ),
+                            CustomLoginButton(
+                                onPressed: () {
+                                  _handleSubmit();
+                                },
+                                text: "SIGN UP",
+                                width: double.infinity,
+                                height: 54)
+                          ],
+                        ),
+                      )),
+                )),
+          ],
+        ),
       ),
     );
   }
