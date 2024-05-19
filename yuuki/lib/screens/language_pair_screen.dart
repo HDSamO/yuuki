@@ -317,7 +317,7 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
     await _topicController.finishStudyUserTopic(
       myUser,
       userTopic.id,
-      learningResult.avgScore ?? 0,
+      learningResult.avgScore ?? 0.0,
     );
 
     // Fetch the updated user topic

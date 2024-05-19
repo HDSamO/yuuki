@@ -41,6 +41,7 @@ class CustomInputText extends StatelessWidget {
           borderSide: BorderSide(color: Colors.blue, width: 2),
         ),
         suffixIcon: suffixIcon, // Add this line
+        errorMaxLines: 3,
       ),
       style: TextStyle(color: Colors.blue),
     );

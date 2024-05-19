@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
               body: Text('Error: ${snapshot.error}'),
             );
           } else {
-            if (!_onboarding!) {
+            if (_onboarding == null || !_onboarding!) {
               return OnboardingScreen();
             }
             // Hiển thị màn hình đăng nhập nếu không tìm thấy người dùng
@@ -121,58 +121,3 @@ class _MyAppState extends State<MyApp> {
     return null;
   }
 }
-
-/*
-class _MyAppState extends State<MyApp> {
-  final _userController = UserService();
-  String? _userId;
-  String? _userEmail;
-  MyUser? _foundUser;
-  bool _isDataLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
-  void getData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userId = prefs.getString('id');
-      _userEmail = prefs.getString('email');
-      _isDataLoaded = true;
-      getMyUser();
-    });
-  }
-
-  void getMyUser() async {
-    if (_isDataLoaded && _userEmail != null) {
-      _foundUser = await _userController.getUserByEmail(_userEmail!);
-      if (_foundUser != null) {
-        setState(() {});
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    if (_foundUser == null){
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: LoginScreen(),
-        ),
-      );
-    }
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: ExampleScreen(user: _foundUser),
-      ),
-    );
-  }
-}
-*/

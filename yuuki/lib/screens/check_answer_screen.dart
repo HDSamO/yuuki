@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/leaderboard_screen.dart';
-import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_confirm.dart';
-import 'package:yuuki/widgets/customs/custom_login_button.dart';
 import 'package:yuuki/widgets/items/item_check_answer.dart';
 
 import '../models/my_user.dart';
@@ -100,7 +98,7 @@ class CheckAnswerScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: 600,
+                  height: MediaQuery.of(context).size.height * 0.7,
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: learningResult.questionAnswers.length,
@@ -125,16 +123,6 @@ class CheckAnswerScreen extends StatelessWidget {
           label: Row(
             children: [
               Icon(Icons.exit_to_app_outlined, color: Colors.white),
-              SizedBox(width: 12),
-              Text(
-                'Exit',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: "QuicksandRegular",
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
             ],
           ),
         ),

@@ -12,16 +12,22 @@ class LearningResult {
   }
 
   void calculateAvgScore() {
-    final totalAnswers = questionAnswers.length;
-    var correctAnswers = 0;
-
-    for (final questionAnswer in questionAnswers) {
-      if (questionAnswer.check) {
-        correctAnswers++;
-      }
+    if (questionAnswers.isEmpty){
+      avgScore = 0.0;
     }
+    else {
+      final totalAnswers = questionAnswers.length;
 
-    avgScore = (correctAnswers * 100) / totalAnswers;
+      var correctAnswers = 0;
+
+      for (final questionAnswer in questionAnswers) {
+        if (questionAnswer.check) {
+          correctAnswers++;
+        }
+      }
+
+      avgScore = (correctAnswers * 100) / totalAnswers;
+    }
   }
 
   String? convertRawTimeToFormattedTime() {

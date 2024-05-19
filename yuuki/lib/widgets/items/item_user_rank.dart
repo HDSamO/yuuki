@@ -70,7 +70,8 @@ class ItemUserRank extends StatelessWidget {
                             const SizedBox(width: 16),
                             _buildItemInfo(
                               context,
-                              "Score: ${(topUser.score * 10).round() / 10}",
+                              // "Score: ${(topUser.score * 10).round() / 10}",
+                              "Score: ${_formatScore(topUser.score)}",
                             ),
                             const SizedBox(width: 16),
                             _buildItemInfo(
@@ -89,6 +90,13 @@ class ItemUserRank extends StatelessWidget {
         ),
       )
     );
+  }
+
+  String _formatScore(double? score) {
+    if (score == null || score.isNaN || score.isInfinite) {
+      return "0.0";
+    }
+    return ((score * 10).round() / 10).toString();
   }
 
   Widget _buildItemInfo(BuildContext context, String text) {

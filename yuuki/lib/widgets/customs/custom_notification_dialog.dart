@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../utils/const.dart';
 
@@ -18,7 +20,7 @@ class CustomNotificationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        height: 180,
+        height: 250,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -50,50 +52,57 @@ class CustomNotificationDialog extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              alignment: Alignment.center,
-              child: Text(
-                textAlign: TextAlign.center,
-                message,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: "QuicksandRegular",
-                  color: isSuccess ? Colors.green : Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    alignment: Alignment.center,
+                    child: Text(
+                      textAlign: TextAlign.center,
+                      message,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: "QuicksandRegular",
+                        color: isSuccess ? Colors.green : Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close the dialog
+                        },
+                        child: Text(
+                          "OK",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: "QuicksandRegular",
+                            color: AppColors.mainColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 40,
+                          ),
+                          foregroundColor: AppColors.mainColor,
+                          side: BorderSide(
+                            color: AppColors.mainColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Close the dialog
-                  },
-                  child: Text(
-                    "OK",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: "QuicksandRegular",
-                      color: AppColors.mainColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 40,
-                    ),
-                    foregroundColor: AppColors.mainColor,
-                    side: BorderSide(
-                      color: AppColors.mainColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            )
           ],
         ),
       ),

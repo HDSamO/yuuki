@@ -38,7 +38,7 @@ class ItemCheckAnswer extends StatelessWidget {
           color: backgroundColor,
           child: Container(
             width: double.infinity,
-            height: 42,
+            height: 55,
             margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
             child: Center(
                 child: Padding(

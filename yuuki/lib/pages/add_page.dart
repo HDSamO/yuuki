@@ -3,7 +3,6 @@ import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';
-import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/items/item_add_vocabulary.dart';
 
@@ -109,16 +108,21 @@ class _AddPageState extends State<AddPage> {
   }
 
   void _onCreatePressed() async {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
+    if (vocabularyItems.isEmpty){
+      _showNotificationDialog("Notification", "The topic needs to have at least one vocabulary word.", false);
+    }
+    else if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
       setState(() {
         isTitleEmpty = titleController.text.isEmpty;
         isDescriptionEmpty = descriptionController.text.isEmpty;
       });
-    } else if (termControllers.any((controller) => controller.text.isEmpty) ||
+    }
+    else if (termControllers.any((controller) => controller.text.isEmpty) ||
         definitionControllers.any((controller) => controller.text.isEmpty)) {
       // _showValidateDialog("Please enter term or definition!");
       _showNotificationDialog("Notification", "Please enter term or definition!", false);
-    } else {
+    }
+    else {
       _showLoadingDialog();
 
       try {
@@ -409,13 +413,22 @@ class _AddPageState extends State<AddPage> {
             ),
           ),
           SizedBox(height: 8),
-          Column(
-            children: [
-              ...List.generate(vocabularyItems.length, (index) {
-                return vocabularyItems[index];
-              }),
-            ],
+          ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: vocabularyItems.length,
+            itemBuilder: (context, index) {
+              return vocabularyItems[index];
+            },
+            reverse: true,
           ),
+          // Column(
+          //   children: [
+          //     ...List.generate(vocabularyItems.length, (index) {
+          //       return vocabularyItems[index];
+          //     }),
+          //   ],
+          // ),
         ],
       ),
     );

@@ -135,16 +135,6 @@ class LeaderBoardScreen extends StatelessWidget {
           label: Row(
             children: [
               Icon(Icons.exit_to_app_outlined, color: Colors.white),
-              SizedBox(width: 12),
-              Text(
-                'Exit',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: "QuicksandRegular",
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
             ],
           ),
         ),

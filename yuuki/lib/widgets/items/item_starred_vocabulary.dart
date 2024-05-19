@@ -79,7 +79,7 @@ class _ItemStarredVocabularyState extends State<ItemStarredVocabulary> {
                     },
                     icon: Icon(
                       Icons.volume_up,
-                      size: 48,
+                      size: 36,
                       color: Colors.black,
                     ),
                   ),

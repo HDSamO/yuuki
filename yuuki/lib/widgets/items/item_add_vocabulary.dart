@@ -46,7 +46,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Container(
           width: double.infinity,
-          height: 300,
+          height: 320,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Colors.white,

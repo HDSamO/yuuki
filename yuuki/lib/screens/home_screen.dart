@@ -1,15 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:motion_tab_bar/MotionBadgeWidget.dart';
-import 'package:motion_tab_bar/MotionTabBar.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 import 'package:yuuki/pages/add_page.dart';
 import 'package:yuuki/pages/community_page.dart';
 import 'package:yuuki/pages/home_page.dart';
 import 'package:yuuki/pages/profile_page.dart';
 import 'package:yuuki/pages/library_page.dart';
-import 'package:yuuki/services/user_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/utils/const.dart';
 

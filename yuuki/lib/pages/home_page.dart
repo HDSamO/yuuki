@@ -1,17 +1,10 @@
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:card_actions/card_action_button.dart';
-import 'package:card_actions/card_actions.dart';
 import 'package:draggable_home/draggable_home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:scaled_list/scaled_list.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:tab_container/tab_container.dart';
 import 'package:yuuki/models/my_user.dart';
-import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
-import 'package:yuuki/models/vocabulary.dart';
 import 'package:yuuki/results/topic_list_result.dart';
 import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/utils/const.dart';

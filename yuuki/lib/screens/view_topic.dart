@@ -112,16 +112,21 @@ class _ViewTopicState extends State<ViewTopic> {
   }
 
   Future<void> _updateTopic() async {
-    if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
+    if (vocabularyItems.isEmpty){
+      _showNotificationDialog("Notification", "The topic needs to have at least one vocabulary word.", false);
+    }
+    else if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
       setState(() {
         isTitleEmpty = titleController.text.isEmpty;
         isDescriptionEmpty = descriptionController.text.isEmpty;
       });
-    } else if (termControllers.any((controller) => controller.text.isEmpty) ||
+    }
+    else if (termControllers.any((controller) => controller.text.isEmpty) ||
         definitionControllers.any((controller) => controller.text.isEmpty)) {
       _showNotificationDialog("Error",
           "Please enter terms or definitions of all vocabulary!", false);
-    } else {
+    }
+    else {
       _showLoadingDialog();
       try {
         Topic updatedTopic = Topic(

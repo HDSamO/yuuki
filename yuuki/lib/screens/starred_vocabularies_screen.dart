@@ -72,22 +72,41 @@ class _StarredVocabulariesScreenState extends State<StarredVocabulariesScreen> {
     );
   }
 
-  Widget _buildStarredVocabularies(BuildContext context){
-    if (widget.myUser.starredTopic!.vocabularies.isEmpty){
+  Widget _buildStarredVocabularies(BuildContext context) {
+    // Kiểm tra nếu starredTopic là null
+    if (widget.myUser.starredTopic == null) {
       return Padding(
         padding: EdgeInsets.all(20),
         child: Center(
           child: Text(
             textAlign: TextAlign.center,
-            "The list is empty!",
+            "No starred topic available!",
             style: TextStyle(
-                fontSize: 24,
-                color: Colors.red
+              fontSize: 24,
+              color: Colors.red,
             ),
           ),
         ),
       );
     }
+
+    // Tiếp tục với kiểm tra danh sách từ vựng
+    if (widget.myUser.starredTopic!.vocabularies.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(
+          child: Text(
+            textAlign: TextAlign.center,
+            "The vocabulary list is empty!",
+            style: TextStyle(
+              fontSize: 24,
+              color: Colors.red,
+            ),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -100,4 +119,5 @@ class _StarredVocabulariesScreenState extends State<StarredVocabulariesScreen> {
       },
     );
   }
+
 }
