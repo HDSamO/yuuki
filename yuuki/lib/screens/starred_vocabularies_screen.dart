@@ -80,7 +80,7 @@ class _StarredVocabulariesScreenState extends State<StarredVocabulariesScreen> {
         child: Center(
           child: Text(
             textAlign: TextAlign.center,
-            "No starred topic available!",
+            "No starred vocabularies available!",
             style: TextStyle(
               fontSize: 24,
               color: Colors.red,
