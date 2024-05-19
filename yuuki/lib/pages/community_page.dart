@@ -50,34 +50,6 @@ class _CommunityPageState extends State<CommunityPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FutureBuilder<List<MyUser>>(
-                future: UserService().getUserList(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else {
-                    final users = snapshot.data;
-                    return Container(
-                      height: 140,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: users?.length ?? 0,
-                        itemBuilder: (context, index) {
-                          final user = users![index];
-                          return ItemCommunityPeople(user: user);
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-              SizedBox(height: 16),
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(horizontal: 20),
@@ -179,6 +151,33 @@ class _CommunityPageState extends State<CommunityPage> {
                     fontFamily: "Quicksand",
                   ),
                 ),
+              ),
+              FutureBuilder<List<MyUser>>(
+                future: UserService().getUserList(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    final users = snapshot.data;
+                    return Container(
+                      height: 140,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: users?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          final user = users![index];
+                          return ItemCommunityPeople(user: user);
+                        },
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),
