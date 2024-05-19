@@ -6,12 +6,8 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_language_screen.dart';
 import 'package:yuuki/screens/view_topic.dart';
-import 'package:yuuki/utils/const.dart';
-import 'package:yuuki/utils/demension.dart';
 
-enum SampleItem {
-  view,
-}
+import '../customs/custom_notification_dialog.dart';
 
 class ItemHomeResent extends StatefulWidget {
   final UserTopic userTopic;
@@ -31,6 +27,7 @@ class ItemHomeResent extends StatefulWidget {
 }
 
 class _ItemHomeResentState extends State<ItemHomeResent> {
+
   onTapFunctionToViewTopic(BuildContext context) async {
     final reLoadPage = await Navigator.push(
       context,
@@ -48,42 +45,49 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
   }
 
   onTapFunctionToLearning(BuildContext context) async {
-    final reLoadPage = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChooseLanguageScreen(
-          myUser: widget.user,
-          userTopic: widget.userTopic,
+    if (widget.userTopic.vocabularies.isEmpty){
+      _showNotificationDialog("Error", "The vocabulary list is empty", false);
+    } else {
+      final reLoadPage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChooseLanguageScreen(
+            myUser: widget.user,
+            userTopic: widget.userTopic,
+          ),
         ),
-      ),
-    );
+      );
 
-    if (reLoadPage) {
-      widget.onRefresh();
+      if (reLoadPage) {
+        widget.onRefresh();
+      }
     }
+  }
+
+  void _showNotificationDialog(String title, String message, bool isSuccess) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    SampleItem? selectedItem;
     return GestureDetector(
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (e) => ChooseLanguageScreen(
-        //       myUser: widget.user,
-        //       userTopic: widget.userTopic,
-        //     ),
-        //   ),
-        // );
-
         onTapFunctionToLearning(context);
       },
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: Container(
-          width: 300,
+          width: 320,
           height: 160,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -107,7 +111,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                     widget.userTopic.title,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: Dimensions.fontSize(context, 20),
+                      fontSize: 20,
                       fontFamily: "Quicksand",
                     ),
                   ),
@@ -118,7 +122,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                       Container(
                         alignment: Alignment.center,
                         height: 20,
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(217, 240, 255, 1),
                           borderRadius: BorderRadius.circular(20),
@@ -127,7 +131,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                           "${widget.userTopic.vocabularies.length} terms",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: Dimensions.fontSize(context, 12),
+                            fontSize: 12,
                             fontFamily: "QuicksandRegular",
                           ),
                         ),
@@ -138,7 +142,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                       Container(
                         alignment: Alignment.center,
                         height: 20,
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(217, 240, 255, 1),
                           borderRadius: BorderRadius.circular(20),
@@ -147,7 +151,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                           "${widget.topic != null ? widget.topic!.views : widget.userTopic.view} views",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: Dimensions.fontSize(context, 12),
+                            fontSize: 12,
                             fontFamily: "QuicksandRegular",
                           ),
                         ),
@@ -182,72 +186,39 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                         widget.userTopic.authorName,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: Dimensions.fontSize(context, 16),
+                          fontSize: 16,
                           fontFamily: "QuicksandRegular",
                         ),
                       ),
                     ),
-                    PopupMenuButton<SampleItem>(
-                      initialValue: selectedItem,
-                      color: AppColors.mainColor,
-                      onSelected: (SampleItem item) {
-                        setState(() {
-                          selectedItem = item;
-                        });
-                        if (item == SampleItem.view) {
-                          // Navigator.pushReplacement(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (BuildContext context) => ViewTopic(
-                          //       userTopic: widget.userTopic,
-                          //       user: widget.user,
-                          //     ),
-                          //   ),
-                          // );
-
-                          onTapFunctionToViewTopic(context);
-
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => ViewTopic(
-                          //       userTopic: widget.userTopic,
-                          //       user: widget.user,
-                          //     ),
-                          //   ),
-                          // );
-                        }
-                      },
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<SampleItem>>[
-                        const PopupMenuItem<SampleItem>(
-                          value: SampleItem.view,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.visibility,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'View',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Quicksand",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    SizedBox(width: 16,),
+                    _buildViewTopicButton(context, widget.userTopic),
                   ],
                 )
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildViewTopicButton(BuildContext context, UserTopic userTopic) {
+    return Container(
+      alignment: Alignment.center,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(217, 240, 255, 1),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: IconButton(
+          icon: const Icon(
+            Icons.navigate_next,
+            size: 28,
+          ),
+          onPressed: () {
+            onTapFunctionToViewTopic(context);
+          },
         ),
       ),
     );

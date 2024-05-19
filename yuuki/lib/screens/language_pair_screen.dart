@@ -11,6 +11,7 @@ import 'package:yuuki/services/topic_service.dart';
 import 'package:yuuki/widgets/customs/custom_primary_button.dart';
 
 import '../models/vocabulary.dart';
+import '../widgets/customs/custom_dialog_confirm.dart';
 
 class LanguagePairScreen extends StatefulWidget {
   final MyUser myUser;
@@ -141,26 +142,16 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("Xác nhận"),
-                                    content: Text("Bạn có muốn thoát không?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () async {
-                                          getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+                                  return CustomDialogConfirm(
+                                    title: "Confirm",
+                                    content: "Do you want to exit",
+                                    onPressed: () async {
+                                      getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
 
-                                          Navigator.pop(context); // Close the dialog
-                                          Navigator.pop(context); // Close the screen
-                                        },
-                                        child: Text("Có"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context); // Close the dialog
-                                        },
-                                        child: Text("Không"),
-                                      ),
-                                    ],
+                                      Navigator.pop(context); // Close the dialog
+                                      Navigator.pop(context); // Close the screen
+                                    },
+                                    okeText: "Exit",
                                   );
                                 },
                               );
@@ -305,11 +296,22 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
     );
   }
 
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
   Future<LearningResult> getLearningResult(MyUser myUser, UserTopic userTopic, List<QuestionAnswer> questionAnswers) async {
     // Calculate the learning result
     LearningResult learningResult = LearningResult(questionAnswers: questionAnswers);
     learningResult.calculateAvgScore();
-    print("Score: ${learningResult.avgScore}");
 
     // Finish the study session for the user topic
     await _topicController.finishStudyUserTopic(
@@ -395,7 +397,9 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
 
                   // Kết thúc học và chuyển trang
                   if (_index == _totalVocabulary - 1) {
+                    _showLoadingDialog();
                     LearningResult learningResult = await getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+                    Navigator.pop(context); // Close the dialog
 
                     Navigator.push(
                       context,
@@ -502,7 +506,9 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
                   // Check if this is the last vocabulary item
                   if (_index == _totalVocabulary - 1) {
                     // Get the learning result
+                    _showLoadingDialog();
                     LearningResult learningResult = await getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+                    Navigator.pop(context); // Close loading dialog
 
                     // Pop the current context to close the dialog or current screen
                     Navigator.pop(context);

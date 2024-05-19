@@ -10,6 +10,7 @@ import 'package:yuuki/widgets/items/item_add_vocabulary.dart';
 import '../models/topic.dart';
 import '../results/topic_result.dart';
 import '../results/user_topic_result.dart';
+import '../widgets/customs/custom_notification_dialog.dart';
 
 class AddPage extends StatefulWidget {
   final MyUser? user;
@@ -29,6 +30,7 @@ class _AddPageState extends State<AddPage> {
   bool isTitleEmpty = false;
   bool isDescriptionEmpty = false;
   TopicController topicController = TopicController();
+  int totalVocabulary = 0;
 
   List<Vocabulary> _getVocabularies() {
     return List.generate(vocabularyItems.length, (index) {
@@ -83,7 +85,7 @@ class _AddPageState extends State<AddPage> {
             Text(
               'Create',
               style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
+                fontSize: 16,
                 fontFamily: "QuicksandRegular",
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -102,6 +104,7 @@ class _AddPageState extends State<AddPage> {
       vocabularyItems.clear();
       termControllers.clear();
       definitionControllers.clear();
+      totalVocabulary = 0;
     });
   }
 
@@ -113,9 +116,11 @@ class _AddPageState extends State<AddPage> {
       });
     } else if (termControllers.any((controller) => controller.text.isEmpty) ||
         definitionControllers.any((controller) => controller.text.isEmpty)) {
-      _showValidateDialog("Please enter term or definition!");
+      // _showValidateDialog("Please enter term or definition!");
+      _showNotificationDialog("Notification", "Please enter term or definition!", false);
     } else {
       _showLoadingDialog();
+
       try {
         Topic topic = Topic.fromUserCreated(
           widget.user!,
@@ -127,20 +132,20 @@ class _AddPageState extends State<AddPage> {
 
         TopicResult topicResult = await _addTopic(topic);
         if (!topicResult.success){
-          _showErrorDialog(topicResult.errorMessage!);
+          _showNotificationDialog("Error", topicResult.errorMessage!, false);
         }
 
         UserTopicResult userTopicResult = await _addTopicToUser(topicResult.topic!.id);
         if (!userTopicResult.success){
-          _showErrorDialog(userTopicResult.errorMessage!);
+          _showNotificationDialog("Error", userTopicResult.errorMessage!, false);
         }
 
         _finishAddTopic();
         Navigator.of(context).pop(); // Close the loading dialog
-        _showSuccessDialog();
+        _showNotificationDialog("Success", "Topic Added Successfully!", true);
       } catch (error) {
         Navigator.of(context).pop(); // Close the loading dialog
-        _showErrorDialog(error.toString());
+        _showNotificationDialog("Error", error.toString(), false);
       }
     }
   }
@@ -157,127 +162,15 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
-  void _showSuccessDialog() {
+  void _showNotificationDialog(String title, String message, bool isSuccess) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text("Topic added successfully!"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Error"),
-          content: Text("Error: $message"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showValidateDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Container(
-            height: 200,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20)),
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF397CFF),
-                        Color(0x803DB7FC),
-                      ],
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Notification",
-                    style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 20),
-                      fontFamily: "Quicksand",
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  alignment: Alignment.center,
-                  child: Text(
-                    message,
-                    style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
-                      fontFamily: "QuicksandRegular",
-                      color: Color(0xffec5b5b),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    "Close",
-                    style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
-                      fontFamily: "QuicksandRegular",
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 40,
-                    ),
-                    backgroundColor: AppColors.mainColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
         );
       },
     );
@@ -292,7 +185,7 @@ class _AddPageState extends State<AddPage> {
           child: Text(
             "Title",
             style: TextStyle(
-              fontSize: Dimensions.fontSize(context, 16),
+              fontSize: 16,
               fontFamily: "Quicksand",
               color: Colors.black,
             ),
@@ -343,7 +236,7 @@ class _AddPageState extends State<AddPage> {
           child: Text(
             "Description",
             style: TextStyle(
-              fontSize: Dimensions.fontSize(context, 16),
+              fontSize: 16,
               fontFamily: "Quicksand",
               color: Colors.black,
             ),
@@ -402,7 +295,7 @@ class _AddPageState extends State<AddPage> {
           label: Text(
             isPublic ? "Public" : "Private",
             style: TextStyle(
-              fontSize: Dimensions.fontSize(context, 16),
+              fontSize: 16,
               fontFamily: "QuicksandRegular",
               color: AppColors.mainColor,
               fontWeight: FontWeight.bold,
@@ -422,7 +315,7 @@ class _AddPageState extends State<AddPage> {
           label: Text(
             "Import",
             style: TextStyle(
-              fontSize: Dimensions.fontSize(context, 16),
+              fontSize: 16,
               fontFamily: "QuicksandRegular",
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -444,6 +337,7 @@ class _AddPageState extends State<AddPage> {
         vocabularyItems.removeAt(index);
         termControllers.removeAt(index);
         definitionControllers.removeAt(index);
+        totalVocabulary--;
       });
     }
   }
@@ -456,14 +350,27 @@ class _AddPageState extends State<AddPage> {
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            child: Text(
-              "Vocabularies",
-              style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 16),
-                fontFamily: "Quicksand",
-                color: Colors.black,
-              ),
-            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Vocabularies",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Quicksand",
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  "Total: $totalVocabulary",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Quicksand",
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            )
           ),
           SizedBox(height: 16),
           ElevatedButton.icon(
@@ -483,6 +390,7 @@ class _AddPageState extends State<AddPage> {
                     },
                   ),
                 );
+                totalVocabulary++;
               });
             },
             icon: Icon(

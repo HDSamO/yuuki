@@ -10,6 +10,8 @@ import 'package:yuuki/widgets/customs/custom_login_button.dart';
 import 'package:yuuki/widgets/items/item_user_rank.dart';
 
 import '../models/my_user.dart';
+import '../utils/const.dart';
+import '../widgets/customs/custom_dialog_confirm.dart';
 import 'home_screen.dart';
 
 class LeaderBoardScreen extends StatelessWidget {
@@ -70,8 +72,8 @@ class LeaderBoardScreen extends StatelessWidget {
                               padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
                               child: Image.asset(
                                 'assets/images/learning/img_arrow_left.png',
-                                width: Dimensions.width(context, 36),
-                                height: Dimensions.height(context, 36),
+                                width: 36,
+                                height: 36,
                               ),
                             ),
                           ),
@@ -81,7 +83,7 @@ class LeaderBoardScreen extends StatelessWidget {
                                   "Leaderboard",
                                   style: TextStyle(
                                       fontFamily: 'Jua',
-                                      fontSize: Dimensions.fontSize(context, 42),
+                                      fontSize: 42,
                                       color: Colors.black
                                   ),
                                 ),
@@ -89,62 +91,87 @@ class LeaderBoardScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: Dimensions.height(context, 16),),
+                      SizedBox(height: 16,),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
                             "Topic name: ${userTopic.title}",
                             style: TextStyle(
-                              fontSize: Dimensions.fontSize(context, 24),
+                              fontSize: 18,
+                              fontFamily: "QuicksandRegular"
                             ),
                           ),
                           Text(
                             "Your score: ${(learningResult.avgScore! * 10).round() / 10} / 100",
                             style: TextStyle(
-                              fontSize: Dimensions.fontSize(context, 24),
+                              fontSize: 18,
+                              fontFamily: "QuicksandRegular"
                             ),
                           ),
                           Text(
                             "Your time: ${learningResult.formattedTime}",
                             style: TextStyle(
-                              fontSize: Dimensions.fontSize(context, 24),
+                              fontSize: 18,
+                              fontFamily: "QuicksandRegular"
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: Dimensions.height(context, 16),),
+                      SizedBox(height: 16,),
                       buildWidget(context),
                     ],
                   )
               ),
-              SizedBox(height: Dimensions.height(context, 16),),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: EdgeInsets.all(Dimensions.iconSize(context, 16)),
-                  child: CustomLoginButton(
-                    text: "Exit",
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(user: myUser),
-                        ),
-                            (route) => false,
-                      );
-                    },
-                    width: double.infinity,
-                    height: 54,
-                  ),
-                ),
-              ),
             ],
           )
         ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            _showDialog(context);
+          },
+          heroTag: 'uniqueTag',
+          backgroundColor: AppColors.mainColor,
+          label: Row(
+            children: [
+              Icon(Icons.exit_to_app_outlined, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
+                'Exit',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "QuicksandRegular",
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return CustomDialogConfirm(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(user: myUser),
+                ),
+                    (route) => false,
+              );
+            },
+            okeText: "Exit",
+            content: "Do you want to exit?",
+            title: "Confirm"
+        );
+      },
     );
   }
 
@@ -158,37 +185,35 @@ class LeaderBoardScreen extends StatelessWidget {
             child: Text(
               "Best time and score",
               style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 24),
-                fontFamily: "Cabin",
-                color: Color(0xFFFA6900),
+                fontSize: 24,
+                fontFamily: "Jua",
+                color: AppColors.mainColor,
               ),
             ),
           ),
           buildFutureBuilder(fetchTopScores),
-
-          SizedBox(height: Dimensions.height(context, 16),),
+          SizedBox(height: 16,),
 
           Align(
             alignment: Alignment.topLeft,
             child: Text(
               "Most time studied",
               style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 24),
-                fontFamily: "Cabin",
-                color: Color(0xFFFA6900),
+                fontSize: 24,
+                fontFamily: "Jua",
+                color: AppColors.mainColor,
               ),
             ),
           ),
           buildFutureBuilder(fetchTopViewers),
-
-          SizedBox(height: Dimensions.height(context, 16),),
+          SizedBox(height: 16,),
         ],
       );
     } else {
       return Text(
         "Leaderboards are only available on public topic.",
         style: TextStyle(
-            fontSize: Dimensions.fontSize(context, 24),
+            fontSize: 24,
             color: Colors.red
         ),
       );
@@ -208,7 +233,7 @@ class LeaderBoardScreen extends StatelessWidget {
             child: Text(
               'Error: ${snapshot.error}',
               style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 20),
+                fontSize: 20,
               ),
             ),
           );
@@ -222,7 +247,7 @@ class LeaderBoardScreen extends StatelessWidget {
               child: Text(
                 'No users found',
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 20),
+                  fontSize: 20,
                 ),
               ),
             );
@@ -230,7 +255,7 @@ class LeaderBoardScreen extends StatelessWidget {
             // Display the list of users
             var topUsers = topUserResult.topScorers!;
             return SizedBox(
-              height: Dimensions.height(context, MediaQuery.of(context).size.height * 0.27,),
+              height: 220,
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: topUsers.length,
@@ -248,7 +273,7 @@ class LeaderBoardScreen extends StatelessWidget {
             child: Text(
               'Unexpected error',
               style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 20),
+                fontSize: 20,
               ),
             ),
           );

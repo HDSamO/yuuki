@@ -8,7 +8,7 @@ import 'package:yuuki/screens/login_screen.dart';
 import 'package:yuuki/utils/const.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_change_password.dart';
-import 'package:yuuki/widgets/customs/custom_dialog_conform.dart';
+import 'package:yuuki/widgets/customs/custom_dialog_confirm.dart';
 import 'package:yuuki/widgets/customs/custom_dialog_edit_profile.dart';
 import 'package:yuuki/widgets/customs/custom_fragment_scaffold.dart';
 import 'package:yuuki/widgets/customs/custom_item_profile.dart';
@@ -56,7 +56,7 @@ class ProfilePage extends StatelessWidget {
                       Text(
                         user!.name,
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 24),
+                          fontSize: 24,
                           fontFamily: "Quicksand",
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -65,7 +65,7 @@ class ProfilePage extends StatelessWidget {
                       Text(
                         user!.email,
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 20),
+                          fontSize: 20,
                           fontFamily: "QuicksandRegular",
                           color: Colors.black,
                         ),
@@ -152,7 +152,7 @@ class ProfilePage extends StatelessWidget {
                           return CustomDialogConfirm(
                             title: "Confirm Logout",
                             content:
-                                "you definitely want to sign out of this account?",
+                                "You definitely want to sign out of this account?",
                             okeText: "Logout",
                             onPressed: () async {
                               final SharedPreferences prefs =

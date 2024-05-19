@@ -25,7 +25,7 @@ class ItemUserTopicFolder extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Container(
         width: double.infinity,
-        height: 110,
+        height: 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
@@ -53,7 +53,7 @@ class ItemUserTopicFolder extends StatelessWidget {
                               userTopic.title,
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: Dimensions.fontSize(context, 18),
+                                fontSize: 18,
                                 fontFamily: "QuicksandRegular",
                               ),
                             ),
@@ -64,7 +64,7 @@ class ItemUserTopicFolder extends StatelessWidget {
                             },
                             icon: Icon(
                               Icons.delete_outline,
-                              size: Dimensions.iconSize(context, 26),
+                              size: 22,
                             ),
                           ),
                         ],
@@ -77,7 +77,7 @@ class ItemUserTopicFolder extends StatelessWidget {
                         children: [
                           _buildItemInfo(
                             context,
-                            "${userTopic.vocabularies.length} Items",
+                            "${userTopic.vocabularies.length} terms",
                           ),
                           const SizedBox(width: 12),
                           const Icon(

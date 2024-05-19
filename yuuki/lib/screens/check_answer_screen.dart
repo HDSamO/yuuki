@@ -4,10 +4,12 @@ import 'package:yuuki/models/learning_result.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/leaderboard_screen.dart';
 import 'package:yuuki/utils/demension.dart';
+import 'package:yuuki/widgets/customs/custom_dialog_confirm.dart';
 import 'package:yuuki/widgets/customs/custom_login_button.dart';
 import 'package:yuuki/widgets/items/item_check_answer.dart';
 
 import '../models/my_user.dart';
+import '../utils/const.dart';
 import 'home_screen.dart';
 
 class CheckAnswerScreen extends StatelessWidget {
@@ -56,8 +58,8 @@ class CheckAnswerScreen extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(20, 32, 32, 24),
                           child: Image.asset(
                             'assets/images/learning/img_arrow_left.png',
-                            width: Dimensions.width(context, 36),
-                            height: Dimensions.height(context, 36),
+                            width: 36,
+                            height: 36,
                           ),
                         ),
                       ),
@@ -79,7 +81,7 @@ class CheckAnswerScreen extends StatelessWidget {
                             },
                             icon: Icon(
                               Icons.leaderboard,
-                              size: Dimensions.iconSize(context, 36),
+                              size: 36,
                               color: Colors.yellow,
                             ),
                           )
@@ -92,13 +94,13 @@ class CheckAnswerScreen extends StatelessWidget {
                     "Your answer: ${learningResult.getCorrectAnswers().length.toString()} / ${learningResult.questionAnswers.length.toString()}",
                     style: TextStyle(
                         fontFamily: 'Katibeh',
-                        fontSize: Dimensions.fontSize(context, 48),
+                        fontSize: 48,
                         color: Colors.black
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: Dimensions.height(context, 550),
+                  height: 600,
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: learningResult.questionAnswers.length,
@@ -110,25 +112,30 @@ class CheckAnswerScreen extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(height: Dimensions.height(context, 32),),
-                Center(
-                  child: CustomLoginButton(
-                    text: "Exit",
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(user: myUser),
-                        ),
-                            (route) => false,
-                      );
-                    },
-                    width: double.infinity,
-                    height: 54,
-                  ),
-                ),
               ],
             )
+          ),
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            _showDialog(context);
+          },
+          heroTag: 'uniqueTag',
+          backgroundColor: AppColors.mainColor,
+          label: Row(
+            children: [
+              Icon(Icons.exit_to_app_outlined, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
+                'Exit',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "QuicksandRegular",
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -138,48 +145,24 @@ class CheckAnswerScreen extends StatelessWidget {
   void _showDialog(BuildContext context) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Leaderboards are only available on public topic",
-            style: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold
-            ),
-          ),
-          content: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                "Topic name: ${userTopic.title}",
-                style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 24),
+        return CustomDialogConfirm(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(user: myUser),
                 ),
-              ),
-              Text(
-                "Your score: ${(learningResult.avgScore! * 10).round() / 10} / 100",
-                style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 24),
-                ),
-              ),
-              Text(
-                "Your time: ${learningResult.formattedTime}",
-                style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 24),
-                ),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Close"),
-            ),
-          ],
+                    (route) => false,
+              );
+            },
+            okeText: "Exit",
+            content: "Do you want to exit?",
+            title: "Confirm"
         );
       },
     );
   }
+
 }

@@ -1,16 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
-import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
-import 'package:yuuki/utils/demension.dart';
 
-import '../../models/vocabulary.dart';
 import '../../screens/choose_language_screen.dart';
 import '../../screens/view_topic.dart';
 import '../customs/custom_delete_dialog.dart';
+import '../customs/custom_notification_dialog.dart';
 
 class ItemLibraryRecent extends StatelessWidget {
   final MyUser myUser;
@@ -43,19 +40,37 @@ class ItemLibraryRecent extends StatelessWidget {
   }
 
   onTapFunctionToLearning(BuildContext context) async {
-    final reLoadPage = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChooseLanguageScreen(
-          myUser: myUser,
-          userTopic: userTopic,
+    if (userTopic.vocabularies.isEmpty){
+      _showNotificationDialog(context, "Error", "The vocabulary list is empty", false);
+    } else {
+      final reLoadPage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChooseLanguageScreen(
+            myUser: myUser,
+            userTopic: userTopic,
+          ),
         ),
-      ),
-    );
+      );
 
-    if (reLoadPage) {
-      onRefresh();
+      if (reLoadPage) {
+        onRefresh();
+      }
     }
+  }
+
+  void _showNotificationDialog(BuildContext context, String title, String message, bool isSuccess) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
+        );
+      },
+    );
   }
 
   @override
@@ -64,7 +79,7 @@ class ItemLibraryRecent extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        onTapFunctionToViewTopic(context);
+        onTapFunctionToLearning(context);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -98,18 +113,18 @@ class ItemLibraryRecent extends StatelessWidget {
                                 currentTopic.title,
                                 style: TextStyle(
                                   color: Colors.black,
-                                  fontSize: Dimensions.fontSize(context, 18),
+                                  fontSize: 18,
                                   fontFamily: "QuicksandRegular",
                                 ),
                               ),
                             ),
                             IconButton(
                               onPressed: () {
-                                _showDeleteConfirmationDialog(context);
+                                _showDeleteConfirmationDialog(context, userTopic.title);
                               },
                               icon: const Icon(
                                 Icons.delete_outline,
-                                size: 20,
+                                size: 24,
                               ),
                             ),
                           ],
@@ -122,7 +137,7 @@ class ItemLibraryRecent extends StatelessWidget {
                           children: [
                             _buildItemInfo(
                               context,
-                              "${currentTopic.vocabularies.length} Items",
+                              "${currentTopic.vocabularies.length} terms",
                             ),
                             const SizedBox(width: 12),
                             const Icon(
@@ -135,13 +150,13 @@ class ItemLibraryRecent extends StatelessWidget {
                                 currentTopic.authorName,
                                 style: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontFamily: "QuicksandRegular",
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            _buildStudyButton(context, userTopic)
+                            const SizedBox(width: 20),
+                            _buildViewTopicButton(context, userTopic)
                           ],
                         ),
                       ),
@@ -156,50 +171,19 @@ class ItemLibraryRecent extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context){
+  void _showDeleteConfirmationDialog(BuildContext context, String nameTopic){
     showDialog(
         context: context,
         builder: (BuildContext context){
           return CustomDeleteDialog(
               title: "Confirm Delete",
-              message: "This item contains text. Are you sure you want to delete it?",
+              message: "Are you sure you want to delete topic \"${nameTopic}\"?",
               onFunction: () {
                 onRemove();
               }
           );
         }
     );
-  }
-
-  UserTopic _getDefaultUserTopic() {
-    // Tạo danh sách từ vựng cho chủ đề
-    List<Vocabulary> vocabularies = [
-      Vocabulary(term: "apple", definition: "a fruit"),
-      Vocabulary(term: "book", definition: "a written or printed work"),
-      Vocabulary(
-          term: "cat", definition: "a small domesticated carnivorous mammal"),
-      Vocabulary(term: "dog", definition: "a domesticated carnivorous mammal"),
-      Vocabulary(
-          term: "elephant", definition: "a very large herbivorous mammal"),
-      Vocabulary(
-          term: "flower", definition: "the seed-bearing part of a plant"),
-      Vocabulary(term: "guitar", definition: "a stringed musical instrument"),
-      Vocabulary(term: "house", definition: "a building for human habitation"),
-      Vocabulary(term: "ice cream", definition: "a sweet frozen food"),
-      Vocabulary(term: "jacket", definition: "a short coat"),
-    ];
-
-    // Tạo một chủ đề mới
-    Topic myTopic = Topic(
-      id: "1",
-      title: "My Vocabulary List",
-      description: "A collection of various words and their meanings.",
-      vocabularies: vocabularies,
-      private: false,
-      authorName: "John Doe",
-    );
-
-    return UserTopic.fromTopic(myTopic);
   }
 
   Widget _buildItemInfo(BuildContext context, String text) {
@@ -222,7 +206,7 @@ class ItemLibraryRecent extends StatelessWidget {
     );
   }
 
-  Widget _buildStudyButton(BuildContext context, UserTopic userTopic) {
+  Widget _buildViewTopicButton(BuildContext context, UserTopic userTopic) {
     return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
@@ -235,17 +219,7 @@ class ItemLibraryRecent extends StatelessWidget {
           size: 28,
         ),
         onPressed: () {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (e) => ChooseLanguageScreen(
-          //       myUser: myUser,
-          //       userTopic: userTopic,
-          //     ),
-          //   ),
-          // );
-
-          onTapFunctionToLearning(context);
+          onTapFunctionToViewTopic(context);
         },
       ),
     );

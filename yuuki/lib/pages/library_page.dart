@@ -63,25 +63,29 @@ class _LibraryPageState extends State<LibraryPage> with SingleTickerProviderStat
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.blue),
                       color: Colors.transparent, // Set white background
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.star, color: Colors.yellow),
+                        Icon(
+                          Icons.star,
+                          color: Colors.yellow,
+                          size: 14,
+                        ),
                         SizedBox(width: 5),
                         Text(
                           'VOCABULARIES',
                           style: TextStyle(
                             color: Colors.blueAccent,
-                            fontSize: 14,
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 SizedBox(width: 16,),
               ],

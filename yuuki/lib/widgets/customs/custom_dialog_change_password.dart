@@ -60,7 +60,7 @@ class _CustomDialogState extends State<CustomDialog> {
               child: Text(
                 "Change password",
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 20),
+                  fontSize: 20,
                   fontFamily: "Quicksand",
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -201,7 +201,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   child: Text(
                     "Cancel",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "QuicksandRegular",
                       color: Color(0xffec5b5b),
                       fontWeight: FontWeight.bold,
@@ -307,7 +307,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   child: Text(
                     "Change",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "QuicksandRegular",
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

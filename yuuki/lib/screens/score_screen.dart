@@ -49,7 +49,7 @@ class ScoreScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.topLeft,
                 child: Padding(
-                    padding: EdgeInsets.all(Dimensions.iconSize(context, 20)),
+                    padding: EdgeInsets.all(20),
                     child: IconButton(
                       onPressed: (){
                         Navigator.pushAndRemoveUntil(
@@ -63,7 +63,7 @@ class ScoreScreen extends StatelessWidget {
                       icon: Icon(
                           Icons.cancel,
                         color: Colors.blue,
-                        size: Dimensions.iconSize(context, 40),
+                        size: 40,
                       ),
                     )
                 ),
@@ -78,18 +78,18 @@ class ScoreScreen extends StatelessWidget {
                           headerText,
                           style: TextStyle(
                             fontFamily: 'Jua',
-                            fontSize: Dimensions.fontSize(context, 54),
+                            fontSize: 54,
                             color: Color(0xFF6078F9),
                           ),
                         ),
                       ),
-                      SizedBox(width: Dimensions.height(context, 10)),
+                      SizedBox(width: 10),
                       Center(
                         child: Text(
                           "${learningResult.getCorrectAnswers().length.toString()} / ${learningResult.questionAnswers.length.toString()}",
                           style: TextStyle(
                               fontFamily: 'Katibeh',
-                              fontSize: Dimensions.fontSize(context, 81),
+                              fontSize: 81,
                               color: Colors.black
                           ),
                         ),
@@ -99,7 +99,7 @@ class ScoreScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 20), vertical: Dimensions.height(context, 20)),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: CustomLoginButton(
                   onPressed: () {
                     Navigator.push(
@@ -116,7 +116,7 @@ class ScoreScreen extends StatelessWidget {
                   },
                   text: "CHECK THE ANSWER",
                   width: double.infinity,
-                  height: Dimensions.height(context, 54),
+                  height: 54,
                 ),
               ),
             ],

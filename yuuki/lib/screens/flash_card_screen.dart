@@ -12,6 +12,7 @@ import 'package:yuuki/widgets/items/item_flash_card.dart';
 import '../models/vocabulary.dart';
 import '../results/vocabulary_list_result.dart';
 import '../services/topic_service.dart';
+import '../widgets/customs/custom_dialog_confirm.dart';
 
 class FlashCardScreen extends StatefulWidget {
   final MyUser myUser;
@@ -183,24 +184,14 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("Xác nhận"),
-                                    content: Text("Bạn có muốn thoát không?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context); // Close the dialog
-                                          Navigator.pop(context); // Close the screen
-                                        },
-                                        child: Text("Có"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context); // Close the dialog
-                                        },
-                                        child: Text("Không"),
-                                      ),
-                                    ],
+                                  return CustomDialogConfirm(
+                                    title: "Confirm",
+                                    content: "Do you want to exit",
+                                    onPressed: () {
+                                      Navigator.pop(context); // Close the dialog
+                                      Navigator.pop(context); // Close the screen
+                                    },
+                                    okeText: "Exit",
                                   );
                                 },
                               );

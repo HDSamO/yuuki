@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
-import 'package:yuuki/utils/demension.dart';
 
 import '../../screens/choose_language_screen.dart';
 import '../../screens/view_topic.dart';
+import '../customs/custom_notification_dialog.dart';
 
 class ItemLibraryProgress extends StatelessWidget {
   final MyUser myUser;
@@ -35,32 +35,50 @@ class ItemLibraryProgress extends StatelessWidget {
   }
 
   onTapFunctionToLearning(BuildContext context) async {
-    final reLoadPage = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChooseLanguageScreen(
-          myUser: myUser,
-          userTopic: userTopic,
+    if (userTopic.vocabularies.isEmpty){
+      _showNotificationDialog(context, "Error", "The vocabulary list is empty", false);
+    } else {
+      final reLoadPage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChooseLanguageScreen(
+            myUser: myUser,
+            userTopic: userTopic,
+          ),
         ),
-      ),
-    );
+      );
 
-    if (reLoadPage) {
-      onRefresh();
+      if (reLoadPage) {
+        onRefresh();
+      }
     }
+  }
+
+  void _showNotificationDialog(BuildContext context, String title, String message, bool isSuccess) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        onTapFunctionToViewTopic(context);
+        onTapFunctionToLearning(context);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         child: Container(
           width: double.infinity,
-          height: Dimensions.height(context, 90),
+          height: 90,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Colors.white,
@@ -87,7 +105,7 @@ class ItemLibraryProgress extends StatelessWidget {
                             userTopic.title,
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: Dimensions.fontSize(context, 18),
+                              fontSize: 18,
                               fontFamily: "QuicksandRegular",
                             ),
                           ),
@@ -98,7 +116,7 @@ class ItemLibraryProgress extends StatelessWidget {
                         children: [
                           _buildItemInfo(
                             context,
-                            "${userTopic.vocabularies.length} Items",
+                            "${userTopic.vocabularies.length} terms",
                           ),
                           const SizedBox(width: 12),
                           _buildItemInfo(
@@ -110,7 +128,7 @@ class ItemLibraryProgress extends StatelessWidget {
                     ],
                   ),
                 ),
-                _buildStudyButton(context, userTopic),
+                _buildViewTopicButton(context, userTopic),
               ],
             ),
           ),
@@ -139,7 +157,7 @@ class ItemLibraryProgress extends StatelessWidget {
     );
   }
 
-  Widget _buildStudyButton(BuildContext context, UserTopic userTopic) {
+  Widget _buildViewTopicButton(BuildContext context, UserTopic userTopic) {
     return Container(
       alignment: Alignment.center,
       child: Container(
@@ -153,17 +171,7 @@ class ItemLibraryProgress extends StatelessWidget {
             size: 28,
           ),
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (e) => ChooseLanguageScreen(
-            //       myUser: myUser,
-            //       userTopic: userTopic,
-            //     ),
-            //   ),
-            // );
-
-            onTapFunctionToLearning(context);
+            onTapFunctionToViewTopic(context);
           },
         ),
       ),

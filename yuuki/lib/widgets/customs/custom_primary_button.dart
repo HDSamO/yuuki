@@ -33,7 +33,7 @@ class CustomPrimaryButton extends StatelessWidget {
             text,
             style: TextStyle(
               color: Colors.white,
-              fontSize: Dimensions.fontSize(context, 20),
+              fontSize: 22,
               fontWeight: FontWeight.bold,
             ),
           ),

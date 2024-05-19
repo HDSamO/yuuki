@@ -97,7 +97,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
               child: Text(
                 "Edit Profile",
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 20),
+                  fontSize: 20,
                   fontFamily: "Quicksand",
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -233,7 +233,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                           child: Text(
                             "Cancel",
                             style: TextStyle(
-                              fontSize: Dimensions.fontSize(context, 16),
+                              fontSize: 16,
                               fontFamily: "QuicksandRegular",
                               color: Color(0xffec5b5b),
                               fontWeight: FontWeight.bold,
@@ -276,7 +276,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                           child: Text(
                             "Save",
                             style: TextStyle(
-                              fontSize: Dimensions.fontSize(context, 16),
+                              fontSize: 16,
                               fontFamily: "QuicksandRegular",
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -308,7 +308,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            height: Dimensions.height(context, 180),
+            height: 180,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -333,7 +333,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                   child: Text(
                     "Confirm Update",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 20),
+                      fontSize: 20,
                       fontFamily: "Quicksand",
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -349,7 +349,7 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                   child: Text(
                     "User information has been updated",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "QuicksandRegular",
                       color: Colors.green,
                       fontWeight: FontWeight.bold,
@@ -372,9 +372,9 @@ class _CustomDialogEditProfileState extends State<CustomDialogEditProfile> {
                         );
                       },
                       child: Text(
-                        "oke",
+                        "OK",
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 16),
+                          fontSize: 16,
                           fontFamily: "QuicksandRegular",
                           color: AppColors.mainColor,
                           fontWeight: FontWeight.bold,

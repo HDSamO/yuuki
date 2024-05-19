@@ -46,7 +46,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
         padding: EdgeInsets.symmetric(vertical: 8),
         child: Container(
           width: double.infinity,
-          height: Dimensions.height(context, 320),
+          height: 300,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Colors.white,
@@ -69,7 +69,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                     Text(
                       "Term",
                       style: TextStyle(
-                        fontSize: Dimensions.fontSize(context, 16),
+                        fontSize: 16,
                         fontFamily: "Quicksand",
                         color: Colors.black,
                       ),
@@ -86,6 +86,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                     )
                   ],
                 ),
+                SizedBox(height: 8,),
                 TextField(
                   controller: termController,
                   onChanged: (_) {
@@ -125,7 +126,7 @@ class _ItemAddVocabularyState extends State<ItemAddVocabulary> {
                   child: Text(
                     "Definition",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "Quicksand",
                       color: Colors.black,
                     ),

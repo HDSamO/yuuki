@@ -61,7 +61,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   "People",
                   style: TextStyle(
                     color: AppColors.mainColor,
-                    fontSize: Dimensions.fontSize(context, 20),
+                    fontSize: 20,
                     fontFamily: "Quicksand",
                   ),
                 ),
@@ -101,7 +101,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   "Trending",
                   style: TextStyle(
                     color: AppColors.mainColor,
-                    fontSize: Dimensions.fontSize(context, 20),
+                    fontSize: 20,
                     fontFamily: "Quicksand",
                   ),
                 ),
@@ -146,7 +146,7 @@ class _CommunityPageState extends State<CommunityPage> {
                   "Explore",
                   style: TextStyle(
                     color: AppColors.mainColor,
-                    fontSize: Dimensions.fontSize(context, 20),
+                    fontSize: 20,
                     fontFamily: "Quicksand",
                   ),
                 ),

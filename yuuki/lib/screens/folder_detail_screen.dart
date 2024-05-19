@@ -10,7 +10,9 @@ import '../models/folder.dart';
 import '../models/my_user.dart';
 import '../models/topic.dart';
 import '../models/user_topic.dart';
+import '../utils/const.dart';
 import '../utils/demension.dart';
+import '../widgets/customs/custom_notification_dialog.dart';
 import '../widgets/items/item_user_topic_folder.dart';
 
 class FolderDetailScreen extends StatefulWidget {
@@ -68,12 +70,12 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
                             padding: EdgeInsets.fromLTRB(10, 10, 0, 10),
                             child: Image.asset(
                               'assets/images/learning/img_arrow_left.png',
-                              width: Dimensions.width(context, 36),
-                              height: Dimensions.height(context, 36),
+                              width: 36,
+                              height: 36,
                             ),
                           ),
                         ),
-                        SizedBox(height: Dimensions.height(context, 16),),
+                        SizedBox(height: 16,),
                         Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +94,7 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
                                     "Current folder: ${widget.folder.folderName}",
                                     style: TextStyle(
                                       color: Colors.black,
-                                      fontSize: Dimensions.fontSize(context, 24),
+                                      fontSize: 24,
                                       fontFamily: "Quicksand",
                                     ),
                                   ),
@@ -100,17 +102,25 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
                             ],
                           ),
                         ),
-                        SizedBox(height: Dimensions.height(context, 16),),
+                        SizedBox(height: 16,),
                         Text(
                           'Topic Not In Folder',
-                          style: TextStyle(fontSize: 20, fontFamily: "Cabin"),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Cabin",
+                            color: AppColors.mainColor,
+                          ),
                         ),
                         const SizedBox(height: 10,),
                         _buildTopicNotInFolders(),
                         SizedBox(height: Dimensions.height(context, 16),),
                         Text(
                           'Topic In Folder',
-                          style: TextStyle(fontSize: 20, fontFamily: "Cabin"),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: "Cabin",
+                            color: AppColors.mainColor,
+                          ),
                         ),
                         const SizedBox(height: 10,),
                         _buildTopicInFolder(),
@@ -137,41 +147,15 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
     );
   }
 
-  void _showSuccessDialog(String message) {
+  void _showNotificationDialog(String title, String message, bool isSuccess) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Error"),
-          content: Text("Error: $message"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("OK"),
-            ),
-          ],
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
         );
       },
     );
@@ -179,7 +163,6 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
 
   void _addTopicToFolder(Topic topic) async{
     _showLoadingDialog();
-
     UserTopicResult userTopicResult = await _folderService.addTopicToFolder(widget.myUser, _folderId, topic.id);
     Navigator.pop(context); // Close the loading dialog
 
@@ -194,12 +177,12 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
           _userTopicInFolder = folderResult.folder!.topics;
         });
       } else {
-        _showErrorDialog(folderResult.errorMessage!);
+        _showNotificationDialog("Error", folderResult.errorMessage!, false);
       }
 
-      _showSuccessDialog("Topic added successfully!");
+      _showNotificationDialog("Success", "Topic added successfully!", true);
     } else {
-      _showErrorDialog(userTopicResult.errorMessage!);
+      _showNotificationDialog("Error", userTopicResult.errorMessage!, false);
     }
   }
 
@@ -213,13 +196,13 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
           );
         } else if (snapshot.hasError) {
           return Padding(
-            padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+            padding: EdgeInsets.all(20),
             child: Center(
               child: Text(
                 textAlign: TextAlign.center,
                 'Error: ${snapshot.error}',
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 24),
+                  fontSize: 24,
                   color: Colors.red,
                 ),
               ),
@@ -247,13 +230,13 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
             );
           } else {
             return Padding(
-              padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+              padding: EdgeInsets.all(20),
               child: Center(
                 child: Text(
                   textAlign: TextAlign.center,
                   'The topic list is empty!',
                   style: TextStyle(
-                    fontSize: Dimensions.fontSize(context, 24),
+                    fontSize: 24,
                     color: Colors.red,
                   ),
                 ),
@@ -291,19 +274,19 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
           });
 
           // Show success dialog
-          _showSuccessDialog("Topic has been deleted!");
+          _showNotificationDialog("Success", "Topic has been deleted!", true);
         } else {
           // Show error dialog if fetching folder details failed
-          _showErrorDialog(folderResult.errorMessage!);
+          _showNotificationDialog("Error", folderResult.errorMessage!, false);
         }
       } else {
         // Show error dialog if deleting the topic failed
-        _showErrorDialog(userTopicResult.errorMessage!);
+        _showNotificationDialog("Error", userTopicResult.errorMessage!, false);
       }
     } catch (e) {
       // Handle any unexpected errors
       Navigator.pop(context); // Ensure the loading dialog is closed
-      _showErrorDialog(e.toString());
+      _showNotificationDialog("Error", e.toString(), false);
     }
   }
 
@@ -327,13 +310,13 @@ class _FolderDetailScreenState extends State<FolderDetailScreen> {
       );
     } else {
       return Padding(
-        padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+        padding: EdgeInsets.all(20),
         child: Center(
           child: Text(
             textAlign: TextAlign.center,
             'The topic list is empty!',
             style: TextStyle(
-              fontSize: Dimensions.fontSize(context, 24),
+              fontSize: 24,
               color: Colors.red,
             ),
           ),
