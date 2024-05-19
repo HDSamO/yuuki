@@ -27,7 +27,6 @@ class ItemHomeResent extends StatefulWidget {
 }
 
 class _ItemHomeResentState extends State<ItemHomeResent> {
-
   onTapFunctionToViewTopic(BuildContext context) async {
     final reLoadPage = await Navigator.push(
       context,
@@ -45,7 +44,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
   }
 
   onTapFunctionToLearning(BuildContext context) async {
-    if (widget.userTopic.vocabularies.isEmpty){
+    if (widget.userTopic.vocabularies.isEmpty) {
       _showNotificationDialog("Error", "The vocabulary list is empty", false);
     } else {
       final reLoadPage = await Navigator.push(
@@ -70,10 +69,7 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
       context: context,
       builder: (BuildContext context) {
         return CustomNotificationDialog(
-            title: title,
-            message: message,
-            isSuccess: isSuccess
-        );
+            title: title, message: message, isSuccess: isSuccess);
       },
     );
   }
@@ -172,9 +168,9 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                         shape: CircleBorder(),
                         color: Colors.transparent,
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
-                          radius: 20.0,
+                          backgroundImage:
+                              AssetImage('assets/images/avatar/avatar.jpg'),
+                          radius: 20,
                         ),
                       ),
                     ),
@@ -191,7 +187,9 @@ class _ItemHomeResentState extends State<ItemHomeResent> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 16,),
+                    SizedBox(
+                      width: 16,
+                    ),
                     _buildViewTopicButton(context, widget.userTopic),
                   ],
                 )

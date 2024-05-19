@@ -25,7 +25,6 @@ class ItemHomePublished extends StatefulWidget {
 }
 
 class _ItemHomePublishedState extends State<ItemHomePublished> {
-
   onTapFunctionToViewTopic(BuildContext context, UserTopic userTopic) async {
     final reLoadPage = await Navigator.push(
       context,
@@ -43,7 +42,7 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
   }
 
   onTapFunctionToLearning(BuildContext context, UserTopic userTopic) async {
-    if (widget.topic.vocabularies.isEmpty){
+    if (widget.topic.vocabularies.isEmpty) {
       _showNotificationDialog("Error", "The vocabulary list is empty", false);
     } else {
       final reLoadPage = await Navigator.push(
@@ -68,10 +67,7 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
       context: context,
       builder: (BuildContext context) {
         return CustomNotificationDialog(
-            title: title,
-            message: message,
-            isSuccess: isSuccess
-        );
+            title: title, message: message, isSuccess: isSuccess);
       },
     );
   }
@@ -172,9 +168,9 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                         shape: CircleBorder(),
                         color: Colors.transparent,
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
-                          radius: 20.0,
+                          backgroundImage:
+                              AssetImage('assets/images/avatar/avatar.jpg'),
+                          radius: 20,
                         ),
                       ),
                     ),

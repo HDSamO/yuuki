@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/results/password_result.dart';
 import 'package:yuuki/services/user_service.dart';
 import 'package:yuuki/utils/const.dart';
-import 'package:yuuki/utils/demension.dart';
 
 class CustomDialog extends StatefulWidget {
   final MyUser user;
@@ -19,22 +17,17 @@ class CustomDialog extends StatefulWidget {
 
 class _CustomDialogState extends State<CustomDialog> {
   final TextEditingController _oldPasswordController = TextEditingController();
-
   final TextEditingController _newPasswordController = TextEditingController();
-
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
   bool _isOldPasswordVisible = false;
-
   bool _isNewPasswordVisible = false;
-
   bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      // barrierDismissible: false,
       child: Container(
         height: 380,
         decoration: BoxDecoration(
@@ -52,7 +45,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   end: Alignment.bottomRight,
                   colors: [
                     Color(0xFF397CFF),
-                    Color(0x803DB7FC), // 0x80 for 50% opacity
+                    Color(0x803DB7FC),
                   ],
                 ),
               ),
@@ -67,13 +60,9 @@ class _CustomDialogState extends State<CustomDialog> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 20,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   TextField(
@@ -110,9 +99,7 @@ class _CustomDialogState extends State<CustomDialog> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   TextField(
                     controller: _newPasswordController,
                     obscureText: !_isNewPasswordVisible,
@@ -147,9 +134,7 @@ class _CustomDialogState extends State<CustomDialog> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  SizedBox(height: 20),
                   TextField(
                     controller: _confirmPasswordController,
                     obscureText: !_isConfirmPasswordVisible,
@@ -188,9 +173,7 @@ class _CustomDialogState extends State<CustomDialog> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -208,14 +191,9 @@ class _CustomDialogState extends State<CustomDialog> {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 40,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 40),
                     foregroundColor: Color(0xffec5b5b),
-                    side: BorderSide(
-                      color: Color(0xffec5b5b),
-                    ),
+                    side: BorderSide(color: Color(0xffec5b5b)),
                   ),
                 ),
                 ElevatedButton(
@@ -230,37 +208,16 @@ class _CustomDialogState extends State<CustomDialog> {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Error'),
-                            content: Text('Old password incorrect'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
-                          );
+                          return _showFailureDialog(
+                              "Failed Change", "Old password is incorrect");
                         },
                       );
                     } else if (newPassword != confirmPassword) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Error'),
-                            content: Text(
-                                'New password and confirm password do not match.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
-                          );
+                          return _showFailureDialog("Failed Change",
+                              'New password and confirm password do not match.');
                         },
                       );
                     } else {
@@ -270,35 +227,15 @@ class _CustomDialogState extends State<CustomDialog> {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Changed password successfully'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            );
+                            return _showSuccessDialog();
                           },
                         );
-                        Navigator.pop(context);
                       } else {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Error'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            );
+                            return _showFailureDialog(
+                                "Failed Change", "Password change failed");
                           },
                         );
                       }
@@ -314,11 +251,167 @@ class _CustomDialogState extends State<CustomDialog> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 40,
-                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 40),
                     backgroundColor: AppColors.mainColor,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _showSuccessDialog() {
+    return Dialog(
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF397CFF),
+                    Color(0x803DB7FC),
+                  ],
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                "Successful Change",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "Quicksand",
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              alignment: Alignment.center,
+              child: Text(
+                "Your password has been changed",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "QuicksandRegular",
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "QuicksandRegular",
+                      color: AppColors.mainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 40),
+                    foregroundColor: AppColors.mainColor,
+                    side: BorderSide(color: AppColors.mainColor),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _showFailureDialog(String title, String subTitle) {
+    return Dialog(
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF397CFF),
+                    Color(0x803DB7FC),
+                  ],
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontFamily: "Quicksand",
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              alignment: Alignment.center,
+              child: Text(
+                subTitle,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "QuicksandRegular",
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: "QuicksandRegular",
+                      color: AppColors.mainColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 40),
+                    foregroundColor: AppColors.mainColor,
+                    side: BorderSide(color: AppColors.mainColor),
                   ),
                 ),
               ],

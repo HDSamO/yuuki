@@ -40,8 +40,9 @@ class ItemLibraryRecent extends StatelessWidget {
   }
 
   onTapFunctionToLearning(BuildContext context) async {
-    if (userTopic.vocabularies.isEmpty){
-      _showNotificationDialog(context, "Error", "The vocabulary list is empty", false);
+    if (userTopic.vocabularies.isEmpty) {
+      _showNotificationDialog(
+          context, "Error", "The vocabulary list is empty", false);
     } else {
       final reLoadPage = await Navigator.push(
         context,
@@ -59,16 +60,14 @@ class ItemLibraryRecent extends StatelessWidget {
     }
   }
 
-  void _showNotificationDialog(BuildContext context, String title, String message, bool isSuccess) {
+  void _showNotificationDialog(
+      BuildContext context, String title, String message, bool isSuccess) {
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return CustomNotificationDialog(
-            title: title,
-            message: message,
-            isSuccess: isSuccess
-        );
+            title: title, message: message, isSuccess: isSuccess);
       },
     );
   }
@@ -120,7 +119,8 @@ class ItemLibraryRecent extends StatelessWidget {
                             ),
                             IconButton(
                               onPressed: () {
-                                _showDeleteConfirmationDialog(context, userTopic.title);
+                                _showDeleteConfirmationDialog(
+                                    context, userTopic.title);
                               },
                               icon: const Icon(
                                 Icons.delete_outline,
@@ -171,19 +171,18 @@ class ItemLibraryRecent extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context, String nameTopic){
+  void _showDeleteConfirmationDialog(BuildContext context, String nameTopic) {
     showDialog(
         context: context,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return CustomDeleteDialog(
               title: "Confirm Delete",
-              message: "Are you sure you want to delete topic \"${nameTopic}\"?",
+              message:
+                  "Are you sure you want to delete topic \"${nameTopic}\"?",
               onFunction: () {
                 onRemove();
-              }
-          );
-        }
-    );
+              });
+        });
   }
 
   Widget _buildItemInfo(BuildContext context, String text) {

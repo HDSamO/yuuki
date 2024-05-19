@@ -46,9 +46,9 @@ class ProfilePage extends StatelessWidget {
                           shape: CircleBorder(),
                           color: Colors.transparent,
                           child: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                                "https://ps.w.org/user-avatar-reloaded/assets/icon-128x128.png?rev=2540745"),
-                            radius: 70.0,
+                            backgroundImage:
+                                AssetImage('assets/images/avatar/avatar.jpg'),
+                            radius: 70,
                           ),
                         ),
                       ),
