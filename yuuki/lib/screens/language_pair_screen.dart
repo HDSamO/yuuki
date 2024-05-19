@@ -276,7 +276,7 @@ class _LanguagePairScreenState extends State<LanguagePairScreen> {
                   // Back and Next Buttons
                   CustomPrimaryButton(
                     onPressed: () => {
-                      if (_answerController.text.toLowerCase() ==
+                      if (_answerController.text.trim().toLowerCase() ==
                           _updatedVocabularies[_index].definition.toLowerCase())
                         {_showCheckRight(context)}
                       else

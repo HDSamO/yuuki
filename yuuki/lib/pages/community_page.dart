@@ -50,6 +50,7 @@ class _CommunityPageState extends State<CommunityPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 16,),
               Container(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.symmetric(horizontal: 20),

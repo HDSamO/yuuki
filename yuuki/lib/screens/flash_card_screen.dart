@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flip_card/flip_card.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yuuki/models/my_user.dart';
@@ -34,6 +35,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
   int _index = 0;
   int _currentVocabulary = 1;
   Timer? _autoPlayTimer;
+  Timer? _flipTimer;
 
   late int _totalVocabulary;
   late double _progress;
@@ -45,6 +47,9 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
   bool _isAutoPlaySelected = false;
   bool _isShuffleSelected = false;
   bool _isFilterSelected = false;
+  bool _isFrontCard = true;
+
+  final FlipCardController _flipController = FlipCardController();
 
   List<Vocabulary> _swappedVocabularies(List<Vocabulary> vocabularies){
     List<Vocabulary> newVocabularies = [];
@@ -313,6 +318,14 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                   // ),
                   Expanded(
                     child: FlipCard(
+                      controller: _flipController,
+                      flipOnTouch: true, // Disable the automatic flip on touch
+                      onFlipDone: (isFront) {
+                        setState(() {
+                          _isFrontCard = !isFront;
+                        });
+                      },
+                      speed: 150,
                       front: ItemFlashCard(
                         myUser: widget.myUser,
                         userTopic: widget.userTopic,
@@ -341,14 +354,28 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CustomPrimaryButton(
-                        onPressed: () => _navigate(-1),
+                        onPressed: () => {
+                          if (_isFrontCard){
+                            _navigate(-1),
+                          } else {
+                            _flipController.toggleCard(),
+                            _navigate(-1),
+                          }
+                        },
                         text: 'Back',
-                        width: 150,
+                        width: 120,
                         height: 60,
                         color: Colors.blue,
                       ),
                       CustomPrimaryButton(
-                        onPressed: () => _navigate(1),
+                        onPressed: () => {
+                          if (_isFrontCard){
+                            _navigate(1),
+                          } else {
+                            _flipController.toggleCard(),
+                            _navigate(1),
+                          }
+                        },
                         text: 'Next',
                         width: 150,
                         height: 60,
@@ -376,7 +403,11 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
   }
 
   void startAutoPlay() {
-    _autoPlayTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _flipTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      _flipController.toggleCard();
+    });
+
+    _autoPlayTimer = Timer.periodic(const Duration(seconds: 6), (timer) {
       setState(() {
         // Luôn nằm trong phạm vi từ 0 đến _totalVocabulary - 1.
         _index = (_index + 1) % _totalVocabulary;
@@ -393,7 +424,9 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
     setState(() {
       _isAutoPlaySelected = false;
       _autoPlayTimer?.cancel();
+      _flipTimer?.cancel();
       _autoPlayTimer = null;
+      _flipTimer = null;
     });
   }
 

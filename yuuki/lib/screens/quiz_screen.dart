@@ -316,7 +316,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         _navigate(1),
                       }
                     },
-                    text: 'CHECK',
+                    text: 'CONTINUE',
                     width: double.infinity,
                     height: 54,
                     color: Color(0xFF0947E8),
