@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
 
   late Future<List<UserTopic>> _recentTopicsFuture;
   late Future<TopicListResult> _publishedTopicsFuture;
+  late Future<TopicListResult> _privateTopicsFuture;
 
   @override
   void initState() {
@@ -41,14 +42,19 @@ class _HomePageState extends State<HomePage> {
     _updateGreeting();
     _recentTopicsFuture = _getRecentTopics();
     _publishedTopicsFuture = _getPublishedTopics();
+    _privateTopicsFuture = _getPrivateTopics();
   }
 
-  Future<List<UserTopic>> _getRecentTopics() async{
+  Future<List<UserTopic>> _getRecentTopics() async {
     return await TopicController().getRecentTopics(widget.user!);
   }
 
-  Future<TopicListResult> _getPublishedTopics() async{
+  Future<TopicListResult> _getPublishedTopics() async {
     return await TopicController().getPublishedTopics(widget.user!);
+  }
+
+  Future<TopicListResult> _getPrivateTopics() async {
+    return await TopicController().getPrivateTopics(widget.user!);
   }
 
   void _updateGreeting() {
@@ -199,11 +205,16 @@ class _HomePageState extends State<HomePage> {
                     return Text('Error: ${snapshot.error}');
                   } else {
                     final recentTopics = snapshot.data ?? [];
+                    final filteredTopics = recentTopics
+                        .where((userTopic) =>
+                            userTopic.author == widget.user!.id ||
+                            userTopic.private == false)
+                        .toList();
                     return Container(
                       height: 180,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: recentTopics.map((userTopic) {
+                        children: filteredTopics.map((userTopic) {
                           return ItemHomeResent(
                             userTopic: userTopic,
                             user: widget.user!,
@@ -211,12 +222,70 @@ class _HomePageState extends State<HomePage> {
                               setState(() {
                                 _recentTopicsFuture = _getRecentTopics();
                                 _publishedTopicsFuture = _getPublishedTopics();
+                                _privateTopicsFuture = _getPrivateTopics();
                               });
                             },
                           );
                         }).toList(),
                       ),
                     );
+                  }
+                },
+              ),
+              SizedBox(height: 8),
+              FutureBuilder<TopicListResult>(
+                future: _privateTopicsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    final recentTopics = snapshot.data?.topics ?? [];
+
+                    if (recentTopics.isEmpty) {
+                      return SizedBox
+                          .shrink();
+                    } else {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              "Private",
+                              style: TextStyle(
+                                color: AppColors.mainColor,
+                                fontSize: Dimensions.fontSize(context, 20),
+                                fontFamily: "Quicksand",
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final topic = recentTopics[index];
+                              return ItemHomePublished(
+                                topic: topic,
+                                user: widget.user!,
+                                onRefresh: () {
+                                  setState(() {
+                                    _recentTopicsFuture = _getRecentTopics();
+                                    _publishedTopicsFuture =
+                                        _getPublishedTopics();
+                                    _privateTopicsFuture = _getPrivateTopics();
+                                  });
+                                },
+                              );
+                            },
+                            itemCount: recentTopics.length,
+                          ),
+                        ],
+                      );
+                    }
                   }
                 },
               ),
@@ -256,6 +325,7 @@ class _HomePageState extends State<HomePage> {
                             setState(() {
                               _recentTopicsFuture = _getRecentTopics();
                               _publishedTopicsFuture = _getPublishedTopics();
+                              _privateTopicsFuture = _getPrivateTopics();
                             });
                           },
                         );

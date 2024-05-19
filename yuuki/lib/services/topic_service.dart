@@ -565,6 +565,25 @@ class TopicController {
     }
   }
 
+  Future<TopicListResult> getPrivateTopics(MyUser user) async {
+    try {
+      final userId = user.id;
+
+      final topicsCollection = FirebaseFirestore.instance.collection('topics');
+
+      final topicsQuery = await topicsCollection
+          .where('author', isEqualTo: userId)
+          .where('private', isEqualTo: true)
+          .get();
+
+      final topics =
+          topicsQuery.docs.map((doc) => Topic.fromMap(doc.data()!)).toList();
+      return TopicListResult(success: true, topics: topics);
+    } catch (e) {
+      return TopicListResult(success: false, errorMessage: e.toString());
+    }
+  }
+
   Future<void> updateAuthorName(MyUser user) async {
     try {
       final String? userId = user.id;
