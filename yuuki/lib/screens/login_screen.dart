@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               CircularProgressIndicator(),
               SizedBox(width: 16),
-              Text("Loading..."),
+              Text("Logging in..."),
             ],
           ),
           duration: Duration(seconds: 5),
@@ -352,12 +352,12 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           child: Container(
             width: 500,
-            padding: EdgeInsets.only(bottom: Dimensions.height(context, 16)),
+            padding: EdgeInsets.only(bottom: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  height: Dimensions.height(context, 50),
+                  height: 50,
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(20)),
@@ -374,7 +374,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text(
                     "Forgot Password",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 20),
+                      fontSize: 20,
                       fontFamily: "Quicksand",
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -422,7 +422,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         "Cancel",
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 16),
+                          fontSize: 16,
                           fontFamily: "QuicksandRegular",
                           color: Color(0xffec5b5b),
                           fontWeight: FontWeight.bold,
@@ -489,7 +489,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         "Send",
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 16),
+                          fontSize: 16,
                           fontFamily: "QuicksandRegular",
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

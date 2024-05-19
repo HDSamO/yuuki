@@ -1,5 +1,4 @@
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yuuki/models/my_user.dart';
@@ -7,11 +6,8 @@ import 'package:yuuki/models/topic.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/screens/choose_language_screen.dart';
 import 'package:yuuki/screens/view_topic.dart';
-import 'package:yuuki/services/topic_service.dart';
-import 'package:yuuki/utils/const.dart';
-import 'package:yuuki/utils/demension.dart';
 
-enum SampleItem { view }
+import '../customs/custom_notification_dialog.dart';
 
 class ItemHomePublished extends StatefulWidget {
   final Topic topic;
@@ -29,6 +25,7 @@ class ItemHomePublished extends StatefulWidget {
 }
 
 class _ItemHomePublishedState extends State<ItemHomePublished> {
+
   onTapFunctionToViewTopic(BuildContext context, UserTopic userTopic) async {
     final reLoadPage = await Navigator.push(
       context,
@@ -46,37 +43,45 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
   }
 
   onTapFunctionToLearning(BuildContext context, UserTopic userTopic) async {
-    final reLoadPage = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChooseLanguageScreen(
-          myUser: widget.user,
-          userTopic: userTopic,
+    if (widget.topic.vocabularies.isEmpty){
+      _showNotificationDialog("Error", "The vocabulary list is empty", false);
+    } else {
+      final reLoadPage = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChooseLanguageScreen(
+            myUser: widget.user,
+            userTopic: userTopic,
+          ),
         ),
-      ),
-    );
+      );
 
-    if (reLoadPage) {
-      widget.onRefresh();
+      if (reLoadPage) {
+        widget.onRefresh();
+      }
     }
+  }
+
+  void _showNotificationDialog(String title, String message, bool isSuccess) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    SampleItem? selectedItem;
     UserTopic userTopic = UserTopic.fromTopic(widget.topic);
+
     return GestureDetector(
       onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (e) => ChooseLanguageScreen(
-        //       myUser: widget.user,
-        //       userTopic: userTopic,
-        //     ),
-        //   ),
-        // );
-
         onTapFunctionToLearning(context, userTopic);
       },
       child: Padding(
@@ -106,7 +111,7 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                     widget.topic.title,
                     style: TextStyle(
                       color: Colors.black,
-                      fontSize: Dimensions.fontSize(context, 20),
+                      fontSize: 20,
                       fontFamily: "Quicksand",
                     ),
                   ),
@@ -117,16 +122,16 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                       Container(
                         alignment: Alignment.center,
                         height: 20,
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(217, 240, 255, 1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          "${widget.topic.vocabularies.length} items",
+                          "${widget.topic.vocabularies.length} terms",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: Dimensions.fontSize(context, 12),
+                            fontSize: 12,
                             fontFamily: "QuicksandRegular",
                           ),
                         ),
@@ -137,7 +142,7 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                       Container(
                         alignment: Alignment.center,
                         height: 20,
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
                           color: Color.fromRGBO(217, 240, 255, 1),
                           borderRadius: BorderRadius.circular(20),
@@ -146,7 +151,7 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                           "${widget.topic.views} views",
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: Dimensions.fontSize(context, 12),
+                            fontSize: 12,
                             fontFamily: "QuicksandRegular",
                           ),
                         ),
@@ -181,62 +186,38 @@ class _ItemHomePublishedState extends State<ItemHomePublished> {
                         widget.topic.authorName,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: Dimensions.fontSize(context, 16),
+                          fontSize: 16,
                           fontFamily: "QuicksandRegular",
                         ),
                       ),
                     ),
-                    PopupMenuButton<SampleItem>(
-                      initialValue: selectedItem,
-                      color: AppColors.mainColor,
-                      onSelected: (SampleItem item) {
-                        setState(() {
-                          selectedItem = item;
-                        });
-                        if (item == SampleItem.view) {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => ViewTopic(
-                          //       userTopic: userTopic,
-                          //       user: widget.user,
-                          //     ),
-                          //   ),
-                          // );
-
-                          onTapFunctionToViewTopic(context, userTopic);
-                        }
-                      },
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<SampleItem>>[
-                        const PopupMenuItem<SampleItem>(
-                          value: SampleItem.view,
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.visibility,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'View',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Quicksand",
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildViewTopicButton(context, userTopic),
                   ],
                 )
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildViewTopicButton(BuildContext context, UserTopic userTopic) {
+    return Container(
+      alignment: Alignment.center,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromRGBO(217, 240, 255, 1),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: IconButton(
+          icon: const Icon(
+            Icons.navigate_next,
+            size: 28,
+          ),
+          onPressed: () {
+            onTapFunctionToViewTopic(context, userTopic);
+          },
         ),
       ),
     );

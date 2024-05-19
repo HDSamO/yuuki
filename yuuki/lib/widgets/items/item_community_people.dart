@@ -60,7 +60,7 @@ class ItemCommunityPeople extends StatelessWidget {
                         user.name,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: Dimensions.fontSize(context, 20),
+                          fontSize: 20,
                           fontFamily: "Quicksand",
                         ),
                       ),
@@ -83,7 +83,7 @@ class ItemCommunityPeople extends StatelessWidget {
                         "${user.userTopics!.length} topics",
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: Dimensions.fontSize(context, 12),
+                          fontSize: 12,
                           fontFamily: "QuicksandRegular",
                         ),
                       ),

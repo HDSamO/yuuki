@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:yuuki/models/my_user.dart';
 import 'package:yuuki/models/user_topic.dart';
 import 'package:yuuki/models/vocabulary.dart';
@@ -21,6 +22,8 @@ class ItemStarredVocabulary extends StatefulWidget {
 }
 
 class _ItemStarredVocabularyState extends State<ItemStarredVocabulary> {
+  late FlutterTts flutterTts = FlutterTts();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -45,24 +48,40 @@ class _ItemStarredVocabularyState extends State<ItemStarredVocabulary> {
           child: Center(
               child: Row(
                 children: [
-                  _buildItemInfo(
-                    context,
-                    widget.vocabulary.term,
+                  Expanded(
+                      child: Row(
+                        children: [
+                          _buildItemInfo(
+                            context,
+                            widget.vocabulary.term,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            ":",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 24,
+                              fontFamily: "QuicksandRegular",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          _buildItemInfo(
+                            context,
+                            widget.vocabulary.definition,
+                          ),
+                        ],
+                      )
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    ":",
-                    style: TextStyle(
+                  IconButton(
+                    onPressed: () {
+                      speak(widget.vocabulary.term);
+                    },
+                    icon: Icon(
+                      Icons.volume_up,
+                      size: 48,
                       color: Colors.black,
-                      fontSize: Dimensions.fontSize(context, 24),
-                      fontFamily: "QuicksandRegular",
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  _buildItemInfo(
-                    context,
-                    widget.vocabulary.definition,
                   ),
                 ],
               )
@@ -72,11 +91,19 @@ class _ItemStarredVocabularyState extends State<ItemStarredVocabulary> {
     );
   }
 
+  void speak(String text) async {
+    String languageCode = "en-US";
+
+    await flutterTts.setLanguage(languageCode);
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
+  }
+
   Widget _buildItemInfo(BuildContext context, String text) {
     return Container(
       alignment: Alignment.center,
-      height: Dimensions.height(context, 50),
-      padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 16), vertical: Dimensions.height(context, 8)),
+      height: 50,
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: Dimensions.height(context, 8)),
       decoration: BoxDecoration(
         color: const Color.fromRGBO(217, 240, 255, 1),
         borderRadius: BorderRadius.circular(20),
@@ -85,39 +112,11 @@ class _ItemStarredVocabularyState extends State<ItemStarredVocabulary> {
         text,
         style: TextStyle(
           color: Colors.black,
-          fontSize: Dimensions.fontSize(context, 18),
+          fontSize: 18,
           fontFamily: "QuicksandRegular",
         ),
       ),
     );
   }
 
-  Widget _buildStudyButton(BuildContext context, UserTopic userTopic) {
-    return Container(
-      alignment: Alignment.center,
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromRGBO(217, 240, 255, 1),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: IconButton(
-          icon: const Icon(
-            Icons.navigate_next,
-            size: 28,
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (e) => ChooseLanguageScreen(
-                  myUser: widget.myUser,
-                  userTopic: userTopic,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
 }

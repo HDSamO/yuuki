@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
               title,
               style: TextStyle(
                 color: textColor,
-                fontSize: Dimensions.fontSize(context, 20),
+                fontSize: 20,
                 fontFamily: "Quicksand",
               ),
             ),
@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                 subTitle,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: Dimensions.fontSize(context, 16),
+                  fontSize: 16,
                   fontFamily: "Quicksand",
                 ),
               ),
@@ -191,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                   "Recent",
                   style: TextStyle(
                     color: AppColors.mainColor,
-                    fontSize: Dimensions.fontSize(context, 20),
+                    fontSize: 20,
                     fontFamily: "Quicksand",
                   ),
                 ),
@@ -257,7 +257,7 @@ class _HomePageState extends State<HomePage> {
                               "Private",
                               style: TextStyle(
                                 color: AppColors.mainColor,
-                                fontSize: Dimensions.fontSize(context, 20),
+                                fontSize: 20,
                                 fontFamily: "Quicksand",
                               ),
                             ),
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                   "Published",
                   style: TextStyle(
                     color: AppColors.mainColor,
-                    fontSize: Dimensions.fontSize(context, 20),
+                    fontSize: 20,
                     fontFamily: "Quicksand",
                   ),
                 ),

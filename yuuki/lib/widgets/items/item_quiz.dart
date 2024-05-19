@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:yuuki/utils/demension.dart';
 import 'package:yuuki/widgets/customs/custom_quiz_button.dart';
 
@@ -59,8 +61,8 @@ class ItemQuizState extends State<ItemQuiz> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: Dimensions.width(context, MediaQuery.of(context).size.width - 60),
-                  padding: EdgeInsets.symmetric(vertical: Dimensions.height(context, 10), horizontal: Dimensions.width(context, 20)),
+                  width: 700,
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
@@ -74,17 +76,17 @@ class ItemQuizState extends State<ItemQuiz> {
                       Text(
                         'Choose the correct answer:',
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 24),
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: Dimensions.height(context, 10)),
+                      SizedBox(height: 10),
                       Text(
                         widget.vocabulary.term,
                         style: TextStyle(
-                          fontSize: Dimensions.fontSize(context, 36),
+                          fontSize: 36,
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
@@ -93,43 +95,21 @@ class ItemQuizState extends State<ItemQuiz> {
                     ],
                   ),
                 ),
-                SizedBox(height: Dimensions.height(context, 30)),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 16)),
-                  child: Column(
-                    children: [
-                      CustomQuizButton(
-                        text: widget.vocabularies[0].definition,
+                SizedBox(height: 30),
+                Expanded(
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(10),
+                    itemCount: 4,
+                    itemBuilder: (BuildContext context, int index) {
+                      return CustomQuizButton(
+                        text: widget.vocabularies[index].definition,
                         onTap: () {
-                          _handleOptionSelected(0, widget.vocabularies[0].definition);
+                          _handleOptionSelected(index, widget.vocabularies[index].definition);
                         },
-                        isSelected: _buttonStates[0],
-                      ),
-                      SizedBox(height: Dimensions.height(context, 16)),
-                      CustomQuizButton(
-                        text: widget.vocabularies[1].definition,
-                        onTap: () {
-                          _handleOptionSelected(1, widget.vocabularies[1].definition);
-                        },
-                        isSelected: _buttonStates[1],
-                      ),
-                      SizedBox(height: Dimensions.height(context, 16)),
-                      CustomQuizButton(
-                        text: widget.vocabularies[2].definition,
-                        onTap: () {
-                          _handleOptionSelected(2, widget.vocabularies[2].definition);
-                        },
-                        isSelected: _buttonStates[2],
-                      ),
-                      SizedBox(height: Dimensions.height(context, 16)),
-                      CustomQuizButton(
-                        text: widget.vocabularies[3].definition,
-                        onTap: () {
-                          _handleOptionSelected(3, widget.vocabularies[3].definition);
-                        },
-                        isSelected: _buttonStates[3],
-                      ),
-                    ],
+                        isSelected: _buttonStates[index],
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 16,),
                   ),
                 ),
               ],

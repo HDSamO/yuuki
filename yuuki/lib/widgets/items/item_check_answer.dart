@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:yuuki/models/question_answer.dart';
 import 'package:yuuki/utils/demension.dart';
+import 'package:yuuki/widgets/customs/custom_notification_dialog.dart';
 
 class ItemCheckAnswer extends StatelessWidget {
   final QuestionAnswer questionAnswer;
@@ -37,7 +38,7 @@ class ItemCheckAnswer extends StatelessWidget {
           color: backgroundColor,
           child: Container(
             width: double.infinity,
-            height: 54,
+            height: 42,
             margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
             child: Center(
                 child: Padding(
@@ -48,20 +49,20 @@ class ItemCheckAnswer extends StatelessWidget {
                         child: Text(
                           "${questionAnswer.vocabulary.term} : ${questionAnswer.vocabulary.definition}",
                           style: TextStyle(
-                            fontSize: Dimensions.fontSize(context, 18),
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: itemColor,
                           ),
                         ),
                       ),
                       IconButton(
-                        alignment: Alignment.topRight,
+                        alignment: Alignment.centerRight,
                         onPressed: () {
                           speak(flutterTts, questionAnswer.vocabulary.term, isEnVi);
                         },
                         icon: Icon(
                           Icons.volume_up,
-                          size: Dimensions.iconSize(context, 36),
+                          size: 30,
                           color: itemColor,
                         ),
                       ),
@@ -78,28 +79,10 @@ class ItemCheckAnswer extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-              "Your answer",
-            style: TextStyle(
-              color: questionAnswer.check ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold
-            ),
-          ),
-          content: Text(
-            questionAnswer.answer.isEmpty ? "The answer is empty" : questionAnswer.answer,
-            style: TextStyle(
-              fontSize: Dimensions.fontSize(context, 18),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Close"),
-            ),
-          ],
+        return CustomNotificationDialog(
+            title: "Your answer",
+            message: questionAnswer.answer.isEmpty ? "The answer is empty" : questionAnswer.answer,
+            isSuccess: questionAnswer.check
         );
       },
     );

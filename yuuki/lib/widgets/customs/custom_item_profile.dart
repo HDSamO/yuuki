@@ -47,7 +47,7 @@ class CustomItemProfile extends StatelessWidget {
                   child: Text(
                     text,
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "Quicksand",
                       color: Colors.black,
                     ),

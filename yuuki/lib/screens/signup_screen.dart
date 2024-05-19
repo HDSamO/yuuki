@@ -130,6 +130,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _isLoading = false;
       });
 
+      ScaffoldMessenger.of(context)
+          .hideCurrentSnackBar(); // Hide the loading snackbar
+
       if (userResult.success) {
         setState(() {
           _isSubmit = false;

@@ -24,7 +24,7 @@ class ItemTopicFolder extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: Container(
         width: double.infinity,
-        height: 110,
+        height: 90,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
@@ -52,7 +52,7 @@ class ItemTopicFolder extends StatelessWidget {
                               topic.title,
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: Dimensions.fontSize(context, 18),
+                                fontSize: 18,
                                 fontFamily: "QuicksandRegular",
                               ),
                             ),
@@ -61,7 +61,7 @@ class ItemTopicFolder extends StatelessWidget {
                             onPressed: onAdd,
                             icon: Icon(
                               Icons.add_card_outlined,
-                              size: Dimensions.iconSize(context, 26),
+                              size: 22,
                             ),
                           ),
                         ],
@@ -74,7 +74,7 @@ class ItemTopicFolder extends StatelessWidget {
                         children: [
                           _buildItemInfo(
                             context,
-                            "${topic.vocabularies.length} Items",
+                            "${topic.vocabularies.length} terms",
                           ),
                           const SizedBox(width: 12),
                           const Icon(

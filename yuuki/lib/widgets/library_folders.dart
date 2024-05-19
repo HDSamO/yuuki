@@ -7,7 +7,7 @@ import 'package:yuuki/widgets/items/item_library_folder.dart';
 
 import '../models/my_user.dart';
 import '../utils/const.dart';
-import '../utils/demension.dart';
+import 'customs/custom_notification_dialog.dart';
 
 class LibraryFolders extends StatefulWidget {
   const LibraryFolders({super.key, required this.myUser});
@@ -36,7 +36,7 @@ class _LibraryFoldersState extends State<LibraryFolders> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+      padding: EdgeInsets.all(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +93,7 @@ class _LibraryFoldersState extends State<LibraryFolders> {
           Center(
             child: _buildAddButton(),
           ),
-          SizedBox(height: Dimensions.height(context, 20)),
+          SizedBox(height: 20),
           _buildFolders(),
         ],
       ),
@@ -112,21 +112,15 @@ class _LibraryFoldersState extends State<LibraryFolders> {
     );
   }
 
-  void _showSuccessDialog() {
+  void _showNotificationDialog(String title, String message, bool isSuccess) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Success"),
-          content: Text("Folder added successfully!"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("OK"),
-            ),
-          ],
+        return CustomNotificationDialog(
+            title: title,
+            message: message,
+            isSuccess: isSuccess
         );
       },
     );
@@ -151,7 +145,7 @@ class _LibraryFoldersState extends State<LibraryFolders> {
       });
 
       _nameController.clear();
-      _showSuccessDialog();
+      _showNotificationDialog("Success", "Folder added successfully", true);
     }
   }
 
@@ -183,13 +177,13 @@ class _LibraryFoldersState extends State<LibraryFolders> {
           );
         } else if (snapshot.hasError) {
           return Padding(
-            padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+            padding: EdgeInsets.all(20),
             child: Center(
               child: Text(
                 textAlign: TextAlign.center,
                 'Error: ${snapshot.error}',
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 24),
+                  fontSize: 24,
                   color: Colors.red,
                 ),
               ),
@@ -217,13 +211,13 @@ class _LibraryFoldersState extends State<LibraryFolders> {
             );
           } else {
             return Padding(
-              padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+              padding: EdgeInsets.all(20),
               child: Center(
                 child: Text(
                   textAlign: TextAlign.center,
                   'The folder list is empty!',
                   style: TextStyle(
-                    fontSize: Dimensions.fontSize(context, 24),
+                    fontSize: 24,
                     color: Colors.red,
                   ),
                 ),

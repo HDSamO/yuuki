@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/const.dart';
-import '../../utils/demension.dart';
 
 class CustomDeleteDialog extends StatelessWidget {
   final String title;
@@ -44,7 +43,7 @@ class CustomDeleteDialog extends StatelessWidget {
               child: Text(
                 title,
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 20),
+                  fontSize: 20,
                   fontFamily: "Quicksand",
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -58,9 +57,10 @@ class CustomDeleteDialog extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               alignment: Alignment.center,
               child: Text(
+                textAlign: TextAlign.center,
                 message,
                 style: TextStyle(
-                  fontSize: Dimensions.fontSize(context, 16),
+                  fontSize: 16,
                   fontFamily: "QuicksandRegular",
                   color: Color(0xffec5b5b),
                   fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class CustomDeleteDialog extends StatelessWidget {
                   child: Text(
                     "Cancel",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "QuicksandRegular",
                       color: AppColors.mainColor,
                       fontWeight: FontWeight.bold,
@@ -105,7 +105,7 @@ class CustomDeleteDialog extends StatelessWidget {
                   child: Text(
                     "Remove",
                     style: TextStyle(
-                      fontSize: Dimensions.fontSize(context, 16),
+                      fontSize: 16,
                       fontFamily: "QuicksandRegular",
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

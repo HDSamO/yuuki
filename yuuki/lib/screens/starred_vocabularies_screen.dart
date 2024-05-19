@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:yuuki/services/topic_service.dart';
 
 import '../models/my_user.dart';
-import '../models/user_topic.dart';
-import '../models/vocabulary.dart';
-import '../results/vocabulary_list_result.dart';
 import '../utils/demension.dart';
 import '../widgets/items/item_starred_vocabulary.dart';
 
@@ -46,8 +43,8 @@ class _StarredVocabulariesScreenState extends State<StarredVocabulariesScreen> {
                         },
                         child: Image.asset(
                           'assets/images/learning/img_arrow_left.png',
-                          width: Dimensions.width(context, 36),
-                          height: Dimensions.height(context, 36),
+                          width: 36,
+                          height: 36,
                         ),
                       ),
                       Expanded(
@@ -57,7 +54,7 @@ class _StarredVocabulariesScreenState extends State<StarredVocabulariesScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontFamily: 'Jua',
-                              fontSize: Dimensions.fontSize(context, 30),
+                              fontSize: 30,
                               color: Color(0xFFFCEC0A),
                             ),
                           ),
@@ -78,13 +75,13 @@ class _StarredVocabulariesScreenState extends State<StarredVocabulariesScreen> {
   Widget _buildStarredVocabularies(BuildContext context){
     if (widget.myUser.starredTopic!.vocabularies.isEmpty){
       return Padding(
-        padding: EdgeInsets.all(Dimensions.fontSize(context, 20)),
+        padding: EdgeInsets.all(20),
         child: Center(
           child: Text(
             textAlign: TextAlign.center,
             "The list is empty!",
             style: TextStyle(
-                fontSize: Dimensions.fontSize(context, 24),
+                fontSize: 24,
                 color: Colors.red
             ),
           ),

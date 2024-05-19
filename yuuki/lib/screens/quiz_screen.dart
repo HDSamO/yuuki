@@ -14,6 +14,7 @@ import '../models/learning_result.dart';
 import '../models/question_answer.dart';
 import '../models/vocabulary.dart';
 import '../services/topic_service.dart';
+import '../widgets/customs/custom_dialog_confirm.dart';
 import '../widgets/items/item_quiz.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -172,7 +173,7 @@ class _QuizScreenState extends State<QuizScreen> {
               height: MediaQuery.of(context).size.height,
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: Dimensions.width(context, 20), vertical: Dimensions.height(context, 30)),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -186,17 +187,17 @@ class _QuizScreenState extends State<QuizScreen> {
                         children: [
                           Text(
                             _currentVocabulary.toString(),
-                            style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 20, color: Colors.blue, fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(width: Dimensions.width(context, 8),),
+                          SizedBox(width: 8,),
                           Text(
                             "/",
-                            style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 20, color: Colors.blue, fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(width: Dimensions.width(context, 8),),
+                          SizedBox(width: 8,),
                           Text(
                             _totalVocabulary.toString(),
-                            style: TextStyle(fontSize: Dimensions.fontSize(context, 20), color: Colors.blue, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 20, color: Colors.blue, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -208,36 +209,26 @@ class _QuizScreenState extends State<QuizScreen> {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text("Xác nhận"),
-                                    content: Text("Bạn có muốn thoát không?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
+                                  return CustomDialogConfirm(
+                                    title: "Confirm",
+                                    content: "Do you want to exit",
+                                    onPressed: () async {
+                                        getLearningResult(widget.myUser, widget.userTopic, _questionAnswers);
 
-                                          Navigator.pop(context); // Close the dialog
-                                          Navigator.pop(context); // Close the screen
-                                        },
-                                        child: Text("Có"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.pop(context); // Close the dialog
-                                        },
-                                        child: Text("Không"),
-                                      ),
-                                    ],
+                                        Navigator.pop(context); // Close the dialog
+                                        Navigator.pop(context); // Close the screen
+                                    },
+                                    okeText: "Exit",
                                   );
                                 },
                               );
                             },
-                            icon: Icon(Icons.arrow_back, size: Dimensions.iconSize(context, 36),),
+                            icon: Icon(Icons.arrow_back, size: 36,),
                           ),
-                          SizedBox(width: Dimensions.width(context, 8)),
+                          SizedBox(width: 8),
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(Dimensions.radius(context, 12)),
+                              borderRadius: BorderRadius.circular(12),
                               child: LinearProgressIndicator(
                                 minHeight: _totalVocabulary.toDouble(),
                                 value: _progress,
@@ -250,7 +241,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: Dimensions.height(context, 10)),
+                  SizedBox(height: 10),
                   // Functional Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -261,32 +252,32 @@ class _QuizScreenState extends State<QuizScreen> {
                             onPressed: (){
                               speak(_updatedVocabularies[_index].term, _isEnVi);
                             },
-                            icon: Icon(Icons.volume_up, size: Dimensions.iconSize(context, 36), color: Colors.black,),
+                            icon: Icon(Icons.volume_up, size: 36, color: Colors.black,),
                           ),
-                          SizedBox(width: Dimensions.width(context, 10)),
+                          SizedBox(width: 10),
                           Text(
                               "Listen",
                               style: TextStyle(
-                                fontSize: Dimensions.fontSize(context, 24),
+                                fontSize: 24,
                               )
                           ),
                         ],
                       ),
                       Row(
                         children: [
-                          Icon(Icons.timer_outlined, size: Dimensions.iconSize(context, 36),),
-                          SizedBox(width: Dimensions.width(context, 10),),
+                          Icon(Icons.timer_outlined, size: 36,),
+                          SizedBox(width: 10,),
                           Text(
                             "00:${_milliseconds ~/ 1000}",
                             style: TextStyle(
-                              fontSize: Dimensions.fontSize(context, 24),
+                              fontSize: 24,
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  SizedBox(height: Dimensions.height(context, 16),),
+                  SizedBox(height: 16,),
                   // CustomViewPager
                   Flexible(
                     child: ItemQuiz(
@@ -295,7 +286,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       onOptionSelected: handleOptionSelected,
                     ),
                   ),
-                  SizedBox(height: Dimensions.height(context, 24)),
+                  SizedBox(height: 24),
                   // Back and Next Buttons
                   CustomPrimaryButton(
                     onPressed: () async => {
@@ -306,7 +297,9 @@ class _QuizScreenState extends State<QuizScreen> {
 
                       // Kết thúc học và chuyển trang
                       if (_index == _totalVocabulary - 1) {
+                        _showLoadingDialog(),
                         learningResult = await getLearningResult(widget.myUser, widget.userTopic, _questionAnswers),
+                        Navigator.pop(context), // Close loading dialog
 
                         Navigator.push(
                           context,
@@ -325,7 +318,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     },
                     text: 'CHECK',
                     width: double.infinity,
-                    height: Dimensions.height(context, 54),
+                    height: 54,
                     color: Color(0xFF0947E8),
                   ),
                 ],
@@ -334,6 +327,18 @@ class _QuizScreenState extends State<QuizScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLoadingDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 
@@ -369,10 +374,6 @@ class _QuizScreenState extends State<QuizScreen> {
     int rawTime = userTopic.endTime - userTopic.startTime;
     learningResult.rawTime = rawTime;
     learningResult.convertRawTimeToFormattedTime();
-    print("Start time: ${userTopic.startTime}");
-    print("End time: ${userTopic.endTime}");
-    print("Raw time: ${learningResult.rawTime}");
-    print("Formatted time: ${learningResult.formattedTime}");
   }
 
   void _navigate(int direction) {
